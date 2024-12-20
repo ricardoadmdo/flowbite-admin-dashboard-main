@@ -25,7 +25,7 @@ const startServer = async () => {
 		await dbConnection();
 
 		// Sincronizar modelos
-		await sequelize.sync();
+		await sequelize.sync({ alter: true }); // Usar { alter: true } para actualizar la estructura de la tabla
 
 		// Escuchar peticiones
 		app.listen(process.env.PORT, () => {

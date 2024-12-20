@@ -51,6 +51,11 @@ const createAdmin = async (req, res) => {
 		// Encripta la contraseña
 		const hashedPassword = await bcryptjs.hash(contrasena, 10);
 
+		// Verifica que el rol sea válido
+		if (!['Administrador', 'Dependiente'].includes(rol)) {
+			return res.status(400).json({ success: false, message: 'El rol debe ser ADMIN_ROLE o USER_ROLE' });
+		}
+
 		// Crea el nuevo usuario
 		const newUser = await Usuario.create({
 			usuario,

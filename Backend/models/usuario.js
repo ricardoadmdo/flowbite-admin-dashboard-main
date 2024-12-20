@@ -36,7 +36,7 @@ const Usuario = sequelize.define(
 			allowNull: false,
 			validate: {
 				isIn: {
-					args: [['ADMIN_ROLE', 'USER_ROLE']],
+					args: [['Administrador', 'Dependiente']],
 					msg: 'El rol debe ser ADMIN_ROLE o USER_ROLE',
 				},
 			},
