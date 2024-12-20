@@ -1,36 +1,48 @@
-const { Schema, model } = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../database/config');
 
-const ProductoSchema = Schema({
-	nombre: {
-		type: String,
-		required: [true, 'El nombre es obligatorio'],
+const Producto = sequelize.define(
+	'Producto',
+	{
+		nombre: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: 'El nombre es obligatorio',
+				},
+			},
+		},
+		precio: {
+			type: DataTypes.FLOAT,
+			allowNull: false,
+		},
+		precioCosto: {
+			type: DataTypes.FLOAT,
+			allowNull: false,
+		},
+		cantidadTienda: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		cantidadAlmacen: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		url: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
 	},
-	precio: {
-		type: Number,
-		required: true,
-	},
-	precioCosto: {
-		type: Number,
-		required: true,
-	},
-	cantidadTienda: {
-		type: Number,
-		required: true,
-	},
-	cantidadAlmacen: {
-		type: Number,
-		required: true,
-	},
-	url: {
-		type: String,
-		required: true,
-	},
-});
+	{
+		toJSON: {
+			transform: (doc, ret) => {
+				ret.uid = ret.id;
+				delete ret.id;
+				delete ret.__v;
+			},
+		},
+	}
+);
 
-ProductoSchema.methods.toJSON = function () {
-	const { __v, _id, ...producto } = this.toObject();
-	producto.uid = _id;
-	return producto;
-};
-
-module.exports = model('Producto', ProductoSchema);
+module.exports = Producto;

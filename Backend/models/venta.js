@@ -1,53 +1,46 @@
-const { Schema, model } = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../database/config');
 
-const ProductoSchema = Schema({
+const Producto = sequelize.define('Producto', {
 	nombre: {
-		type: String,
-		required: [true, 'El nombre es obligatorio'],
+		type: DataTypes.STRING,
+		allowNull: false,
+		validate: {
+			notEmpty: {
+				msg: 'El nombre es obligatorio',
+			},
+		},
 	},
 	precio: {
-		type: Number,
-		required: true,
+		type: DataTypes.FLOAT,
+		allowNull: false,
 	},
 	precioCosto: {
-		type: Number,
-		required: true,
+		type: DataTypes.FLOAT,
+		allowNull: false,
 	},
 	cantidad: {
-		type: Number,
-		required: true,
+		type: DataTypes.INTEGER,
+		allowNull: false,
 	},
 });
 
-const VentaSchema = new Schema({
-	productos: {
-		type: [ProductoSchema],
-		required: true,
-	},
+const Venta = sequelize.define('Venta', {
 	totalProductos: {
-		type: Number,
-		required: true,
+		type: DataTypes.INTEGER,
+		allowNull: false,
 	},
 	precioTotal: {
-		type: Number,
-		required: true,
-	},
-	fecha: {
-		type: Date,
-		required: true,
-		default: Date.now,
-	},
-	tipoPago: {
-		type: String,
-		enum: ['Efectivo', 'Transferencia'],
-		required: true,
+		type: DataTypes.FLOAT,
+		allowNull: false,
 	},
 });
 
-VentaSchema.methods.toJSON = function () {
-	const { __v, _id, ...venta } = this.toObject();
-	venta.uid = _id;
-	return venta;
-};
+// Definir la relación entre Venta y Producto
+Venta.hasMany(Producto, { as: 'productos' });
+Producto.belongsTo(Venta);
 
-module.exports = model('Venta', VentaSchema);
+module.exports = {
+	Venta,
+	Producto,
+};

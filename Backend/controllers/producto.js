@@ -1,116 +1,110 @@
-const { response, request } = require('express');
 const Producto = require('../models/producto');
 
+// Obtener todos los productos
 const productosGet = async (req, res) => {
 	try {
-		const { limit = 8, page = 1, search } = req.query;
-		const offset = (page - 1) * limit;
-
-		const query = {};
-		if (search) {
-			query.nombre = new RegExp(search, 'i'); // Búsqueda insensible a mayúsculas
-		}
-
-		const [total, productos] = await Promise.all([Producto.countDocuments(query), Producto.find(query).skip(offset).limit(Number(limit))]);
-
-		res.json({
-			total,
-			productos,
-			page: Number(page),
-			limit: Number(limit),
-			totalPages: Math.ceil(total / limit),
-		});
+		const productos = await Producto.findAll();
+		res.status(200).json(productos);
 	} catch (error) {
-		console.error('Error al obtener los productos:', error);
-		res.status(500).json({
-			msg: 'Error al obtener los productos',
-			error: error.message,
-		});
+		console.error('Error al obtener productos:', error);
+		res.status(500).json({ error: error.message });
 	}
 };
 
-const productosBuscar = async (req, res) => {
-	const { page, limit, search } = req.query;
-	const productos = await Producto.find({
-		nombre: { $regex: search, $options: 'i' }, // Buscar por nombre (insensible a mayúsculas)
-	})
-		.skip((page - 1) * limit)
-		.limit(Number(limit));
-
-	const totalProductos = await Producto.countDocuments({
-		nombre: { $regex: search, $options: 'i' },
-	});
-
-	res.json({ productos, totalPages: Math.ceil(totalProductos / limit) });
-};
-
+// Crear un nuevo producto
 const productosPost = async (req, res) => {
-	const { nombre, cantidadTienda, cantidadAlmacen, precio, precioCosto, url } = req.body;
+	const { nombre, precio, precioCosto, cantidadTienda, cantidadAlmacen, url } = req.body;
 
 	try {
-		const newProducto = new Producto({
+		const nuevoProducto = await Producto.create({
 			nombre,
-			cantidadTienda,
-			cantidadAlmacen,
 			precio,
 			precioCosto,
+			cantidadTienda,
+			cantidadAlmacen,
 			url,
 		});
-		await newProducto.save();
-		res.status(201).json(newProducto);
+		res.status(201).json(nuevoProducto);
 	} catch (error) {
 		console.error('Error al crear producto:', error);
 		res.status(500).json({ error: error.message });
 	}
 };
-const getProductoPorId = async (req, res) => {
+
+// Actualizar un producto
+const productosPut = async (req, res) => {
+	const { id } = req.params;
+	const { nombre, precio, precioCosto, cantidadTienda, cantidadAlmacen, url } = req.body;
+
 	try {
-		const producto = await Producto.findById(req.params.id);
+		const producto = await Producto.findByPk(id);
 		if (!producto) {
 			return res.status(404).json({ msg: 'Producto no encontrado' });
 		}
-		res.json(producto);
-	} catch (error) {
-		console.error('Error al obtener el producto:', error);
-		res.status(500).json({ msg: 'Error del servidor', error: error.message });
-	}
-};
-const productosPut = async (req, res) => {
-	const { id } = req.params;
-	const { nombre, cantidadTienda, cantidadAlmacen, precio, precioCosto, url } = req.body;
 
-	try {
-		const productoExistente = await Producto.findById(id);
-		if (!productoExistente) {
-			return res.status(404).json({ msg: 'Producto no encontrado' });
-		}
+		producto.nombre = nombre;
+		producto.precio = precio;
+		producto.precioCosto = precioCosto;
+		producto.cantidadTienda = cantidadTienda;
+		producto.cantidadAlmacen = cantidadAlmacen;
+		producto.url = url;
 
-		productoExistente.nombre = nombre !== undefined ? nombre : productoExistente.nombre;
-		productoExistente.cantidadAlmacen = cantidadAlmacen !== undefined ? cantidadAlmacen : productoExistente.cantidadAlmacen;
-		productoExistente.cantidadTienda = cantidadTienda !== undefined ? cantidadTienda : productoExistente.cantidadTienda;
-		productoExistente.precio = precio !== undefined ? precio : productoExistente.precio;
-		productoExistente.precioCosto = precioCosto !== undefined ? precioCosto : productoExistente.precioCosto;
-		productoExistente.url = url !== undefined ? url : productoExistente.url;
-
-		await productoExistente.save();
-		res.status(200).json(productoExistente);
+		await producto.save();
+		res.status(200).json(producto);
 	} catch (error) {
 		console.error('Error al actualizar producto:', error);
 		res.status(500).json({ error: error.message });
 	}
 };
+
+// Eliminar un producto
 const productoDelete = async (req, res) => {
 	const { id } = req.params;
 
 	try {
-		const producto = await Producto.findById(id);
+		const producto = await Producto.findByPk(id);
 		if (!producto) {
 			return res.status(404).json({ msg: 'Producto no encontrado' });
 		}
-		await producto.deleteOne();
+		await producto.destroy();
 		res.status(200).json({ msg: 'Producto eliminado' });
 	} catch (error) {
 		console.error('Error al eliminar producto:', error);
+		res.status(500).json({ error: error.message });
+	}
+};
+
+// Buscar productos por nombre
+const productosBuscar = async (req, res) => {
+	const { nombre } = req.query;
+
+	try {
+		const productos = await Producto.findAll({
+			where: {
+				nombre: {
+					[Op.like]: `%${nombre}%`,
+				},
+			},
+		});
+		res.status(200).json(productos);
+	} catch (error) {
+		console.error('Error al buscar productos:', error);
+		res.status(500).json({ error: error.message });
+	}
+};
+
+// Obtener producto por ID
+const getProductoPorId = async (req, res) => {
+	const { id } = req.params;
+
+	try {
+		const producto = await Producto.findByPk(id);
+		if (!producto) {
+			return res.status(404).json({ msg: 'Producto no encontrado' });
+		}
+		res.status(200).json(producto);
+	} catch (error) {
+		console.error('Error al obtener producto:', error);
 		res.status(500).json({ error: error.message });
 	}
 };

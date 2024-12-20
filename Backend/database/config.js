@@ -1,16 +1,21 @@
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
+
+const sequelize = new Sequelize('u420899308_BravoDatabase', 'u420899308_bravo', 'Ale90112326342*', {
+	host: 'superbravo.es',
+	dialect: 'mysql',
+});
 
 const dbConnection = async () => {
 	try {
-		await mongoose.connect('mongodb://localhost/VidaFitness');
-
-		console.log('Base de Datos Online con MongoDB');
+		await sequelize.authenticate();
+		console.log('Conexión a la base de datos MySQL establecida con éxito.');
 	} catch (error) {
-		console.log(error);
+		console.error('Error al conectar a la base de datos:', error);
 		throw new Error('Error al iniciar la Base de Datos!');
 	}
 };
 
 module.exports = {
+	sequelize,
 	dbConnection,
 };

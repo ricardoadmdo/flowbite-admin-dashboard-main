@@ -22,7 +22,22 @@ app.use('/api/productos', require('./routes/producto'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/venta', require('./routes/venta'));
 
-//Escuchar peticiones
-app.listen(process.env.PORT, () => {
-	console.log(`Backend corriendo en el puerto: ${process.env.PORT}`);
-});
+// Función para iniciar el servidor
+const startServer = async () => {
+	try {
+		// Base de Datos
+		await dbConnection();
+
+		// Sincronizar modelos
+		await sequelize.sync();
+
+		// Escuchar peticiones
+		app.listen(process.env.PORT, () => {
+			console.log(`Backend corriendo en el puerto: ${process.env.PORT}`);
+		});
+	} catch (error) {
+		console.error('Error al iniciar el servidor:', error);
+	}
+};
+
+startServer();
