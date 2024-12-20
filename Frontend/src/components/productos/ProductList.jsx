@@ -30,7 +30,9 @@ const ProductList = () => {
 		isError,
 		error,
 		refetch,
-	} = useFetch(['productos', currentPage, limit, searchTerm], () => fetchProductos(currentPage, limit, searchTerm), { keepPreviousData: true });
+	} = useFetch(['productos', currentPage, limit, searchTerm], () => fetchProductos(currentPage, limit, searchTerm), {
+		keepPreviousData: true,
+	});
 
 	const handlePreviousPage = () => {
 		if (currentPage > 1) {
@@ -116,7 +118,7 @@ const ProductList = () => {
 					placeholder='Buscar producto...'
 					value={searchQuery}
 					onChange={(e) => setSearchQuery(e.target.value)}
-					onKeyPress={handleKeyPress} // Buscar al presionar 'Enter'
+					onKeyDown={handleKeyPress}
 				/>
 				<div className='input-group-append'>
 					<button className='btn btn-secondary' type='button' onClick={handleSearch}>
@@ -155,7 +157,10 @@ const ProductList = () => {
 											<strong>Cantidad en Tienda:</strong> {val.cantidadTienda} Unidades
 										</p>
 									) : (
-										<p className='card-text' style={{ color: 'red', fontWeight: 'bold', fontSize: '20px' }}>
+										<p
+											className='card-text'
+											style={{ color: 'red', fontWeight: 'bold', fontSize: '20px' }}
+										>
 											Producto en tienda agotado
 										</p>
 									)}
@@ -165,14 +170,20 @@ const ProductList = () => {
 											<strong>Cantidad en Almacén:</strong> {val.cantidadAlmacen} Unidades
 										</p>
 									) : (
-										<p className='card-text' style={{ color: 'red', fontWeight: 'bold', fontSize: '20px' }}>
+										<p
+											className='card-text'
+											style={{ color: 'red', fontWeight: 'bold', fontSize: '20px' }}
+										>
 											Producto en almacén agotado
 										</p>
 									)}
 								</div>
 								<div className='card-footer'>
 									<div className='d-flex justify-content-between'>
-										<button className='btn btn-outline-secondary' onClick={() => navigate(`/edit/${val.uid}`)}>
+										<button
+											className='btn btn-outline-secondary'
+											onClick={() => navigate(`/edit/${val.uid}`)}
+										>
 											<FontAwesomeIcon icon={faEdit} /> Editar
 										</button>
 										<button className='btn btn-outline-danger' onClick={() => deleteProducto(val)}>
