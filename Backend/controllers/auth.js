@@ -8,7 +8,6 @@ const login = async (req, res) => {
 	try {
 		// Busca el usuario en la base de datos
 		const user = await Usuario.findOne({ where: { usuario } });
-		console.log('Usuario encontrado:', user);
 
 		if (!user) {
 			return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
@@ -23,7 +22,6 @@ const login = async (req, res) => {
 		}
 
 		// Si el usuario y la contraseña son correctos
-		console.log('Inicio de sesión exitoso para usuario:', user);
 		res.json({
 			success: true,
 			message: 'Inicio de sesión exitoso',

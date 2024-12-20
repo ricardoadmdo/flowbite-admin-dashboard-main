@@ -20,9 +20,6 @@ const Login = () => {
 				contrasena,
 			});
 
-			// Log para verificar la respuesta
-			console.log('Respuesta de autenticación:', response.data);
-
 			if (response.data.success) {
 				const action = {
 					type: types.login,
@@ -32,7 +29,6 @@ const Login = () => {
 					},
 				};
 				dispatch(action);
-
 				navigate('/reporte-venta');
 				Swal.fire({
 					title: 'Éxito',
@@ -43,14 +39,19 @@ const Login = () => {
 			} else {
 				Swal.fire({
 					title: 'Error',
-					text: 'Usuario o contraseña incorrecto',
+					text: response.data.message,
 					icon: 'error',
 					confirmButtonText: 'Aceptar',
 				});
 			}
 		} catch (error) {
 			console.error('Error durante la autenticación:', error);
-			alert('Error durante la autenticación');
+			Swal.fire({
+				title: 'Error',
+				text: 'Error durante la autenticación',
+				icon: 'error',
+				confirmButtonText: 'Aceptar',
+			});
 		}
 	};
 
