@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer } from 'react';
+import { createContext, useReducer, useEffect } from 'react';
 import { authReducer } from './authReducer';
 import PropTypes from 'prop-types';
 
@@ -12,9 +12,9 @@ export const AuthProvider = ({ children }) => {
 	const [user, dispatch] = useReducer(authReducer, {}, init);
 
 	useEffect(() => {
-		if (!user) return;
-
-		localStorage.setItem('user', JSON.stringify(user));
+		if (user) {
+			localStorage.setItem('user', JSON.stringify(user));
+		}
 	}, [user]);
 
 	const login = (credentials) => {
@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
 
 	const logout = () => {
 		dispatch({ type: 'logout' });
+		localStorage.removeItem('user');
 	};
 
 	return <AuthContext.Provider value={{ user, dispatch, login, logout }}>{children}</AuthContext.Provider>;

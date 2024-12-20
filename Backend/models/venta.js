@@ -1,33 +1,22 @@
 const { Schema, model } = require('mongoose');
 
-const ProductoSchema = new Schema({
+const ProductoSchema = Schema({
 	nombre: {
 		type: String,
 		required: [true, 'El nombre es obligatorio'],
-	},
-	cantidad: {
-		type: Number,
-		required: true,
 	},
 	precio: {
 		type: Number,
 		required: true,
 	},
-	url: {
-		type: String,
+	precioCosto: {
+		type: Number,
+		required: true,
 	},
-	estado: {
-		type: Boolean,
+	cantidad: {
+		type: Number,
+		required: true,
 	},
-});
-
-const ClienteSchema = new Schema({
-	nombre: { type: String },
-	telefono: { type: String },
-	direccion: { type: String },
-	municipio: { type: String },
-	reparto: { type: String },
-	nota: { type: String },
 });
 
 const VentaSchema = new Schema({
@@ -48,10 +37,9 @@ const VentaSchema = new Schema({
 		required: true,
 		default: Date.now,
 	},
-	cliente: ClienteSchema,
 	tipoPago: {
 		type: String,
-		enum: ['online', 'presencial', 'dependiente'],
+		enum: ['Efectivo', 'Transferencia'],
 		required: true,
 	},
 });

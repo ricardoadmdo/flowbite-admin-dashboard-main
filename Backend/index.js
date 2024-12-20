@@ -6,24 +6,21 @@ require('dotenv').config();
 //Crear el servidor de express
 const app = express();
 
-//Base de datos
+//Base de Datos
 dbConnection();
 
 //CORS
-app.use(
-	cors({
-		origin: 'http://localhost:1313', // Permitir solicitudes desde este origen
-	})
-);
+app.use(cors());
 
 //Lectura y parseo del body
 app.use(express.json());
 
 //Rutas
-app.use('/api/users', require('./routes/usuarios.js'));
-app.use('/api/product', require('./routes/productos.js'));
-app.use('/api/auth', require('./routes/auth.js'));
-app.use('/api/venta', require('./routes/ventas.js'));
+// Usar las rutas de usuario
+app.use('/api/usuarios', require('./routes/usuario'));
+app.use('/api/productos', require('./routes/producto'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/venta', require('./routes/venta'));
 
 //Escuchar peticiones
 app.listen(process.env.PORT, () => {

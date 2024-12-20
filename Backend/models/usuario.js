@@ -5,33 +5,18 @@ const UsuarioSchema = Schema({
 		type: String,
 		required: [true, 'El nombre es obligatorio'],
 	},
-	correo: {
-		type: String,
-		unique: true,
-		required: [true, 'El correo es obligatorio'],
-	},
-	password: {
+	contrasena: {
 		type: String,
 		required: [true, 'El password es obligatorio'],
+	},
+	usuario: {
+		type: String,
+		required: [true, 'El usuario es obligatorio'],
 	},
 	rol: {
 		type: String,
 		required: true,
 		emun: ['ADMIN_ROLE', 'USER_ROLE'],
-	},
-	estado: {
-		type: Boolean,
-		default: true,
-	},
-	google: {
-		type: Boolean,
-		default: false,
-	},
-	login_code: {
-		type: String,
-	},
-	verification_token: {
-		type: String,
 	},
 });
 

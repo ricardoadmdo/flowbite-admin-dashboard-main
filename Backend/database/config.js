@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dbConnection = async () => {
 	try {
-		await mongoose.connect('mongodb://localhost/MIPYMES');
+		await mongoose.connect('mongodb://localhost/VidaFitness');
 
 		console.log('Base de Datos Online con MongoDB');
 	} catch (error) {
