@@ -5,7 +5,14 @@ import './barranavegacion.css';
 import { types } from '../../types/types';
 import logo from '../../images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faSignOutAlt, faFileInvoice, faCashRegister, faBoxes, faUserCog } from '@fortawesome/free-solid-svg-icons';
+import {
+	faUser,
+	faSignOutAlt,
+	faFileInvoice,
+	faCashRegister,
+	faBoxes,
+	faUserCog,
+} from '@fortawesome/free-solid-svg-icons';
 
 const Barranavegacion = () => {
 	const { user, dispatch } = useContext(AuthContext);
@@ -24,7 +31,12 @@ const Barranavegacion = () => {
 	};
 
 	const handleClickOutside = (event) => {
-		if (sidebarRef.current && !sidebarRef.current.contains(event.target) && buttonRef.current && !buttonRef.current.contains(event.target)) {
+		if (
+			sidebarRef.current &&
+			!sidebarRef.current.contains(event.target) &&
+			buttonRef.current &&
+			!buttonRef.current.contains(event.target)
+		) {
 			setIsOpen(false);
 		}
 	};
