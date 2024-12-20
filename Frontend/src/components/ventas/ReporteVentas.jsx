@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Axios from 'axios';
+import Axios from '../../api/axiosConfig';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Swal from 'sweetalert2';
@@ -25,7 +25,7 @@ const ReporteVentas = () => {
 				const year = startDate.getFullYear();
 
 				// Petición al backend con la fecha seleccionada y la página actual
-				const { data } = await Axios.get(`http://localhost:3001/api/venta?day=${day}&month=${month}&year=${year}&page=${currentPage}`);
+				const { data } = await Axios.get(`/venta?day=${day}&month=${month}&year=${year}&page=${currentPage}`);
 
 				// Actualizar las ventas, total de páginas, etc.
 				setVentas(data.ventas);
@@ -62,7 +62,9 @@ const ReporteVentas = () => {
 
 		// Verifica si hay productos vendidos antes de usar reduce
 		if (Object.keys(productoContador).length > 0) {
-			const productoMax = Object.keys(productoContador).reduce((a, b) => (productoContador[a] > productoContador[b] ? a : b));
+			const productoMax = Object.keys(productoContador).reduce((a, b) =>
+				productoContador[a] > productoContador[b] ? a : b
+			);
 			setProductoMasVendido(productoMax);
 		} else {
 			setProductoMasVendido('No hay ventas.');
@@ -83,7 +85,7 @@ const ReporteVentas = () => {
 		}).then(async (result) => {
 			if (result.isConfirmed) {
 				try {
-					await Axios.delete(`http://localhost:3001/api/venta/${id}`);
+					await Axios.delete(`/venta/${id}`);
 					setVentas(ventas.filter((venta) => venta.uid !== id));
 					Swal.fire('¡Eliminada!', 'La venta ha sido eliminada.', 'success');
 				} catch (error) {
@@ -113,7 +115,12 @@ const ReporteVentas = () => {
 
 			{/* Filtro por Fecha */}
 			<div className='d-flex justify-content-center mb-4'>
-				<DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat='dd/MM/yyyy' className='form-control' />
+				<DatePicker
+					selected={startDate}
+					onChange={(date) => setStartDate(date)}
+					dateFormat='dd/MM/yyyy'
+					className='form-control'
+				/>
 			</div>
 
 			{/* Total Recaudado, Ganancia Total y Producto Más Vendido */}
@@ -165,7 +172,8 @@ const ReporteVentas = () => {
 										<ul>
 											{venta.productos.map((producto, idx) => (
 												<li key={idx}>
-													{producto.nombre} - {producto.cantidad} x ${producto.precio.toFixed(2)}
+													{producto.nombre} - {producto.cantidad} x $
+													{producto.precio.toFixed(2)}
 												</li>
 											))}
 										</ul>

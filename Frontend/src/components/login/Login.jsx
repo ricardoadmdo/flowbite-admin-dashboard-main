@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Axios from 'axios';
+import Axios from '../../api/axiosConfig';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../auth/authContext';
 import './login.css';
@@ -15,7 +15,7 @@ const Login = () => {
 
 	const handleLogin = async () => {
 		try {
-			const response = await Axios.post('http://localhost:3001/api/auth/login', {
+			const response = await Axios.post('/auth/login', {
 				usuario,
 				contrasena,
 			});
@@ -56,7 +56,7 @@ const Login = () => {
 
 	const createAdmin = async () => {
 		try {
-			const response = await Axios.post('http://localhost:3001/api/auth/create-admin', {
+			const response = await Axios.post('/auth/create-admin', {
 				usuario: 'admin',
 				contrasena: 'admin',
 				nombre: 'Administrador',

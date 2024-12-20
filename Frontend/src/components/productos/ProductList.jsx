@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Axios from 'axios';
+import Axios from '../../api/axiosConfig';
 import useFetch from '../../hooks/useFetch';
 import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const fetchProductos = async (page, limit, search) => {
-	const response = await Axios.get(`http://localhost:3001/api/productos`, {
+	const response = await Axios.get(`/productos`, {
 		params: { page, limit, search },
 	});
 	return response.data;
@@ -60,7 +60,7 @@ const ProductList = () => {
 
 		if (result.isConfirmed) {
 			try {
-				await Axios.delete(`http://localhost:3001/api/productos/${producto.uid}`);
+				await Axios.delete(`/productos/${producto.uid}`);
 				refetch(); // Refetch la lista de productos después de eliminar
 			} catch (error) {
 				console.error('Error al eliminar el producto:', error);

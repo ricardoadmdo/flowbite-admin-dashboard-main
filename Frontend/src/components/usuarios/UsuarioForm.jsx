@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Axios from 'axios';
+import Axios from '../../api/axiosConfig';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ const UsuarioForm = () => {
 	}, [id]);
 
 	const getUsuario = (id) => {
-		Axios.get(`http://localhost:3001/api/usuarios/${id}`)
+		Axios.get(`/usuarios/${id}`)
 			.then((response) => {
 				const usuario = response.data;
 				setNombre(usuario.nombre);
@@ -40,7 +40,7 @@ const UsuarioForm = () => {
 	};
 
 	const add = () => {
-		Axios.post('http://localhost:3001/api/usuarios', { nombre, contrasena, usuario, rol })
+		Axios.post('/usuarios', { nombre, contrasena, usuario, rol })
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
@@ -62,7 +62,7 @@ const UsuarioForm = () => {
 	};
 
 	const update = () => {
-		Axios.put(`http://localhost:3001/api/usuarios/${id}`, { nombre, contrasena, usuario, rol })
+		Axios.put(`/usuarios/${id}`, { nombre, contrasena, usuario, rol })
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
@@ -137,7 +137,12 @@ const UsuarioForm = () => {
 								</div>
 								<div className='mb-3'>
 									<label className='form-label'>Rol</label>
-									<select value={rol} onChange={(e) => setRol(e.target.value)} className='form-select form-select-lg' required>
+									<select
+										value={rol}
+										onChange={(e) => setRol(e.target.value)}
+										className='form-select form-select-lg'
+										required
+									>
 										<option value='' disabled>
 											Seleccione un rol
 										</option>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Axios from 'axios';
+import Axios from '../../api/axiosConfig';
 import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +14,7 @@ const UsuarioList = () => {
 	}, []);
 
 	const getUsuarios = () => {
-		Axios.get('http://localhost:3001/api/usuarios').then((response) => {
+		Axios.get('/usuarios').then((response) => {
 			setUsuarios(response.data.usuarios);
 		});
 	};
@@ -31,7 +31,7 @@ const UsuarioList = () => {
 			cancelButtonText: 'Cancelar',
 		}).then((result) => {
 			if (result.isConfirmed) {
-				Axios.delete(`http://localhost:3001/api/usuarios/${usuario.uid}`).then(() => {
+				Axios.delete(`/usuarios/${usuario.uid}`).then(() => {
 					getUsuarios();
 					Swal.fire({
 						title: 'Usuario eliminado!',
@@ -68,11 +68,19 @@ const UsuarioList = () => {
 							<td>{val.usuario}</td>
 							<td>{val.rol}</td>
 							<td>
-								<button type='button' className='btn btn-outline-secondary me-2' onClick={() => navigate(`/editUser/${val.uid}`)}>
+								<button
+									type='button'
+									className='btn btn-outline-secondary me-2'
+									onClick={() => navigate(`/editUser/${val.uid}`)}
+								>
 									<FontAwesomeIcon icon={faEdit} />
 									Editar
 								</button>
-								<button type='button' className='btn btn-outline-danger' onClick={() => deleteUsuario(val)}>
+								<button
+									type='button'
+									className='btn btn-outline-danger'
+									onClick={() => deleteUsuario(val)}
+								>
 									<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
 								</button>
 							</td>

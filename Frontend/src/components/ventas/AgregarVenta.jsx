@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Axios from 'axios';
+import Axios from '../../api/axiosConfig';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +9,7 @@ import MotionNumber from 'motion-number';
 
 // Función para buscar productos por nombre similar
 const fetchProductos = async (searchTerm) => {
-	const response = await Axios.get(`http://localhost:3001/api/productos?search=${searchTerm}`);
+	const response = await Axios.get(`/productos?search=${searchTerm}`);
 	return response.data.productos;
 };
 
@@ -42,7 +42,7 @@ const AgregarVenta = () => {
 	}, [searchTerm, refetch]);
 
 	const ventaMutation = useMutation({
-		mutationFn: (newVenta) => Axios.post('http://localhost:3001/api/venta', newVenta),
+		mutationFn: (newVenta) => Axios.post('/venta', newVenta),
 		onSuccess: () => {
 			refetchProductos();
 			limpiarCampos();
@@ -112,7 +112,9 @@ const AgregarVenta = () => {
 
 	const aumentarCantidad = (productoId) => {
 		setFormState((prevState) => {
-			const nuevosProductos = prevState.productos.map((p) => (p.uid === productoId ? { ...p, cantidad: p.cantidad + 1 } : p));
+			const nuevosProductos = prevState.productos.map((p) =>
+				p.uid === productoId ? { ...p, cantidad: p.cantidad + 1 } : p
+			);
 
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
 			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
@@ -128,7 +130,9 @@ const AgregarVenta = () => {
 
 	const disminuirCantidad = (productoId) => {
 		setFormState((prevState) => {
-			const nuevosProductos = prevState.productos.map((p) => (p.uid === productoId ? { ...p, cantidad: p.cantidad - 1 } : p));
+			const nuevosProductos = prevState.productos.map((p) =>
+				p.uid === productoId ? { ...p, cantidad: p.cantidad - 1 } : p
+			);
 
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
 			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
@@ -262,20 +266,31 @@ const AgregarVenta = () => {
 
 				<ul className='list-group'>
 					{formState.productos.map((producto) => (
-						<li key={producto.uid} className='list-group-item d-flex align-items-center justify-content-between'>
+						<li
+							key={producto.uid}
+							className='list-group-item d-flex align-items-center justify-content-between'
+						>
 							<span>
-								{producto.nombre} - <MotionNumber value={producto.cantidad} format='0' /> x ${producto.precio} = $
+								{producto.nombre} - <MotionNumber value={producto.cantidad} format='0' /> x $
+								{producto.precio} = $
 								<MotionNumber value={producto.precio * producto.cantidad} format='0,0.00' />
 								CUP
 							</span>
 							<div className='d-flex'>
 								<button
 									className='btn btn-danger btn-sm ml-2'
-									onClick={producto.cantidad > 1 ? () => disminuirCantidad(producto.uid) : () => eliminarProducto(producto.uid)}
+									onClick={
+										producto.cantidad > 1
+											? () => disminuirCantidad(producto.uid)
+											: () => eliminarProducto(producto.uid)
+									}
 								>
 									<FontAwesomeIcon icon={producto.cantidad === 1 ? faTrashAlt : faMinus} />
 								</button>
-								<button className='btn btn-secondary btn-sm ml-2' onClick={() => aumentarCantidad(producto.uid)}>
+								<button
+									className='btn btn-secondary btn-sm ml-2'
+									onClick={() => aumentarCantidad(producto.uid)}
+								>
 									<FontAwesomeIcon icon={faPlus} />
 								</button>
 							</div>
@@ -284,7 +299,8 @@ const AgregarVenta = () => {
 				</ul>
 				<div className='mt-3'>
 					<h5>
-						Total a Pagar: $<MotionNumber value={formState.precioTotal} duration={500} format='$0,0.00' /> CUP
+						Total a Pagar: $<MotionNumber value={formState.precioTotal} duration={500} format='$0,0.00' />{' '}
+						CUP
 					</h5>
 					<h5>
 						Total Productos: <MotionNumber value={formState.totalProductos} format='0' /> Unidades
@@ -293,7 +309,14 @@ const AgregarVenta = () => {
 			</div>
 			<button className='btn btn-success mt-4' onClick={validarVenta}>
 				Registrar Venta
-				<svg xmlns='http://www.w3.org/2000/svg' width='25px' height='25px' viewBox='0 0 24 24' fill='currentColor' className='ml-2'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					width='25px'
+					height='25px'
+					viewBox='0 0 24 24'
+					fill='currentColor'
+					className='ml-2'
+				>
 					<path d='M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4zm1 5q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8' />
 				</svg>
 			</button>
