@@ -4,7 +4,7 @@ import Axios from 'axios';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../auth/authContext';
 import './login.css';
-import background from '../../images/login.jpeg';
+import background from '../../images/login.jpg';
 import { types } from '../../types/types';
 
 const Login = () => {
