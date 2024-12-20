@@ -1,22 +1,18 @@
 const express = require('express');
 const cors = require('cors');
-const { dbConnection } = require('./database/config.js');
+const { dbConnection, sequelize } = require('./database/config.js');
 require('dotenv').config();
 
-//Crear el servidor de express
+// Crear el servidor de express
 const app = express();
 
-//Base de Datos
-dbConnection();
-
-//CORS
+// CORS
 app.use(cors());
 
-//Lectura y parseo del body
+// Lectura y parseo del body
 app.use(express.json());
 
-//Rutas
-// Usar las rutas de usuario
+// Rutas
 app.use('/api/usuarios', require('./routes/usuario'));
 app.use('/api/productos', require('./routes/producto'));
 app.use('/api/auth', require('./routes/auth'));
@@ -33,7 +29,7 @@ const startServer = async () => {
 
 		// Escuchar peticiones
 		app.listen(process.env.PORT, () => {
-			console.log(`Backend corriendo en el puerto: ${process.env.PORT}`);
+			console.log(`🟢Backend corriendo en el puerto: ${process.env.PORT}`);
 		});
 	} catch (error) {
 		console.error('Error al iniciar el servidor:', error);

@@ -13,7 +13,6 @@ const Login = () => {
 	const navigate = useNavigate();
 	const { dispatch } = useContext(AuthContext);
 
-
 	const handleLogin = async () => {
 		try {
 			const response = await Axios.post('http://localhost:3001/api/auth/login', {
