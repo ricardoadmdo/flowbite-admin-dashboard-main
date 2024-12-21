@@ -20,7 +20,7 @@ const createVenta = async (req, res) => {
 
 		// Actualizar cantidades de productos
 		for (let producto of productos) {
-			await Producto.findByIdAndUpdate(producto.uid, { $inc: { cantidadTienda: -producto.cantidad } });
+			await Producto.findByIdAndUpdate(producto.uid, { $inc: { existencia: -producto.cantidad } });
 		}
 
 		// Devolver la nueva venta
@@ -49,7 +49,10 @@ const getVentas = async (req = request, res = response) => {
 			};
 		}
 
-		const [ventas, total] = await Promise.all([Venta.find(query).skip(Number(skip)).limit(Number(limit)), Venta.countDocuments(query)]);
+		const [ventas, total] = await Promise.all([
+			Venta.find(query).skip(Number(skip)).limit(Number(limit)),
+			Venta.countDocuments(query),
+		]);
 
 		res.status(200).json({
 			total,
