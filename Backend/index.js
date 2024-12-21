@@ -24,5 +24,5 @@ app.use('/api/venta', require('./routes/venta'));
 
 //Escuchar peticiones
 app.listen(process.env.PORT, () => {
-	console.log(`Backend corriendo en el puerto: ${process.env.PORT}`);
+	console.log(`🟢Backend corriendo en el puerto: ${process.env.PORT}`);
 });
