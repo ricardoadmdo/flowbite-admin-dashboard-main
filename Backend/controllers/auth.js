@@ -15,7 +15,6 @@ const login = async (req, res) => {
 
 		// Compara la contraseña ingresada con la almacenada en la base de datos
 		const isMatch = await bcryptjs.compare(contrasena, user.contrasena);
-		console.log('Contraseña coincide:', isMatch);
 
 		if (!isMatch) {
 			return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
