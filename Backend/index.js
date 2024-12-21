@@ -22,7 +22,7 @@ app.use('/api/productos', require('./routes/producto'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/venta', require('./routes/venta'));
 
-//Escuchar peticiones
+//Escuchar peticiones.
 app.listen(process.env.PORT, () => {
 	console.log(`🟢Backend corriendo en el puerto: ${process.env.PORT}`);
 });
