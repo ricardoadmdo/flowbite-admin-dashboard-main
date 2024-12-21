@@ -1,35 +1,62 @@
-const { Op } = require('sequelize');
+const { response, request } = require('express');
 const Venta = require('../models/venta');
 const Producto = require('../models/producto');
 
-// Obtener todas las ventas con paginación y filtros
-const getVentas = async (req, res) => {
-	const { page = 1, limit = 10, startDate, endDate } = req.query;
-	const offset = (page - 1) * limit;
-
-	let where = {};
-
-	if (startDate && endDate) {
-		where.fecha = {
-			[Op.gte]: new Date(startDate),
-			[Op.lt]: new Date(endDate),
-		};
-	}
+// Crear una nueva venta
+const createVenta = async (req, res) => {
+	const { productos, ...datos } = req.body;
 
 	try {
-		const { count, rows } = await Venta.findAndCountAll({
-			where,
-			offset: Number(offset),
-			limit: Number(limit),
-			include: [{ model: Producto, as: 'productos' }],
-		});
+		// Verifica que los campos requeridos estén presentes
+		if (!datos || !productos || productos.length === 0) {
+			return res.status(400).json({ message: 'Campos requeridos faltantes' });
+		}
+
+		// Crear un nuevo objeto Venta con los datos recibidos
+		const nuevaVenta = new Venta({ ...datos, productos });
+
+		// Guardar la nueva venta en la base de datos
+		await nuevaVenta.save();
+
+		// Actualizar cantidades de productos
+		for (let producto of productos) {
+			await Producto.findByIdAndUpdate(producto.uid, { $inc: { cantidadTienda: -producto.cantidad } });
+		}
+
+		// Devolver la nueva venta
+		res.status(201).json(nuevaVenta);
+	} catch (error) {
+		console.error('Error al crear venta:', error.message);
+		res.status(500).json({ message: 'Error al crear venta' });
+	}
+};
+
+const getVentas = async (req = request, res = response) => {
+	try {
+		const { day, month, year, limit = 8, page = 1 } = req.query;
+		const skip = (page - 1) * limit;
+		let query = {};
+
+		// Verificar si se ha proporcionado una fecha
+		if (day && month && year) {
+			const startDate = new Date(year, month - 1, day);
+			const endDate = new Date(year, month - 1, day);
+			endDate.setHours(23, 59, 59, 999);
+
+			query.fecha = {
+				$gte: startDate,
+				$lt: endDate,
+			};
+		}
+
+		const [ventas, total] = await Promise.all([Venta.find(query).skip(Number(skip)).limit(Number(limit)), Venta.countDocuments(query)]);
 
 		res.status(200).json({
-			total: count,
-			ventas: rows,
+			total,
+			ventas,
 			page: Number(page),
 			limit: Number(limit),
-			totalPages: Math.ceil(count / limit),
+			totalPages: Math.ceil(total / limit),
 		});
 	} catch (error) {
 		console.error('Error al obtener las ventas:', error);
@@ -40,49 +67,25 @@ const getVentas = async (req, res) => {
 	}
 };
 
-// Crear una nueva venta
-const createVenta = async (req, res) => {
-	const { totalProductos, precioTotal, productos } = req.body;
-
-	try {
-		const nuevaVenta = await Venta.create(
-			{
-				totalProductos,
-				precioTotal,
-				productos,
-			},
-			{
-				include: [{ model: Producto, as: 'productos' }],
-			}
-		);
-
-		res.status(201).json(nuevaVenta);
-	} catch (error) {
-		console.error('Error al crear la venta:', error);
-		res.status(500).json({ error: error.message });
-	}
-};
-
-// Eliminar una venta
-const deleteVenta = async (req, res) => {
+const deleteVenta = async (req = request, res = response) => {
 	const { id } = req.params;
 
 	try {
-		const venta = await Venta.findByPk(id);
-		if (!venta) {
-			return res.status(404).json({ msg: 'Venta no encontrada' });
+		const ventaEliminada = await Venta.findByIdAndDelete(id);
+
+		if (!ventaEliminada) {
+			return res.status(404).json({ message: 'Venta no encontrada' });
 		}
 
-		await venta.destroy();
-		res.status(200).json({ msg: 'Venta eliminada' });
+		res.status(200).json({ message: 'Venta eliminada con éxito' });
 	} catch (error) {
-		console.error('Error al eliminar la venta:', error);
-		res.status(500).json({ error: error.message });
+		console.error('Error al eliminar venta:', error);
+		res.status(500).json({ message: 'Error al eliminar venta' });
 	}
 };
 
 module.exports = {
-	getVentas,
 	createVenta,
+	getVentas,
 	deleteVenta,
 };

@@ -2,7 +2,6 @@ const { response, request } = require('express');
 const bcryptjs = require('bcryptjs');
 const Usuario = require('../models/usuario');
 
-// Crear un nuevo usuario
 const createUsuario = async (req, res) => {
 	const { nombre, contrasena, usuario, rol } = req.body;
 
@@ -11,69 +10,80 @@ const createUsuario = async (req, res) => {
 		const salt = bcryptjs.genSaltSync();
 		const hashedPassword = bcryptjs.hashSync(contrasena, salt);
 
-		const newUsuario = await Usuario.create({
+		const newUsuario = new Usuario({
 			nombre,
 			contrasena: hashedPassword,
 			usuario,
 			rol,
 		});
 
+		await newUsuario.save();
 		res.status(201).json(newUsuario);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
 
-// Obtener todos los usuarios
 const getUsuarios = async (req, res) => {
 	try {
-		const usuarios = await Usuario.findAll();
+		const usuarios = await Usuario.find();
 		res.status(200).json({ usuarios });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
 
-// Actualizar un usuario
+const getUsuarioPorId = async (req, res) => {
+	try {
+		const usuario = await Usuario.findById(req.params.id);
+		if (!usuario) {
+			return res.status(404).json({ msg: 'Usuario no encontrado' });
+		}
+		res.json(usuario);
+	} catch (error) {
+		console.error('Error al obtener el usuario:', error);
+		res.status(500).json({ msg: 'Error del servidor', error: error.message });
+	}
+};
+
 const updateUsuario = async (req, res) => {
 	const { id } = req.params;
 	const { nombre, contrasena, usuario, rol } = req.body;
 
 	try {
-		const user = await Usuario.findByPk(id);
-		if (!user) {
-			return res.status(404).json({ msg: 'Usuario no encontrado' });
+		const usuarioExistente = await Usuario.findById(id);
+		if (usuarioExistente) {
+			// Actualizamos los campos solo si están presentes en el cuerpo de la solicitud
+			usuarioExistente.nombre = nombre !== undefined ? nombre : usuarioExistente.nombre;
+			if (contrasena !== undefined) {
+				// Encriptar la nueva contraseña
+				const salt = bcryptjs.genSaltSync();
+				usuarioExistente.contrasena = bcryptjs.hashSync(contrasena, salt);
+			}
+			usuarioExistente.usuario = usuario !== undefined ? usuario : usuarioExistente.usuario;
+			usuarioExistente.rol = rol !== undefined ? rol : usuarioExistente.rol;
+
+			await usuarioExistente.save();
+			res.status(200).json(usuarioExistente);
+		} else {
+			res.status(404).json({ message: 'Usuario no encontrado' });
 		}
-
-		// Encriptar la nueva contraseña si se proporciona
-		if (contrasena) {
-			const salt = bcryptjs.genSaltSync();
-			user.contrasena = bcryptjs.hashSync(contrasena, salt);
-		}
-
-		user.nombre = nombre || user.nombre;
-		user.usuario = usuario || user.usuario;
-		user.rol = rol || user.rol;
-
-		await user.save();
-		res.status(200).json(user);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
 
-// Eliminar un usuario
 const deleteUsuario = async (req, res) => {
 	const { id } = req.params;
 
 	try {
-		const user = await Usuario.findByPk(id);
-		if (!user) {
-			return res.status(404).json({ msg: 'Usuario no encontrado' });
+		const usuario = await Usuario.findById(id);
+		if (usuario) {
+			await usuario.deleteOne();
+			res.status(200).json({ message: 'Usuario eliminado' });
+		} else {
+			res.status(404).json({ message: 'Usuario no encontrado' });
 		}
-
-		await user.destroy();
-		res.status(200).json({ msg: 'Usuario eliminado' });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
@@ -84,4 +94,5 @@ module.exports = {
 	getUsuarios,
 	updateUsuario,
 	deleteUsuario,
+	getUsuarioPorId,
 };

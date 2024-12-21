@@ -1,32 +1,53 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../database/config');
-const Producto = require('./producto');
+const { Schema, model } = require('mongoose');
 
-const Venta = sequelize.define(
-	'Venta',
-	{
-		totalProductos: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-		},
-		precioTotal: {
-			type: DataTypes.FLOAT,
-			allowNull: false,
-		},
+const ProductoSchema = Schema({
+	nombre: {
+		type: String,
+		required: [true, 'El nombre es obligatorio'],
 	},
-	{
-		toJSON: {
-			transform: (doc, ret) => {
-				ret.uid = ret.id;
-				delete ret.id;
-				delete ret.__v;
-			},
-		},
-	}
-);
+	precio: {
+		type: Number,
+		required: true,
+	},
+	precioCosto: {
+		type: Number,
+		required: true,
+	},
+	cantidad: {
+		type: Number,
+		required: true,
+	},
+});
 
-// Definir la relación entre Venta y Producto
-Venta.hasMany(Producto, { as: 'productos' });
-Producto.belongsTo(Venta);
+const VentaSchema = new Schema({
+	productos: {
+		type: [ProductoSchema],
+		required: true,
+	},
+	totalProductos: {
+		type: Number,
+		required: true,
+	},
+	precioTotal: {
+		type: Number,
+		required: true,
+	},
+	fecha: {
+		type: Date,
+		required: true,
+		default: Date.now,
+	},
+	tipoPago: {
+		type: String,
+		enum: ['Efectivo', 'Transferencia'],
+		required: true,
+	},
+});
 
-module.exports = Venta;
+VentaSchema.methods.toJSON = function () {
+	const { __v, _id, ...venta } = this.toObject();
+	venta.uid = _id;
+	return venta;
+};
+
+module.exports = model('Venta', VentaSchema);

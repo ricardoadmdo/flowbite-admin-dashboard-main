@@ -1,56 +1,29 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../database/config');
+const { Schema, model } = require('mongoose');
 
-const Usuario = sequelize.define(
-	'Usuario',
-	{
-		nombre: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				notEmpty: {
-					msg: 'El nombre es obligatorio',
-				},
-			},
-		},
-		contrasena: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				notEmpty: {
-					msg: 'El password es obligatorio',
-				},
-			},
-		},
-		usuario: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				notEmpty: {
-					msg: 'El usuario es obligatorio',
-				},
-			},
-		},
-		rol: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				isIn: {
-					args: [['Administrador', 'Dependiente']],
-					msg: 'El rol debe ser ADMIN_ROLE o USER_ROLE',
-				},
-			},
-		},
+const UsuarioSchema = Schema({
+	nombre: {
+		type: String,
+		required: [true, 'El nombre es obligatorio'],
 	},
-	{
-		toJSON: {
-			transform: (doc, ret) => {
-				ret.uid = ret.id;
-				delete ret.id;
-				delete ret.password;
-			},
-		},
-	}
-);
+	contrasena: {
+		type: String,
+		required: [true, 'El password es obligatorio'],
+	},
+	usuario: {
+		type: String,
+		required: [true, 'El usuario es obligatorio'],
+	},
+	rol: {
+		type: String,
+		required: true,
+		emun: ['ADMIN_ROLE', 'USER_ROLE'],
+	},
+});
 
-module.exports = Usuario;
+UsuarioSchema.methods.toJSON = function () {
+	const { __v, password, _id, ...usuario } = this.toObject();
+	usuario.uid = _id;
+	return usuario;
+};
+
+module.exports = model('Usuario', UsuarioSchema);

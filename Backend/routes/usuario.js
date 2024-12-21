@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { createUsuario, getUsuarios, updateUsuario, deleteUsuario } = require('../controllers/usuario');
+const { createUsuario, getUsuarios, updateUsuario, deleteUsuario, getUsuarioPorId } = require('../controllers/usuario');
 
 const router = Router();
 
@@ -8,6 +8,9 @@ router.post('/', createUsuario);
 
 // Obtener todos los usuarios
 router.get('/', getUsuarios);
+
+// Obtener 1 usuario por su id
+router.get('/:id', getUsuarioPorId);
 
 // Actualizar un usuario
 router.put('/:id', updateUsuario);
