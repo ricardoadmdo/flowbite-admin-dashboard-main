@@ -1,196 +1,117 @@
 import { useState, useEffect } from 'react';
 import Axios from '../../api/axiosConfig';
-import useFetch from '../../hooks/useFetch';
-import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
 import Pagination from '../ui/Pagination';
+import Swal from 'sweetalert2';
 import ProductSkeleton from './ProductSkeleton';
 import ErrorComponent from '../ui/ErrorComponent';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const fetchProductos = async (page, limit, search) => {
+const fetchProductos = async (page, limit) => {
 	const response = await Axios.get(`/productos`, {
-		params: { page, limit, search },
+		params: { page, limit },
 	});
 	return response.data;
 };
 
 const ProductList = () => {
+	const [productosData, setProductosData] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isError, setIsError] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [searchQuery, setSearchQuery] = useState(''); // Estado para el valor de búsqueda
-	const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda usado
+	const [limit] = useState(8);
+
 	const navigate = useNavigate();
-	const limit = 8;
 
-	// Hacer fetch de los productos con el término de búsqueda incluido
-	const {
-		data: productosData,
-		isLoading,
-		isError,
-		error,
-		refetch,
-	} = useFetch(['productos', currentPage, limit, searchTerm], () => fetchProductos(currentPage, limit, searchTerm), {
-		keepPreviousData: true,
-	});
-
-	const handlePreviousPage = () => {
-		if (currentPage > 1) {
-			setCurrentPage((prevPage) => prevPage - 1);
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await fetchProductos(currentPage, limit);
+			setProductosData(data);
+		} catch (error) {
+			console.error('Error fetching productos:', error);
+			setIsError(true);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
-	const handleNextPage = () => {
-		if (currentPage < (productosData?.totalPages || 0)) {
-			setCurrentPage((prevPage) => prevPage + 1);
-		}
-	};
+	useEffect(() => {
+		fetchData();
+	}, [currentPage]);
 
-	const deleteProducto = async (producto) => {
+	const handleDelete = async (producto) => {
 		const result = await Swal.fire({
-			title: `¿Está seguro que desea eliminar el producto <strong>${producto.nombre}</strong>?`,
-			text: 'El producto será eliminado!',
+			title: `¿Está seguro de eliminar el producto ${producto.nombre}?`,
 			icon: 'warning',
 			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Sí, eliminar!',
+			confirmButtonText: 'Sí, eliminar',
 			cancelButtonText: 'Cancelar',
 		});
 
 		if (result.isConfirmed) {
 			try {
 				await Axios.delete(`/productos/${producto.uid}`);
-				refetch(); // Refetch la lista de productos después de eliminar
+				Swal.fire('Eliminado', `El producto ${producto.nombre} ha sido eliminado`, 'success');
+				fetchData();
 			} catch (error) {
-				console.error('Error al eliminar el producto:', error);
+				console.error('Error eliminando producto:', error);
+				Swal.fire('Error', 'No se pudo eliminar el producto', 'error');
 			}
-			Swal.fire({
-				title: 'Producto eliminado!',
-				html: `<i>El producto <strong>${producto.nombre}</strong> ha sido eliminado con éxito.</i>`,
-				icon: 'success',
-				timer: 3000,
-			});
 		}
 	};
 
-	useEffect(() => {
-		// No es necesario refetch aquí, ya que react-query maneja la recarga de datos
-	}, [currentPage]);
-
-	const handleProductoUpdated = () => {
-		refetch(); // Actualiza la lista después de crear o editar un producto
-	};
-
-	// Función para manejar la búsqueda
-	const handleSearch = () => {
-		setSearchTerm(searchQuery);
-		setCurrentPage(1); // Reiniciar la paginación al hacer una nueva búsqueda
-		refetch();
-	};
-
-	const handleKeyPress = (e) => {
-		if (e.key === 'Enter') {
-			handleSearch();
-		}
-	};
-
-	if (isLoading) {
-		return <ProductSkeleton />;
-	}
-
-	if (isError) {
-		return <ErrorComponent message={error.message} />;
-	}
+	if (isLoading) return <ProductSkeleton />;
+	if (isError) return <ErrorComponent message='No se pudo cargar la lista de productos' />;
 
 	const productosList = productosData?.productos || [];
-	const totalPages = productosData?.totalPages || 0;
+	const totalPages = productosData?.totalPages || 1;
 
 	return (
-		<div className='container animate__animated animate__fadeIn my-5'>
+		<div className='container my-5'>
 			<h2 className='text-center mb-4'>Lista de Productos</h2>
 
-			{/* Barra de búsqueda */}
-			<div className='input-group mb-4'>
-				<input
-					type='text'
-					className='form-control'
-					placeholder='Buscar producto...'
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					onKeyDown={handleKeyPress}
-				/>
-				<div className='input-group-append'>
-					<button className='btn btn-secondary' type='button' onClick={handleSearch}>
-						Buscar
-					</button>
-				</div>
-			</div>
-
 			<div className='text-center mb-4'>
-				<Link to='/productform' className='btn btn-success' onClick={handleProductoUpdated}>
-					Agregar Nuevo Producto
+				<Link to='/productform' className='btn btn-success'>
+					Agregar Producto
 				</Link>
 			</div>
 
 			<div className='row'>
 				{productosList.length > 0 ? (
-					productosList.map((val) => (
-						<div key={val.uid} className='col-sm-6 col-md-4 col-lg-3 mb-4'>
-							<div className='card h-100 shadow-lg border-light'>
+					productosList.map((producto) => (
+						<div key={producto.uid} className='col-sm-6 col-md-4 col-lg-3 mb-4'>
+							<div className='card h-100'>
 								<img
-									src={val.url}
-									className='card-img-top img-fluid'
-									alt={val.nombre}
-									style={{ objectFit: 'contain', height: '200px' }}
+									src={producto.url}
+									alt={producto.nombre}
+									className='card-img-top'
+									style={{ objectFit: 'cover', height: '200px' }}
 								/>
 								<div className='card-body'>
-									<h5 className='card-title text-center'>{val.nombre}</h5>
+									<h5 className='card-title'>{producto.nombre}</h5>
+									<p className='card-text'>{producto.descripcion}</p>
 									<p className='card-text'>
-										<strong>Precio:</strong> ${val.precio} CUP
+										<strong>Precio Venta:</strong> ${producto.venta}
 									</p>
 									<p className='card-text'>
-										<strong>Precio de Costo:</strong> ${val.precioCosto} CUP
+										<strong>Precio Costo:</strong> ${producto.costo}
 									</p>
-									{val.cantidadTienda > 0 ? (
-										<p className='card-text'>
-											<strong>Cantidad en Tienda:</strong> {val.cantidadTienda} Unidades
-										</p>
-									) : (
-										<p
-											className='card-text'
-											style={{ color: 'red', fontWeight: 'bold', fontSize: '20px' }}
-										>
-											Producto en tienda agotado
-										</p>
-									)}
-
-									{val.cantidadAlmacen > 0 ? (
-										<p className='card-text'>
-											<strong>Cantidad en Almacén:</strong> {val.cantidadAlmacen} Unidades
-										</p>
-									) : (
-										<p
-											className='card-text'
-											style={{ color: 'red', fontWeight: 'bold', fontSize: '20px' }}
-										>
-											Producto en almacén agotado
-										</p>
-									)}
+									<p className='card-text'>
+										<strong>Existencia:</strong> {producto.existencia} unidades
+									</p>
 								</div>
-								<div className='card-footer'>
-									<div className='d-flex justify-content-between'>
-										<button
-											className='btn btn-outline-secondary'
-											onClick={() => navigate(`/edit/${val.uid}`)}
-										>
-											<FontAwesomeIcon icon={faEdit} /> Editar
-										</button>
-										<button className='btn btn-outline-danger' onClick={() => deleteProducto(val)}>
-											<FontAwesomeIcon icon={faTrashAlt} />
-											Eliminar
-										</button>
-									</div>
+								<div className='card-footer d-flex justify-content-between'>
+									<button
+										className='btn btn-primary'
+										onClick={() => navigate(`/edit/${producto.uid}`)}
+									>
+										<FontAwesomeIcon icon={faEdit} /> Editar
+									</button>
+									<button className='btn btn-danger' onClick={() => handleDelete(producto)}>
+										<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+									</button>
 								</div>
 							</div>
 						</div>
@@ -200,13 +121,14 @@ const ProductList = () => {
 						<p>No hay productos disponibles.</p>
 					</div>
 				)}
-				<Pagination
-					currentPage={currentPage}
-					totalPages={totalPages}
-					handlePreviousPage={handlePreviousPage}
-					handleNextPage={handleNextPage}
-				/>
 			</div>
+
+			<Pagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				handlePreviousPage={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+				handleNextPage={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+			/>
 		</div>
 	);
 };

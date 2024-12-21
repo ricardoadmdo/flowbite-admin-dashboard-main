@@ -11,7 +11,10 @@ const productosGet = async (req, res) => {
 			query.nombre = new RegExp(search, 'i'); // Búsqueda insensible a mayúsculas
 		}
 
-		const [total, productos] = await Promise.all([Producto.countDocuments(query), Producto.find(query).skip(offset).limit(Number(limit))]);
+		const [total, productos] = await Promise.all([
+			Producto.countDocuments(query),
+			Producto.find(query).skip(offset).limit(Number(limit)),
+		]);
 
 		res.json({
 			total,
@@ -45,17 +48,21 @@ const productosBuscar = async (req, res) => {
 };
 
 const productosPost = async (req, res) => {
-	const { nombre, cantidadTienda, cantidadAlmacen, precio, precioCosto, url } = req.body;
+	const { nombre, codigo, descripcion, existencia, costo, venta, impuestoCosto, impuestoVenta, url } = req.body;
 
 	try {
 		const newProducto = new Producto({
 			nombre,
-			cantidadTienda,
-			cantidadAlmacen,
-			precio,
-			precioCosto,
+			codigo,
+			descripcion,
+			existencia,
+			costo,
+			venta,
+			impuestoCosto,
+			impuestoVenta,
 			url,
 		});
+
 		await newProducto.save();
 		res.status(201).json(newProducto);
 	} catch (error) {
@@ -63,6 +70,35 @@ const productosPost = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
+
+const productosPut = async (req, res) => {
+	const { id } = req.params;
+	const { nombre, codigo, descripcion, existencia, costo, venta, impuestoCosto, impuestoVenta, url } = req.body;
+
+	try {
+		const productoExistente = await Producto.findById(id);
+		if (!productoExistente) {
+			return res.status(404).json({ msg: 'Producto no encontrado' });
+		}
+
+		productoExistente.nombre = nombre !== undefined ? nombre : productoExistente.nombre;
+		productoExistente.codigo = codigo !== undefined ? codigo : productoExistente.codigo;
+		productoExistente.descripcion = descripcion !== undefined ? descripcion : productoExistente.descripcion;
+		productoExistente.existencia = existencia !== undefined ? existencia : productoExistente.existencia;
+		productoExistente.costo = costo !== undefined ? costo : productoExistente.costo;
+		productoExistente.venta = venta !== undefined ? venta : productoExistente.venta;
+		productoExistente.impuestoCosto = impuestoCosto !== undefined ? impuestoCosto : productoExistente.impuestoCosto;
+		productoExistente.impuestoVenta = impuestoVenta !== undefined ? impuestoVenta : productoExistente.impuestoVenta;
+		productoExistente.url = url !== undefined ? url : productoExistente.url;
+
+		await productoExistente.save();
+		res.status(200).json(productoExistente);
+	} catch (error) {
+		console.error('Error al actualizar producto:', error);
+		res.status(500).json({ error: error.message });
+	}
+};
+
 const getProductoPorId = async (req, res) => {
 	try {
 		const producto = await Producto.findById(req.params.id);
@@ -75,30 +111,7 @@ const getProductoPorId = async (req, res) => {
 		res.status(500).json({ msg: 'Error del servidor', error: error.message });
 	}
 };
-const productosPut = async (req, res) => {
-	const { id } = req.params;
-	const { nombre, cantidadTienda, cantidadAlmacen, precio, precioCosto, url } = req.body;
 
-	try {
-		const productoExistente = await Producto.findById(id);
-		if (!productoExistente) {
-			return res.status(404).json({ msg: 'Producto no encontrado' });
-		}
-
-		productoExistente.nombre = nombre !== undefined ? nombre : productoExistente.nombre;
-		productoExistente.cantidadAlmacen = cantidadAlmacen !== undefined ? cantidadAlmacen : productoExistente.cantidadAlmacen;
-		productoExistente.cantidadTienda = cantidadTienda !== undefined ? cantidadTienda : productoExistente.cantidadTienda;
-		productoExistente.precio = precio !== undefined ? precio : productoExistente.precio;
-		productoExistente.precioCosto = precioCosto !== undefined ? precioCosto : productoExistente.precioCosto;
-		productoExistente.url = url !== undefined ? url : productoExistente.url;
-
-		await productoExistente.save();
-		res.status(200).json(productoExistente);
-	} catch (error) {
-		console.error('Error al actualizar producto:', error);
-		res.status(500).json({ error: error.message });
-	}
-};
 const productoDelete = async (req, res) => {
 	const { id } = req.params;
 

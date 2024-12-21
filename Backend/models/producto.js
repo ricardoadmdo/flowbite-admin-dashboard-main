@@ -5,25 +5,43 @@ const ProductoSchema = Schema({
 		type: String,
 		required: [true, 'El nombre es obligatorio'],
 	},
-	precio: {
-		type: Number,
-		required: true,
+	codigo: {
+		type: String,
+		required: [true, 'El código es obligatorio'],
+		unique: true, // Código único por producto
 	},
-	precioCosto: {
-		type: Number,
-		required: true,
+	descripcion: {
+		type: String,
+		required: [true, 'La descripción es obligatoria'],
 	},
-	cantidadTienda: {
+	existencia: {
 		type: Number,
-		required: true,
+		required: [true, 'La existencia es obligatoria'],
+		min: 0, // No permite valores negativos
 	},
-	cantidadAlmacen: {
+	costo: {
 		type: Number,
-		required: true,
+		required: [true, 'El costo es obligatorio'],
+		min: 0,
+	},
+	venta: {
+		type: Number,
+		required: [true, 'El precio de venta es obligatorio'],
+		min: 0,
+	},
+	impuestoCosto: {
+		type: Number,
+		required: [true, 'El impuesto de costo es obligatorio'],
+		min: 0,
+	},
+	impuestoVenta: {
+		type: Number,
+		required: [true, 'El impuesto de venta es obligatorio'],
+		min: 0,
 	},
 	url: {
 		type: String,
-		required: true,
+		required: [true, 'La URL de la imagen es obligatoria'],
 	},
 });
 
