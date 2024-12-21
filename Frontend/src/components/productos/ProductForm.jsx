@@ -108,7 +108,7 @@ const ProductForm = () => {
 			.catch((error) => {
 				Swal.fire({
 					title: 'Error',
-					text: 'Hubo un error al registrar el producto.',
+					text: error,
 					icon: 'error',
 					confirmButtonText: 'Aceptar',
 				});
