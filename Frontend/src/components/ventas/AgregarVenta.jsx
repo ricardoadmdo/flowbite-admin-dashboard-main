@@ -243,8 +243,26 @@ const AgregarVenta = () => {
 							/>
 							<div className='card-body'>
 								<h5 className='card-title'>{producto.nombre}</h5>
-								<p className='card-text fw-bold'>${producto.precio} CUP</p>
-								{producto.cantidadTienda > 0 ? (
+								<p className='card-text fw-bold'>${producto.venta} CUP</p>
+								<p className='card-text'>
+									<strong>Codigo:</strong> {producto.codigo}
+								</p>
+								<p className='card-text'>
+									<strong>Precio Venta:</strong> ${producto.venta}
+								</p>
+								<p className='card-text'>
+									<strong>Precio Costo:</strong> ${producto.costo}
+								</p>
+								<p className='card-text'>
+									<strong>Existencia:</strong> {producto.existencia} unidades
+								</p>
+								<p className='card-text'>
+									<strong>Impuesto de Costo:</strong> ${producto.impuestoCosto}
+								</p>
+								<p className='card-text'>
+									<strong>Impuesto de Venta:</strong> ${producto.impuestoVenta}
+								</p>
+								{producto.existencia > 0 ? (
 									<button className='btn btn-success' onClick={() => openModal(producto)}>
 										Agregar
 									</button>
