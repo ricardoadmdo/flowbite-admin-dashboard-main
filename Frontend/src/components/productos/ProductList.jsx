@@ -93,6 +93,9 @@ const ProductList = () => {
 									<h5 className='card-title'>{producto.nombre}</h5>
 									<p className='card-text'>{producto.descripcion}</p>
 									<p className='card-text'>
+										<strong>Codigo:</strong> {producto.codigo}
+									</p>
+									<p className='card-text'>
 										<strong>Precio Venta:</strong> ${producto.venta}
 									</p>
 									<p className='card-text'>
@@ -100,6 +103,12 @@ const ProductList = () => {
 									</p>
 									<p className='card-text'>
 										<strong>Existencia:</strong> {producto.existencia} unidades
+									</p>
+									<p className='card-text'>
+										<strong>Impuesto de Costo:</strong> ${producto.impuestoCosto}
+									</p>
+									<p className='card-text'>
+										<strong>Impuesto de Venta:</strong> ${producto.impuestoVenta}
 									</p>
 								</div>
 								<div className='card-footer d-flex justify-content-between'>

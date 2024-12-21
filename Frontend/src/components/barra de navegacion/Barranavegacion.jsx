@@ -59,7 +59,7 @@ const Barranavegacion = () => {
 						<NavLink className='navbar-brand' to='/reporte-venta'>
 							<img className='d-inline-block align-text-top' src={logo} alt='Logo' height='35' />
 						</NavLink>
-						SuperBravo
+						ServiciosBravo
 					</span>
 
 					<ul className='navbar-nav'>
