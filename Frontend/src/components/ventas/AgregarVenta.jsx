@@ -77,16 +77,37 @@ const AgregarVenta = () => {
 		setFormState((prevState) => {
 			const nuevosProductos = [...prevState.productos];
 			const index = nuevosProductos.findIndex((p) => p.uid === producto.uid);
-
+	
 			if (index !== -1) {
+				// Verificar si la cantidad excede la existencia
+				if (nuevosProductos[index].cantidad + cantidad > producto.existencia) {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Cantidad excedida',
+						text: `Solo quedan ${producto.existencia} unidades de este producto.`,
+					});
+					return prevState;
+				}
+	
 				nuevosProductos[index].cantidad += cantidad;
+
+
 			} else {
+				if (cantidad > producto.existencia) {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Cantidad excedida',
+						text: `Solo quedan ${producto.existencia} unidades de este producto.`,
+					});
+					return prevState;
+				}
+	
 				nuevosProductos.push({ ...producto, cantidad });
 			}
-
+	
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
 			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
-
+	
 			return {
 				...prevState,
 				productos: nuevosProductos,
@@ -95,6 +116,7 @@ const AgregarVenta = () => {
 			};
 		});
 	};
+	
 
 	const eliminarProducto = (productoId) => {
 		setFormState((prevState) => {
