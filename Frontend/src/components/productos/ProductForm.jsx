@@ -110,7 +110,6 @@ const ProductForm = () => {
 				Swal.fire({
 					title: 'Error',
 					text: 'Hubo un error al registrar el producto.',
-					error,
 					icon: 'error',
 					confirmButtonText: 'Aceptar',
 				});
