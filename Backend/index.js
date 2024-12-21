@@ -12,7 +12,7 @@ dbConnection();
 //CORS
 app.use(cors());
 
-//Lectura y parseo del body
+//Lectura y parseo del body asdasd
 app.use(express.json());
 
 //Rutas
