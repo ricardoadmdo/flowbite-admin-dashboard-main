@@ -54,6 +54,7 @@ const AgregarVenta = () => {
 			});
 		},
 		onError: (error) => {
+			console.log(error)
 			Swal.fire({
 				icon: 'error',
 				title: 'Error al registrar la venta',
