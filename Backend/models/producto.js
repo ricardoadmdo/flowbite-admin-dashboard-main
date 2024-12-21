@@ -8,7 +8,6 @@ const ProductoSchema = Schema({
 	codigo: {
 		type: String,
 		required: [true, 'El código es obligatorio'],
-		unique: true, // Código único por producto
 	},
 	descripcion: {
 		type: String,
