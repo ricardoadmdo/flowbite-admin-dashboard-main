@@ -49,8 +49,8 @@ const ReporteVentas = () => {
 			let gananciaVenta = 0;
 
 			venta.productos.forEach((producto) => {
-				gananciaVenta += (producto.precio - producto.precioCosto) * producto.cantidad;
-				totalRecaudadoCalculado += producto.precio * producto.cantidad;
+				gananciaVenta += (producto.venta - producto.costo) * producto.cantidad;
+				totalRecaudadoCalculado += producto.venta * producto.cantidad;
 				productoContador[producto.nombre] = (productoContador[producto.nombre] || 0) + producto.cantidad;
 			});
 
@@ -145,7 +145,7 @@ const ReporteVentas = () => {
 						<th>Productos</th>
 						<th>Total Recaudado</th>
 						<th>Ganancia por Venta</th>
-						<th>Forma de Pago</th>
+						<th>Gestor</th>
 						<th>Acciones</th>
 					</tr>
 				</thead>
@@ -161,7 +161,7 @@ const ReporteVentas = () => {
 							let gananciaVenta = 0;
 
 							venta.productos.forEach((producto) => {
-								gananciaVenta += (producto.precio - producto.precioCosto) * producto.cantidad;
+								gananciaVenta += (producto.venta - producto.costo) * producto.cantidad;
 							});
 
 							return (
@@ -173,14 +173,14 @@ const ReporteVentas = () => {
 											{venta.productos.map((producto, idx) => (
 												<li key={idx}>
 													{producto.nombre} - {producto.cantidad} x $
-													{producto.precio.toFixed(2)}
+													{producto.venta.toFixed(2)}
 												</li>
 											))}
 										</ul>
 									</td>
 									<td>${venta.precioTotal.toFixed(2)} CUP</td>
 									<td>${gananciaVenta.toFixed(2)} CUP</td>
-									<td>{venta.tipoPago}</td>
+									<td>{venta.gestor}</td>
 									<td>
 										<button className='btn btn-danger' onClick={() => handleDeleteVenta(venta.uid)}>
 											<FontAwesomeIcon icon={faTrashAlt} />
