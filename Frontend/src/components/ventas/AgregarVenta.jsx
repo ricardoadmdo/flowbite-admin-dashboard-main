@@ -84,7 +84,7 @@ const AgregarVenta = () => {
 			}
 
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
-			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
 
 			return {
 				...prevState,
@@ -99,7 +99,7 @@ const AgregarVenta = () => {
 		setFormState((prevState) => {
 			const nuevosProductos = prevState.productos.filter((p) => p.uid !== productoId);
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
-			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
 
 			return {
 				...prevState,
@@ -117,7 +117,7 @@ const AgregarVenta = () => {
 			);
 
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
-			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
 
 			return {
 				...prevState,
@@ -135,7 +135,7 @@ const AgregarVenta = () => {
 			);
 
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
-			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
 
 			return {
 				...prevState,
@@ -157,27 +157,37 @@ const AgregarVenta = () => {
 			return;
 		}
 
-		// Modal para seleccionar tipo de pago
+		// Modal para seleccionar gestor
 		Swal.fire({
-			title: 'Selecciona el tipo de pago',
+			title: 'Seleccione el Gestor',
 			input: 'select',
 			inputOptions: {
-				Efectivo: 'Efectivo',
-				Transferencia: 'Transferencia',
+				Elena: 'Elena',
+				Milton: 'Milton',
+				Liset: 'Liset',
+				Berardo: 'Berardo',
+				Monaco: 'Mónaco',
+				AnaMaria: 'Ana María',
+				Greter: 'Greter',
+				Wilson: 'Wilson',
+				Jazmin: 'Jazmin',
+				Ninguno: 'Ninguno',
 			},
-			inputPlaceholder: 'Selecciona el tipo de pago',
+			inputPlaceholder: 'Selecciona Gestor de la Venta',
 			showCancelButton: true,
 		}).then((result) => {
 			if (result.isConfirmed) {
-				const tipoPago = result.value; // Efectivo o Transferencia
+				const gestor = result.value;
 
 				// Asegurarse de que cada producto tenga los campos requeridos
 				const productosValidados = formState.productos.map((producto) => ({
 					...producto,
-					minimoEnAlmacen: producto.minimoEnAlmacen || 0,
-					minimoEnTienda: producto.minimoEnTienda || 0,
-					precioCosto: producto.precioCosto || 0,
-					precio: producto.precio || 0,
+					existencia: producto.existencia || 0,
+					costo: producto.costo || 0,
+					venta: producto.venta || 0,
+					impuestoCosto: producto.impuestoCosto || 0,
+					impuestoVenta: producto.impuestoVenta || 0,
+					codigo: producto.codigo || 0,
 				}));
 
 				// Realizar la mutación (registro de la venta)
@@ -186,7 +196,7 @@ const AgregarVenta = () => {
 					totalProductos: formState.totalProductos,
 					precioTotal: formState.precioTotal,
 					fecha: new Date(),
-					tipoPago: tipoPago, // Enviar el tipo de pago seleccionado
+					gestor: gestor, // Enviar el gestor
 				});
 			}
 		});
@@ -290,8 +300,8 @@ const AgregarVenta = () => {
 						>
 							<span>
 								{producto.nombre} - <MotionNumber value={producto.cantidad} format='0' /> x $
-								{producto.precio} = $
-								<MotionNumber value={producto.precio * producto.cantidad} format='0,0.00' />
+								{producto.venta} = $
+								<MotionNumber value={producto.venta * producto.cantidad} format='0,0.00' />
 								CUP
 							</span>
 							<div className='d-flex'>

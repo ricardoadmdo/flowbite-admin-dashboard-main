@@ -5,17 +5,35 @@ const ProductoSchema = Schema({
 		type: String,
 		required: [true, 'El nombre es obligatorio'],
 	},
-	precio: {
-		type: Number,
-		required: true,
+	codigo: {
+		type: String,
+		required: [true, 'El código es obligatorio'],
+		unique: true, // Código único por producto
 	},
-	precioCosto: {
+	existencia: {
 		type: Number,
-		required: true,
+		required: [true, 'La existencia es obligatoria'],
+		min: 0, // No permite valores negativos
 	},
-	cantidad: {
+	costo: {
 		type: Number,
-		required: true,
+		required: [true, 'El costo es obligatorio'],
+		min: 0,
+	},
+	venta: {
+		type: Number,
+		required: [true, 'El precio de venta es obligatorio'],
+		min: 0,
+	},
+	impuestoCosto: {
+		type: Number,
+		required: [true, 'El impuesto de costo es obligatorio'],
+		min: 0,
+	},
+	impuestoVenta: {
+		type: Number,
+		required: [true, 'El impuesto de venta es obligatorio'],
+		min: 0,
 	},
 });
 
@@ -37,9 +55,9 @@ const VentaSchema = new Schema({
 		required: true,
 		default: Date.now,
 	},
-	tipoPago: {
+	gestor: {
 		type: String,
-		enum: ['Efectivo', 'Transferencia'],
+		enum: ['Elena', 'Milton', 'Liset', 'Berardo', 'Monaco', 'AnaMaria', 'Greter', 'Wilson', 'Jazmin', 'Ninguno'],
 		required: true,
 	},
 });
