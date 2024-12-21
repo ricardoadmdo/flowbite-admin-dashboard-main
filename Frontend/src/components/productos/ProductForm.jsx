@@ -49,7 +49,6 @@ const ProductForm = () => {
 				Swal.fire({
 					title: 'Error',
 					text: 'Hubo un error al obtener el producto.',
-					error,
 					icon: 'error',
 					confirmButtonText: 'Aceptar',
 				});
@@ -146,7 +145,6 @@ const ProductForm = () => {
 				Swal.fire({
 					title: 'Error',
 					text: 'Hubo un error al actualizar el producto.',
-					error,
 					icon: 'error',
 					confirmButtonText: 'Aceptar',
 				});
