@@ -57,9 +57,9 @@ const UsuarioList = () => {
           <div key={val.uid} className='col-md-4 mb-4'>
             <div className='card'>
               <div className='card-body'>
-                <h5 className='card-title'>{val.nombre}</h5>
-                <h6 className='card-subtitle mb-2 text-muted'>{val.usuario}</h6>
-                <p className='card-text'>Rol: {val.rol}</p>
+                <h5 className='card-title'><strong>Nombre: </strong>{val.nombre}</h5>
+                <p className='card-text'><strong>Usuario: </strong>{val.usuario}</p>
+                <p className='card-text'> <strong>Rol: </strong> {val.rol}</p>
                 <div className='d-flex justify-content-between'>
                   <button
                     type='button'
