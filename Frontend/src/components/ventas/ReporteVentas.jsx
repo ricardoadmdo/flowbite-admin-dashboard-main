@@ -7,6 +7,7 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '../ui/Pagination';
 import '../ventas/ReporteVentas.css';
+import GananciaGestores from './GananciaGestores';
 
 const ReporteVentas = () => {
 	const [ventas, setVentas] = useState([]);
@@ -136,6 +137,9 @@ const ReporteVentas = () => {
 					<strong>Producto Más Vendido:</strong> {productoMasVendido || 'No hay ventas.'}
 				</p>
 			</div>
+
+			{/* Ganancia por Gestor */}
+			<GananciaGestores ventas={ventas} porcentajeGanancia={0.01} />
 
 			{/* Contenedor con desplazamiento horizontal para la tabla */}
 			<div className='report-ventas__table-container'>
