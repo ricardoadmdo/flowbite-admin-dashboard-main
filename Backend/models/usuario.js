@@ -12,6 +12,7 @@ const UsuarioSchema = Schema({
 	usuario: {
 		type: String,
 		required: [true, 'El usuario es obligatorio'],
+		unique: true,
 	},
 	rol: {
 		type: String,

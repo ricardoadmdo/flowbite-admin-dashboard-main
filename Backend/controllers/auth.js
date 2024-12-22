@@ -41,7 +41,7 @@ const createAdmin = async (req, res) => {
 		// Verifica si el usuario ya existe
 		const existingUser = await Usuario.findOne({ usuario });
 		if (existingUser) {
-			return res.status(400).json({ success: false, message: 'El usuario ya existe.' });
+			return res.status(400).json({ success: false, message: 'Ese usuario ya existe' });
 		}
 
 		// Encripta la contraseña
