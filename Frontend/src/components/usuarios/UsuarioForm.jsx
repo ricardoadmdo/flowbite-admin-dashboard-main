@@ -44,10 +44,13 @@ const UsuarioForm = () => {
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
+					toast: true, // Activate toast style
+					position: 'top-end', // Position in the top-right corner
 					title: 'Registro exitoso!',
 					html: `<i>El usuario <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
 					icon: 'success',
-					timer: 3000,
+					showConfirmButton: false,
+					timer: 3000, // Duration before disappearing
 				});
 			})
 			.catch((error) => {
@@ -60,28 +63,32 @@ const UsuarioForm = () => {
 				});
 			});
 	};
-
+	
 	const update = () => {
 		Axios.put(`/usuarios/${id}`, { nombre, contrasena, usuario, rol })
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
+					toast: true, // Activate toast style
+					position: 'top-end', // Position in the top-right corner
 					title: 'Actualización exitosa!',
 					html: `<i>El usuario <strong>${nombre}</strong> se ha actualizado con éxito!</i>`,
 					icon: 'success',
-					timer: 3000,
+					showConfirmButton: false,
+					timer: 3000, // Duration before disappearing
 				});
 			})
 			.catch((error) => {
 				console.error('Hubo un error al actualizar el usuario:', error);
 				Swal.fire({
 					title: 'Error',
-					text: 'Hubo un error al actualizar el producto. Por favor, intente de nuevo.',
+					text: 'Hubo un error al actualizar el usuario. Por favor, intente de nuevo.',
 					icon: 'error',
 					confirmButtonText: 'Aceptar',
 				});
 			});
 	};
+	
 
 	const handleSubmit = (event) => {
 		event.preventDefault();

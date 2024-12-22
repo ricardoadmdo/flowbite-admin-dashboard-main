@@ -82,7 +82,7 @@ const ProductForm = () => {
 		if (file) {
 			imageUrl = await uploadImageToCloudinary();
 		}
-
+	
 		Axios.post('/productos', {
 			nombre,
 			codigo,
@@ -94,27 +94,31 @@ const ProductForm = () => {
 			impuestoVenta,
 			url: imageUrl,
 		})
-			.then(() => {
-				navigate('/gestionar-productos');
-				Swal.fire({
-					position: 'top-end',
-					title: 'Registro exitoso!',
-					html: `<i>El producto <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
-					icon: 'success',
-					showConfirmButton: false,
-					timer: 2000,
-				});
-			})
-			.catch((error) => {
-				Swal.fire({
-					title: 'Error',
-					text: error,
-					icon: 'error',
-					confirmButtonText: 'Aceptar',
-				});
+		.then(() => {
+			navigate('/gestionar-productos');
+			Swal.fire({
+				toast: true, // Activate toast style
+				position: 'top-end', // Position in the top-right corner
+				title: 'Registro exitoso!',
+				html: `<i>El producto <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
+				icon: 'success',
+				showConfirmButton: false,
+				timer: 2000, // Duration before disappearing
+				customClass: {
+					popup: 'small-alert', // Optional: use for smaller alerts if you want further customization
+				},
 			});
+		})
+		.catch((error) => {
+			Swal.fire({
+				title: 'Error',
+				text: error,
+				icon: 'error',
+				confirmButtonText: 'Aceptar',
+			});
+		});
 	};
-
+	
 	const update = async () => {
 		let imageUrl = url;
 		if (file) {
