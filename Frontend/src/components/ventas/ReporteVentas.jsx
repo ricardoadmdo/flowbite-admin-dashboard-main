@@ -17,6 +17,7 @@ const ReporteVentas = () => {
 	const [productoMasVendido, setProductoMasVendido] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
+	const [gananciaNeta, setGananciaNeta] = useState(0);
 
 	// Fetch ventas con paginación y fecha seleccionada
 	useEffect(() => {
@@ -35,17 +36,18 @@ const ReporteVentas = () => {
 				calcularGananciasYProductoMasVendido(data.ventas);
 			} catch (error) {
 				console.error('Error al obtener ventas:', error);
+				Swal.fire('Error', 'No se pudo obtener las ventas. Por favor, intenta nuevamente.', 'error');
 			}
 		};
 
 		fetchVentasByDateAndPage();
 	}, [startDate, currentPage]); // Llamar cada vez que cambie la fecha o la página actual
 
-	// Modificar calcularGananciasYProductoMasVendido
 	const calcularGananciasYProductoMasVendido = (ventas) => {
 		let totalGananciaCalculada = 0;
-		let totalRecaudadoCalculado = 0; // Calcular total basado en ventas
+		let totalRecaudadoCalculado = 0;
 		const productoContador = {};
+		let gananciaGestores = 0; // Variable para acumular las ganancias de los gestores
 
 		ventas.forEach((venta) => {
 			let gananciaVenta = 0;
@@ -54,15 +56,17 @@ const ReporteVentas = () => {
 				productoContador[producto.nombre] = (productoContador[producto.nombre] || 0) + producto.cantidad;
 			});
 
-			// Sumar total recaudado por venta directamente
 			totalRecaudadoCalculado += venta.precioTotal;
 			totalGananciaCalculada += gananciaVenta;
+
+			// Calcular la ganancia para cada gestor (1% en este caso)
+			gananciaGestores += gananciaVenta * 0.01;
 		});
 
 		setTotalGanancia(totalGananciaCalculada);
 		setTotalRecaudado(totalRecaudadoCalculado);
+		setGananciaNeta(totalGananciaCalculada - gananciaGestores); // Ganancia neta para Alejandro
 
-		// Producto más vendido
 		if (Object.keys(productoContador).length > 0) {
 			const productoMax = Object.keys(productoContador).reduce((a, b) =>
 				productoContador[a] > productoContador[b] ? a : b
@@ -132,6 +136,9 @@ const ReporteVentas = () => {
 				</p>
 				<p>
 					<strong>Ganancia Total del Día:</strong> ${totalGanancia.toFixed(2)} CUP
+				</p>
+				<p>
+					<strong>Ganancia Neta para Alejandro:</strong> ${gananciaNeta.toFixed(2)} CUP
 				</p>
 				<p>
 					<strong>Producto Más Vendido:</strong> {productoMasVendido || 'No hay ventas.'}
