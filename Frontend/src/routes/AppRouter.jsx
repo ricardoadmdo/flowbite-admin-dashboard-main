@@ -7,6 +7,8 @@ import ProductList from '../components/productos/ProductList';
 import UsuarioForm from '../components/usuarios/UsuarioForm';
 import UsuarioList from '../components/usuarios/UsuarioList';
 import ReporteVentas from '../components/ventas/ReporteVentas';
+import { AdminRoute } from './AdminRoute';
+
 
 const AppRouter = () => {
 	return (
@@ -14,13 +16,13 @@ const AppRouter = () => {
 			<Routes>
 				<Route element={<LayoutWithNav />}>
 					<Route path='/reporte-venta' element={<ReporteVentas />} />
-					<Route path='/gestionar-productos' element={<ProductList />} />
-					<Route path='/gestionar-usuarios' element={<UsuarioList />} />
+					<Route path='/gestionar-productos' element={<AdminRoute element={<ProductList />}/>} />
+					<Route path='/gestionar-usuarios' element={<AdminRoute element={<UsuarioList />}/>} />
 					<Route path='/agregar-venta' element={<AgregarVenta />} />
-					<Route path='/usuarioform' element={<UsuarioForm />} />
-					<Route path='/editUser/:id' element={<UsuarioForm />} />
-					<Route path='/productform' element={<ProductForm />} />
-					<Route path='/edit/:id' element={<ProductForm />} />
+					<Route path='/usuarioform' element={<AdminRoute element={<UsuarioForm />}/>} />
+					<Route path='/editUser/:id' element={<AdminRoute element={<UsuarioForm />}/>} />
+					<Route path='/productform' element={<AdminRoute element={<ProductForm />}/>} />
+					<Route path='/edit/:id' element={<AdminRoute element={<ProductForm />}/>} />
 				</Route>
 				<Route path='/' element={<Login />} />
 			</Routes>

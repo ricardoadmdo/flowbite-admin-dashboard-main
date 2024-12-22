@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Axios from '../../api/axiosConfig';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -6,8 +6,11 @@ import Swal from 'sweetalert2';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '../ui/Pagination';
+import { AuthContext } from '../../auth/authContext';
 
 const ReporteVentas = () => {
+const {user} = useContext(AuthContext); 
+	
 	const [ventas, setVentas] = useState([]);
 	const [startDate, setStartDate] = useState(new Date());
 	const [totalGanancia, setTotalGanancia] = useState(0);
@@ -16,6 +19,7 @@ const ReporteVentas = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 
+	console.log(user)
 	// Fetch ventas con paginación y fecha seleccionada
 	useEffect(() => {
 		const fetchVentasByDateAndPage = async () => {
