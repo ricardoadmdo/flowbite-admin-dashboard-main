@@ -54,7 +54,7 @@ const AgregarVenta = () => {
 			});
 		},
 		onError: (error) => {
-			console.log(error)
+			console.log(error);
 			Swal.fire({
 				icon: 'error',
 				title: 'Error al registrar la venta',
@@ -77,7 +77,7 @@ const AgregarVenta = () => {
 		setFormState((prevState) => {
 			const nuevosProductos = [...prevState.productos];
 			const index = nuevosProductos.findIndex((p) => p.uid === producto.uid);
-	
+
 			if (index !== -1) {
 				// Verificar si la cantidad excede la existencia
 				if (nuevosProductos[index].cantidad + cantidad > producto.existencia) {
@@ -88,10 +88,8 @@ const AgregarVenta = () => {
 					});
 					return prevState;
 				}
-	
+
 				nuevosProductos[index].cantidad += cantidad;
-
-
 			} else {
 				if (cantidad > producto.existencia) {
 					Swal.fire({
@@ -101,13 +99,13 @@ const AgregarVenta = () => {
 					});
 					return prevState;
 				}
-	
+
 				nuevosProductos.push({ ...producto, cantidad });
 			}
-	
+
 			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
 			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
-	
+
 			return {
 				...prevState,
 				productos: nuevosProductos,
@@ -116,7 +114,6 @@ const AgregarVenta = () => {
 			};
 		});
 	};
-	
 
 	const eliminarProducto = (productoId) => {
 		setFormState((prevState) => {
@@ -196,12 +193,11 @@ const AgregarVenta = () => {
 				Jazmin: 'Jazmin',
 				Ninguno: 'Ninguno',
 			},
-			inputPlaceholder: 'Selecciona Gestor de la Venta',
+			inputPlaceholder: 'Selecciona Gestor, sera Ninguno por defecto',
 			showCancelButton: true,
 		}).then((result) => {
 			if (result.isConfirmed) {
-				const gestor = result.value;
-
+				const gestor = result.value || 'Ninguno';
 				// Asegurarse de que cada producto tenga los campos requeridos
 				const productosValidados = formState.productos.map((producto) => ({
 					...producto,
