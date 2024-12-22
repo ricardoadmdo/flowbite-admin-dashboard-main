@@ -29,7 +29,7 @@ const Login = () => {
 					},
 				};
 				dispatch(action);
-				navigate('/reporte-venta');
+				navigate('/agregar-venta');
 				Swal.fire({
 					title: 'Éxito',
 					text: 'Inicio de sesión exitoso',
