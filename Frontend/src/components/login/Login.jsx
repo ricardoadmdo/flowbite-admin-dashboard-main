@@ -93,46 +93,51 @@ const Login = () => {
 				backgroundPosition: 'center center',
 			}}
 		>
-			<div
-				className='card p-4 shadow text-center animate__animated animate__fadeIn'
-				style={{ borderRadius: '24px', backgroundColor: 'rgba(250, 250, 250, 0.9)' }}
-			>
-				<h3 className='mb-3'>Iniciar Sesión</h3>
-				<form className='d-grid gap-3' onSubmit={(e) => e.preventDefault()}>
-					<div className='form-group'>
-						<label htmlFor='username'>Nombre de Usuario:</label>
-						<input
-							type='text'
-							className='form-control'
-							id='username'
-							placeholder='Ingrese su nombre de usuario'
-							value={usuario}
-							onChange={(e) => setUsername(e.target.value)}
-							style={{ padding: '7px', fontSize: '1rem' }}
-							required
-						/>
+			<div className='text-center'>
+				<h1 className='text-white mb-4'>Servicios Bravo</h1>
+
+				<div
+					className='card p-4 shadow text-center animate__animated animate__fadeIn'
+					style={{ borderRadius: '24px', backgroundColor: 'rgba(250, 250, 250, 0.9)' }}
+				>
+					<h3 className='mb-3'>Iniciar Sesión</h3>
+					<form className='d-grid gap-3' onSubmit={(e) => e.preventDefault()}>
+						<div className='form-group'>
+							<label htmlFor='username'>Nombre de Usuario:</label>
+							<input
+								type='text'
+								className='form-control'
+								id='username'
+								placeholder='Ingrese su nombre de usuario'
+								value={usuario}
+								onChange={(e) => setUsername(e.target.value)}
+								style={{ padding: '7px', fontSize: '1rem' }}
+								required
+							/>
+						</div>
+
+						<div className='form-group position-relative'>
+							<label htmlFor='password'>Contraseña:</label>
+							<input
+								type='password'
+								className='form-control'
+								id='password'
+								placeholder='Ingrese su contraseña'
+								value={contrasena}
+								onChange={(e) => setPassword(e.target.value)}
+								style={{ padding: '10px', fontSize: '1rem' }}
+								required
+							/>
+						</div>
+						<button type='button' className='btn btn-success w-100' onClick={handleLogin}>
+							Iniciar Sesión
+						</button>
+					</form>
+					<div className='mt-3'>
+						<button type='button' className='btn btn-outline-primary w-100' onClick={createAdmin}>
+							Crear Usuario Administrador
+						</button>
 					</div>
-					<div className='form-group position-relative'>
-						<label htmlFor='password'>Contraseña:</label>
-						<input
-							type='password'
-							className='form-control'
-							id='password'
-							placeholder='Ingrese su contraseña'
-							value={contrasena}
-							onChange={(e) => setPassword(e.target.value)}
-							style={{ padding: '10px', fontSize: '1rem' }}
-							required
-						/>
-					</div>
-					<button type='button' className='btn btn-success w-100' onClick={handleLogin}>
-						Iniciar Sesión
-					</button>
-				</form>
-				<div className='mt-3'>
-					<button type='button' className='btn btn-outline-primary w-100' onClick={createAdmin}>
-						Crear Usuario Administrador
-					</button>
 				</div>
 			</div>
 		</div>
