@@ -10,6 +10,7 @@ const useAuth = () => {
 export const AdminRoute = ({ element }) => {
   const { user } = useAuth();
 
+
   return user && user.rol === 'Administrador' ? (
     element
   ) : (

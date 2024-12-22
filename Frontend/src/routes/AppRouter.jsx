@@ -10,6 +10,7 @@ import ReporteVentas from '../components/ventas/ReporteVentas';
 import { AdminRoute } from './AdminRoute';
 
 
+
 const AppRouter = () => {
 	return (
 		<BrowserRouter>
