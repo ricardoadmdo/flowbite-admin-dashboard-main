@@ -86,7 +86,7 @@ const Login = () => {
 
 	return (
 		<div
-			className='container-fluid d-flex justify-content-center align-items-center vh-100 animate__animated animate__fadeIn'
+			className='container-fluid d-flex justify-content-center align-items-center vh-100'
 			style={{
 				backgroundImage: `url(${background})`,
 				backgroundSize: 'cover',
