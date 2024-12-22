@@ -65,6 +65,7 @@ const Barranavegacion = () => {
 					<ul className='navbar-nav'>
 						{user.logged ? (
 							<li className='nav-item'>
+								<h5>{user.nombre}</h5>
 								<button className='nav-link' onClick={handleLogout}>
 									<FontAwesomeIcon icon={faSignOutAlt} />
 									Cerrar Sesión
