@@ -7,25 +7,76 @@ import ProductList from '../components/productos/ProductList';
 import UsuarioForm from '../components/usuarios/UsuarioForm';
 import UsuarioList from '../components/usuarios/UsuarioList';
 import ReporteVentas from '../components/ventas/ReporteVentas';
-import { AdminRoute } from './AdminRoute';
-
-
+import AdminRoute from './AdminRoute';
+import PrivateRoute from './PrivateRoute';
+import Error404 from '../components/Error404';
 
 const AppRouter = () => {
 	return (
 		<BrowserRouter>
 			<Routes>
 				<Route element={<LayoutWithNav />}>
-					<Route path='/reporte-venta' element={<ReporteVentas />} />
-					<Route path='/gestionar-productos' element={<AdminRoute element={<ProductList />}/>} />
-					<Route path='/gestionar-usuarios' element={<AdminRoute element={<UsuarioList />}/>} />
+					<Route
+						path='/reporte-venta'
+						element={
+							<PrivateRoute>
+								<ReporteVentas />
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path='/gestionar-productos'
+						element={
+							<AdminRoute>
+								<ProductList />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/gestionar-usuarios'
+						element={
+							<AdminRoute>
+								<UsuarioList />
+							</AdminRoute>
+						}
+					/>
 					<Route path='/agregar-venta' element={<AgregarVenta />} />
-					<Route path='/usuarioform' element={<AdminRoute element={<UsuarioForm />}/>} />
-					<Route path='/editUser/:id' element={<AdminRoute element={<UsuarioForm />}/>} />
-					<Route path='/productform' element={<AdminRoute element={<ProductForm />}/>} />
-					<Route path='/edit/:id' element={<AdminRoute element={<ProductForm />}/>} />
+					<Route
+						path='/usuarioform'
+						element={
+							<AdminRoute>
+								<UsuarioForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/editUser/:id'
+						element={
+							<AdminRoute>
+								<UsuarioForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/productform'
+						element={
+							<AdminRoute>
+								<ProductForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/edit/:id'
+						element={
+							<AdminRoute>
+								<ProductForm />
+							</AdminRoute>
+						}
+					/>
 				</Route>
 				<Route path='/' element={<Login />} />
+				{/* Ruta comodín para manejar rutas no existentes */}
+				<Route path='*' element={<Error404 />} />
 			</Routes>
 		</BrowserRouter>
 	);

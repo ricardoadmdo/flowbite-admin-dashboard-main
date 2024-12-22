@@ -3,19 +3,17 @@ import { AuthContext } from '../auth/authContext.jsx';
 import { Navigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const AdminRoute = ({ children }) => {
+const PrivateRoute = ({ children }) => {
 	const { user } = useContext(AuthContext);
-	const location = useLocation();
+	const { pathname, search } = useLocation();
 
-	return user.logged && user.rol === 'Administrador' ? (
-		children
-	) : (
-		<Navigate to='/not-found' state={{ from: location }} replace />
-	);
+	localStorage.setItem('lastPath', pathname + search);
+
+	return user.logged ? children : <Navigate to='/not-found' />;
 };
 
-AdminRoute.propTypes = {
+PrivateRoute.propTypes = {
 	children: PropTypes.node.isRequired,
 };
 
-export default AdminRoute;
+export default PrivateRoute;
