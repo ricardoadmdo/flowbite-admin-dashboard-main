@@ -6,7 +6,7 @@ const GananciaGestores = ({ ventas, porcentajeGanancia }) => {
 		const { gestor, productos } = venta;
 
 		// Ignorar ventas con gestor "Ninguno" o sin gestor
-		if (!gestor || gestor.toLowerCase() === 'ninguno') return acc;
+		if (!gestor || gestor.trim().length === 0 || gestor.toLowerCase() === 'ninguno') return acc;
 
 		// Calcular la ganancia total de la venta
 		let gananciaVenta = 0;

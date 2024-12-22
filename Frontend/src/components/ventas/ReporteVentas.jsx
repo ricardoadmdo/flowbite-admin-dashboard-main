@@ -59,8 +59,10 @@ const ReporteVentas = () => {
 			totalRecaudadoCalculado += venta.precioTotal;
 			totalGananciaCalculada += gananciaVenta;
 
-			// Calcular la ganancia para cada gestor (1% en este caso)
-			gananciaGestores += gananciaVenta * 0.01;
+			// Calcular la ganancia para cada gestor solo si no es "Ninguno"
+			if (venta.gestor !== 'Ninguno') {
+				gananciaGestores += gananciaVenta * 0.01; // Aplica el 1% solo si corresponde
+			}
 		});
 
 		setTotalGanancia(totalGananciaCalculada);
