@@ -10,7 +10,7 @@ const app = express();
 dbConnection();
 
 //CORS
-app.use(cors());
+app.use(cors({ origin: 'https://superbravo.es' }));
 
 //Lectura y parseo del body asdasd asdasd
 app.use(express.json());
