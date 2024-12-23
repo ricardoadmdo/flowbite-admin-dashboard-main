@@ -267,7 +267,7 @@ const AgregarVenta = () => {
 						<div className='card h-100 shadow border-light'>
 							<LazyLoadImage
 								height='200px'
-								className='card-img-top img-fluid'
+								className='card-img-top'
 								src={producto.url}
 								alt={`Imagen del producto: ${producto.nombre}`}
 								effect='blur'

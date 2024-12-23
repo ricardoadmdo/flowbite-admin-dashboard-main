@@ -11,6 +11,7 @@ import {
 	faCashRegister,
 	faBoxes,
 	faUserCog,
+	faChartLine,
 } from '@fortawesome/free-solid-svg-icons';
 
 const Barranavegacion = () => {
@@ -81,14 +82,14 @@ const Barranavegacion = () => {
 			</nav>
 			<div ref={sidebarRef} className={`d-flex flex-column vh-100 sidebar ${isOpen ? 'open' : ''}`}>
 				<nav className='nav flex-column mt-3'>
-					<NavLink to='/reporte-venta' className='nav-link'>
-						<FontAwesomeIcon icon={faFileInvoice} className='me-2' />
-						Reporte de Ventas
-					</NavLink>
-
 					<NavLink to='/agregar-venta' className='nav-link'>
 						<FontAwesomeIcon icon={faCashRegister} className='me-2' />
 						Agregar Ventas
+					</NavLink>
+
+					<NavLink to='/reporte-venta' className='nav-link'>
+						<FontAwesomeIcon icon={faFileInvoice} className='me-2' />
+						Reporte de Ventas
 					</NavLink>
 
 					{user.rol === 'Administrador' && (
@@ -97,9 +98,15 @@ const Barranavegacion = () => {
 								<FontAwesomeIcon icon={faBoxes} className='me-2' />
 								Gestionar Productos
 							</NavLink>
+
 							<NavLink to='/gestionar-usuarios' className='nav-link'>
 								<FontAwesomeIcon icon={faUserCog} className='me-2' />
 								Gestionar Usuarios
+							</NavLink>
+
+							<NavLink to='/grafico-ventas' className='nav-link'>
+								<FontAwesomeIcon icon={faChartLine} className='me-2' />
+								Graficos de Ventas
 							</NavLink>
 						</>
 					)}

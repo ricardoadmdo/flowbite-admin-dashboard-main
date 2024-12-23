@@ -10,6 +10,7 @@ import ReporteVentas from '../components/ventas/ReporteVentas';
 import AdminRoute from './AdminRoute';
 import PrivateRoute from './PrivateRoute';
 import Error404 from '../components/Error404';
+import GraficosVentas from '../components/ventas/GraficosVentas';
 
 const AppRouter = () => {
 	return (
@@ -33,6 +34,14 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
+						path='/grafico-ventas'
+						element={
+							<AdminRoute>
+								<GraficosVentas />
+							</AdminRoute>
+						}
+					/>
+					<Route
 						path='/gestionar-usuarios'
 						element={
 							<AdminRoute>
@@ -40,7 +49,14 @@ const AppRouter = () => {
 							</AdminRoute>
 						}
 					/>
-					<Route path='/agregar-venta' element={<AgregarVenta />} />
+					<Route
+						path='/agregar-venta'
+						element={
+							<PrivateRoute>
+								<AgregarVenta />
+							</PrivateRoute>
+						}
+					/>
 					<Route
 						path='/usuarioform'
 						element={
