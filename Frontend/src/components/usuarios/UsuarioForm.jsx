@@ -44,70 +44,82 @@ const UsuarioForm = () => {
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
-					toast: true, // Activate toast style
-					position: 'top-end', // Position in the top-right corner
-					title: 'Registro exitoso!',
-					html: `<i>El usuario <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
+					toast: true,
+					position: 'top-end',
 					icon: 'success',
+					title: '¡Registro exitoso!',
+					html: `<i>El usuario <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
 					showConfirmButton: false,
-					timer: 3000, // Duration before disappearing
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer);
+						toast.addEventListener('mouseleave', Swal.resumeTimer);
+					},
+					customClass: {
+						popup: 'swal-popup-success',
+						title: 'swal-title',
+						text: 'swal-content',
+					},
 				});
 			})
 			.catch((error) => {
-				// Verificar si hay un mensaje de error en la respuesta
-				if (error.response && error.response.data && error.response.data.error) {
-					Swal.fire({
-						title: 'Error',
-						text: error.response.data.error, // Muestra el error enviado desde el backend
-						icon: 'error',
-						timer: 3000,
-					});
-				} else {
-					Swal.fire({
-						title: 'Error',
-						text: 'Ocurrió un error al intentar registrar el usuario.',
-						icon: 'error',
-						timer: 3000,
-					});
-				}
+				console.error('Hubo un error al registrar el usuario:', error);
+				Swal.fire({
+					icon: 'error',
+					title: 'Error al registrar',
+					text: 'Hubo un error al registrar el usuario. Por favor, intente de nuevo.',
+					confirmButtonText: 'Aceptar',
+					customClass: {
+						popup: 'swal-popup-error',
+						title: 'swal-title-error',
+						text: 'swal-content-error',
+					},
+				});
 			});
 	};
-
+	
 	const update = () => {
 		Axios.put(`/usuarios/${id}`, { nombre, contrasena, usuario, rol })
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
-					toast: true, // Estilo de toast
-					position: 'top-end', // Posición en la esquina superior derecha
-					title: 'Actualización exitosa!',
-					html: `<i>El usuario <strong>${nombre}</strong> se ha actualizado con éxito!</i>`,
+					toast: true,
+					position: 'top-end',
 					icon: 'success',
+					title: '¡Actualización exitosa!',
+					html: `<i>El usuario <strong>${nombre}</strong> se ha actualizado con éxito!</i>`,
 					showConfirmButton: false,
-					timer: 3000, // Duración antes de desaparecer
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer);
+						toast.addEventListener('mouseleave', Swal.resumeTimer);
+					},
+					customClass: {
+						popup: 'swal-popup-success',
+						title: 'swal-title',
+						text: 'swal-content',
+					},
 				});
 			})
 			.catch((error) => {
 				console.error('Hubo un error al actualizar el usuario:', error);
-
-				// Comprobar si el error proviene de un nombre de usuario duplicado
-				if (error.response && error.response.data.error) {
-					Swal.fire({
-						title: 'Error',
-						text: error.response.data.error, // Muestra el error enviado desde el backend
-						icon: 'error',
-						confirmButtonText: 'Aceptar',
-					});
-				} else {
-					Swal.fire({
-						title: 'Error',
-						text: 'Hubo un error al actualizar el usuario. Por favor, intente de nuevo.',
-						icon: 'error',
-						confirmButtonText: 'Aceptar',
-					});
-				}
+				Swal.fire({
+					icon: 'error',
+					title: 'Error al actualizar',
+					text: 'Hubo un error al actualizar el usuario. Por favor, intente de nuevo.',
+					confirmButtonText: 'Aceptar',
+					customClass: {
+						popup: 'swal-popup-error',
+						title: 'swal-title-error',
+						text: 'swal-content-error',
+					},
+				});
 			});
 	};
+	
+	
 
 	const handleSubmit = (event) => {
 		event.preventDefault();

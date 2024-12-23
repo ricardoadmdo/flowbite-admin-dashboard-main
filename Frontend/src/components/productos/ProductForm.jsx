@@ -83,40 +83,52 @@ const ProductForm = () => {
 			imageUrl = await uploadImageToCloudinary();
 		}
 	
-		Axios.post('/productos', {
-			nombre,
-			codigo,
-			descripcion,
-			existencia,
-			costo,
-			venta,
-			impuestoCosto,
-			impuestoVenta,
-			url: imageUrl,
-		})
-		.then(() => {
+		try {
+			await Axios.post('/productos', {
+				nombre,
+				codigo,
+				descripcion,
+				existencia,
+				costo,
+				venta,
+				impuestoCosto,
+				impuestoVenta,
+				url: imageUrl,
+			});
 			navigate('/gestionar-productos');
 			Swal.fire({
-				toast: true, // Activate toast style
-				position: 'top-end', // Position in the top-right corner
-				title: 'Registro exitoso!',
-				html: `<i>El producto <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
+				toast: true,
+				position: 'top-end',
 				icon: 'success',
+				title: '¡Registro exitoso!',
+				text: `El producto "${nombre}" se ha registrado con éxito.`,
 				showConfirmButton: false,
-				timer: 2000, // Duration before disappearing
+				timer: 3000,
+				timerProgressBar: true,
+				didOpen: (toast) => {
+					toast.addEventListener('mouseenter', Swal.stopTimer);
+					toast.addEventListener('mouseleave', Swal.resumeTimer);
+				},
 				customClass: {
-					popup: 'small-alert', // Optional: use for smaller alerts if you want further customization
+					popup: 'swal-popup-success',
+					title: 'swal-title',
+					text: 'swal-content',
 				},
 			});
-		})
-		.catch((error) => {
+		} catch (error) {
+			console.error('Error al registrar el producto:', error);
 			Swal.fire({
-				title: 'Error',
-				text: error,
 				icon: 'error',
+				title: 'Error al registrar',
+				text: 'No se pudo registrar el producto. Por favor, intente de nuevo.',
 				confirmButtonText: 'Aceptar',
+				customClass: {
+					popup: 'swal-popup-error',
+					title: 'swal-title-error',
+					text: 'swal-content-error',
+				},
 			});
-		});
+		}
 	};
 	
 	const update = async () => {
@@ -124,36 +136,55 @@ const ProductForm = () => {
 		if (file) {
 			imageUrl = await uploadImageToCloudinary();
 		}
-
-		Axios.put(`/productos/${id}`, {
-			nombre,
-			codigo,
-			descripcion,
-			existencia,
-			costo,
-			venta,
-			impuestoCosto,
-			impuestoVenta,
-			url: imageUrl,
-		})
-			.then(() => {
-				navigate('/gestionar-productos');
-				Swal.fire({
-					title: 'Actualización exitosa!',
-					html: `<i>El producto con código <strong>${codigo}</strong> se ha actualizado con éxito!</i>`,
-					icon: 'success',
-					timer: 3000,
-				});
-			})
-			.catch((error) => {
-				Swal.fire({
-					title: 'Error',
-					text: error,
-					icon: 'error',
-					confirmButtonText: 'Aceptar',
-				});
+	
+		try {
+			await Axios.put(`/productos/${id}`, {
+				nombre,
+				codigo,
+				descripcion,
+				existencia,
+				costo,
+				venta,
+				impuestoCosto,
+				impuestoVenta,
+				url: imageUrl,
 			});
+			navigate('/gestionar-productos');
+			Swal.fire({
+				toast: true,
+				position: 'top-end',
+				icon: 'success',
+				title: '¡Actualización exitosa!',
+				text: `El producto con código "${codigo}" se ha actualizado con éxito.`,
+				showConfirmButton: false,
+				timer: 3000,
+				timerProgressBar: true,
+				didOpen: (toast) => {
+					toast.addEventListener('mouseenter', Swal.stopTimer);
+					toast.addEventListener('mouseleave', Swal.resumeTimer);
+				},
+				customClass: {
+					popup: 'swal-popup-success',
+					title: 'swal-title',
+					text: 'swal-content',
+				},
+			});
+		} catch (error) {
+			console.error('Error al actualizar el producto:', error);
+			Swal.fire({
+				icon: 'error',
+				title: 'Error al actualizar',
+				text: 'No se pudo actualizar el producto. Por favor, intente de nuevo.',
+				confirmButtonText: 'Aceptar',
+				customClass: {
+					popup: 'swal-popup-error',
+					title: 'swal-title-error',
+					text: 'swal-content-error',
+				},
+			});
+		}
 	};
+	
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
