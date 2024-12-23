@@ -182,7 +182,7 @@ const ReporteVentas = () => {
 								return (
 									<tr key={venta.uid}>
 										<td>{(currentPage - 1) * 8 + index + 1}</td>
-										<td>{new Date(venta.fecha).toLocaleDateString()}</td>
+										<td>{new Date(venta.fecha).toLocaleTimeString()}</td>
 										<td>
 											<ul>
 												{venta.productos.map((producto, idx) => (
