@@ -12,7 +12,6 @@ import {
 	faBoxes,
 	faUserCog,
 } from '@fortawesome/free-solid-svg-icons';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Barranavegacion = () => {
 	const { user, dispatch } = useContext(AuthContext);
@@ -56,16 +55,7 @@ const Barranavegacion = () => {
 						☰
 					</button>
 					<span className='navbar-brand mb-0 h1 d-flex align-items-center'>
-						<NavLink className='navbar-brand' to='/reporte-venta'>
-							<LazyLoadImage
-								height='35'
-								width='35'
-								className='d-inline-block align-text-top'
-								alt='logo'
-								src='/src/images/logo.png'
-								effect='blur'
-							/>
-						</NavLink>
+						<NavLink className='navbar-brand' to='/reporte-venta'></NavLink>
 						ServiciosBravo
 					</span>
 
