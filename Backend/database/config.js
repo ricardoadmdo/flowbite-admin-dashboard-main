@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dbConnection = async () => {
 	try {
-		await mongoose.connect('mongodb://admin:admin@45.132.241.211:27017/Superbravo');
+		await mongoose.connect(`${process.env.MONGO_URI}`);
 
 		console.log('🟢Base de Datos Online con MongoDB');
 	} catch (error) {
