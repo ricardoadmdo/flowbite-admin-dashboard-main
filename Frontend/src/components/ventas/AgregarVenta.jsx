@@ -6,6 +6,7 @@ import { faMinus, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import MotionNumber from 'motion-number';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 // Función para buscar productos por nombre similar
 const fetchProductos = async (searchTerm) => {
@@ -264,11 +265,13 @@ const AgregarVenta = () => {
 				{productos.map((producto) => (
 					<div key={producto.uid} className='col-sm-6 col-md-4 col-lg-3 mb-3'>
 						<div className='card h-100 shadow border-light'>
-							<img
-								src={producto.url}
+							<LazyLoadImage
+								height='200px'
 								className='card-img-top img-fluid'
+								src={producto.url}
 								alt={`Imagen del producto: ${producto.nombre}`}
-								style={{ objectFit: 'contain', height: '200px' }}
+								effect='blur'
+								style={{ objectFit: 'contain' }}
 							/>
 							<div className='card-body'>
 								<h5 className='card-title'>{producto.nombre}</h5>
@@ -307,9 +310,9 @@ const AgregarVenta = () => {
 				))}
 			</div>
 			<div className='mt-4'>
-				<h4>
+				<h3>
 					<u>Productos Agregados</u>
-				</h4>
+				</h3>
 
 				<ul className='list-group'>
 					{formState.productos.map((producto) => (
@@ -345,13 +348,13 @@ const AgregarVenta = () => {
 					))}
 				</ul>
 				<div className='mt-3'>
-					<h5>
+					<h4>
 						Total a Pagar: $<MotionNumber value={formState.precioTotal} duration={500} format='$0,0.00' />{' '}
 						CUP
-					</h5>
-					<h5>
+					</h4>
+					<h4>
 						Total Productos: <MotionNumber value={formState.totalProductos} format='0' /> Unidades
-					</h5>
+					</h4>
 				</div>
 			</div>
 			<button className='btn btn-success mt-4' onClick={validarVenta}>

@@ -7,6 +7,7 @@ import ProductSkeleton from './ProductSkeleton';
 import ErrorComponent from '../ui/ErrorComponent';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const fetchProductos = async (page, limit) => {
 	const response = await Axios.get(`/productos`, {
@@ -83,12 +84,15 @@ const ProductList = () => {
 					productosList.map((producto) => (
 						<div key={producto.uid} className='col-sm-6 col-md-4 col-lg-3 mb-4'>
 							<div className='card h-100'>
-								<img
-									src={producto.url}
-									alt={producto.nombre}
+								<LazyLoadImage
+									height='200px'
 									className='card-img-top'
-									style={{ objectFit: 'cover', height: '200px' }}
+									src={producto.url}
+									alt={`Imagen del producto: ${producto.nombre}`}
+									effect='blur'
+									style={{ objectFit: 'cover' }}
 								/>
+
 								<div className='card-body'>
 									<h5 className='card-title'>{producto.nombre}</h5>
 									<p className='card-text'>{producto.descripcion}</p>

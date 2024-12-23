@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../auth/authContext';
 import './barranavegacion.css';
 import { types } from '../../types/types';
-import logo from '../../images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faUser,
@@ -13,6 +12,7 @@ import {
 	faBoxes,
 	faUserCog,
 } from '@fortawesome/free-solid-svg-icons';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Barranavegacion = () => {
 	const { user, dispatch } = useContext(AuthContext);
@@ -57,7 +57,14 @@ const Barranavegacion = () => {
 					</button>
 					<span className='navbar-brand mb-0 h1 d-flex align-items-center'>
 						<NavLink className='navbar-brand' to='/reporte-venta'>
-							<img className='d-inline-block align-text-top' src={logo} alt='Logo' height='35' />
+							<LazyLoadImage
+								height='35'
+								width='35'
+								className='d-inline-block align-text-top'
+								alt='logo'
+								src='/src/images/logo.png'
+								effect='blur'
+							/>
 						</NavLink>
 						ServiciosBravo
 					</span>
@@ -65,7 +72,7 @@ const Barranavegacion = () => {
 					<ul className='navbar-nav'>
 						{user.logged ? (
 							<li className='nav-item'>
-								<h5>{user.nombre}</h5>
+								<span>{user.nombre}</span>
 								<button className='nav-link' onClick={handleLogout}>
 									<FontAwesomeIcon icon={faSignOutAlt} />
 									Cerrar Sesión

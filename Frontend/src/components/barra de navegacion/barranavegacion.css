@@ -98,3 +98,9 @@ body {
 .navbar .nav-link:hover {
 	background-color: #495057; /* Slightly lighter background on hover */
 }
+
+@font-face {
+	font-family: 'CustomFont';
+	src: url('/path/to/font.woff2') format('woff2');
+	font-display: swap;
+}
