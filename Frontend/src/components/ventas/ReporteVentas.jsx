@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '../ui/Pagination';
 import '../ventas/ReporteVentas.css';
 import GananciaGestores from './GananciaGestores';
+import GraficosVentas from './GraficosVentas';
 
 const ReporteVentas = () => {
 	const [ventas, setVentas] = useState([]);
@@ -212,7 +213,7 @@ const ReporteVentas = () => {
 					</tbody>
 				</table>
 			</div>
-
+			<GraficosVentas />
 			{/* Componente de Paginación */}
 			<Pagination
 				currentPage={currentPage}

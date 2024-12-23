@@ -70,6 +70,71 @@ const getVentas = async (req = request, res = response) => {
 	}
 };
 
+const getVentasPorMes = async (req, res) => {
+	try {
+		const fechaActual = new Date();
+		const mesActual = fechaActual.getMonth(); // Índice del mes (0-11)
+		const anioActual = fechaActual.getFullYear();
+
+		// Inicio y fin del mes
+		const inicioMes = new Date(anioActual, mesActual, 1); // 1er día del mes
+		const finMes = new Date(anioActual, mesActual + 1, 1); // 1er día del siguiente mes
+
+		const ventasMensuales = await Venta.aggregate([
+			{
+				$match: {
+					fecha: { $gte: inicioMes, $lt: finMes },
+				},
+			},
+			{
+				$group: {
+					_id: { $dayOfMonth: '$fecha' },
+					total: { $sum: '$precioTotal' },
+				},
+			},
+			{ $sort: { _id: 1 } },
+		]);
+
+		res.status(200).json(ventasMensuales);
+	} catch (error) {
+		console.error('Error al obtener las ventas del mes:', error);
+		res.status(500).json({ error: 'Error al obtener las ventas del mes' });
+	}
+};
+
+const getVentasPorAno = async (req, res) => {
+	try {
+		const anioActual = new Date().getFullYear();
+
+		// Inicio y fin del año
+		const inicioAno = new Date(anioActual, 0, 1); // 1er día del año
+		const finAno = new Date(anioActual + 1, 0, 1); // 1er día del siguiente año
+
+		const ventasAnuales = await Venta.aggregate([
+			{
+				$match: {
+					fecha: {
+						$gte: inicioAno,
+						$lt: finAno,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: { $month: '$fecha' },
+					total: { $sum: '$precioTotal' }, // Cambié '$total' a '$precioTotal' para mantener consistencia
+				},
+			},
+			{ $sort: { _id: 1 } },
+		]);
+
+		res.status(200).json(ventasAnuales);
+	} catch (error) {
+		console.error('Error al obtener las ventas del año:', error);
+		res.status(500).json({ error: 'Error al obtener las ventas del año' });
+	}
+};
+
 const deleteVenta = async (req = request, res = response) => {
 	const { id } = req.params;
 
@@ -91,4 +156,6 @@ module.exports = {
 	createVenta,
 	getVentas,
 	deleteVenta,
+	getVentasPorAno,
+	getVentasPorMes,
 };
