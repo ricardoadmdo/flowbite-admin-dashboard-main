@@ -44,23 +44,37 @@ const UsuarioForm = () => {
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
-					toast: true, // Activate toast style
-					position: 'top-end', // Position in the top-right corner
-					title: 'Registro exitoso!',
-					html: `<i>El usuario <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
+					toast: true,
+					position: 'top-end',
 					icon: 'success',
+					title: '¡Registro exitoso!',
+					html: `<i>El usuario <strong>${nombre}</strong> se ha registrado con éxito!</i>`,
 					showConfirmButton: false,
-					timer: 2000, // Duration before disappearing
-					
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer);
+						toast.addEventListener('mouseleave', Swal.resumeTimer);
+					},
+					customClass: {
+						popup: 'swal-popup-success',
+						title: 'swal-title',
+						text: 'swal-content',
+					},
 				});
 			})
 			.catch((error) => {
 				console.error('Hubo un error al registrar el usuario:', error);
 				Swal.fire({
-					title: 'Error',
-					text: 'Hubo un error al registrar el usuario. Por favor, intente de nuevo.',
 					icon: 'error',
+					title: 'Error al registrar',
+					text: 'Hubo un error al registrar el usuario. Por favor, intente de nuevo.',
 					confirmButtonText: 'Aceptar',
+					customClass: {
+						popup: 'swal-popup-error',
+						title: 'swal-title-error',
+						text: 'swal-content-error',
+					},
 				});
 			});
 	};
@@ -70,27 +84,41 @@ const UsuarioForm = () => {
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
-					toast: true, // Activate toast style
-					position: 'top-end', // Position in the top-right corner
-					title: 'Actualización exitosa!',
-					html: `<i>El usuario <strong>${nombre}</strong> se ha actualizado con éxito!</i>`,
+					toast: true,
+					position: 'top-end',
 					icon: 'success',
+					title: '¡Actualización exitosa!',
+					html: `<i>El usuario <strong>${nombre}</strong> se ha actualizado con éxito!</i>`,
 					showConfirmButton: false,
+					timer: 3000,
 					timerProgressBar: true,
-					timer: 2000, 
-					
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer);
+						toast.addEventListener('mouseleave', Swal.resumeTimer);
+					},
+					customClass: {
+						popup: 'swal-popup-success',
+						title: 'swal-title',
+						text: 'swal-content',
+					},
 				});
 			})
 			.catch((error) => {
 				console.error('Hubo un error al actualizar el usuario:', error);
 				Swal.fire({
-					title: 'Error',
-					text: 'Hubo un error al actualizar el usuario. Por favor, intente de nuevo.',
 					icon: 'error',
+					title: 'Error al actualizar',
+					text: 'Hubo un error al actualizar el usuario. Por favor, intente de nuevo.',
 					confirmButtonText: 'Aceptar',
+					customClass: {
+						popup: 'swal-popup-error',
+						title: 'swal-title-error',
+						text: 'swal-content-error',
+					},
 				});
 			});
 	};
+	
 	
 
 	const handleSubmit = (event) => {
