@@ -12,7 +12,6 @@ const GraficosVentas = () => {
 			try {
 				const { data: ventasMensuales } = await Axios.get('/venta/mes');
 				const { data: ventasAnuales } = await Axios.get('/venta/ano');
-				console.log(ventasMensuales);
 
 				// Procesar ventas mensuales
 				const ventasPorDia = ventasMensuales.map(({ _id, total }) => ({
