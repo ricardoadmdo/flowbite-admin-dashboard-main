@@ -76,7 +76,9 @@ const UsuarioForm = () => {
 					html: `<i>El usuario <strong>${nombre}</strong> se ha actualizado con éxito!</i>`,
 					icon: 'success',
 					showConfirmButton: false,
-					timer: 2000, // Duration before disappearing
+					timerProgressBar: true,
+					timer: 2000, 
+					
 				});
 			})
 			.catch((error) => {
