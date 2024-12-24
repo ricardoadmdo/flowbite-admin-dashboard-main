@@ -79,13 +79,6 @@ const ProductList = () => {
 				</Link>
 			</div>
 
-			{/* Botón para ir al resumen de productos */}
-			<div className='text-center mb-4'>
-				<Link to='/resumenProductos' className='btn btn-success'>
-					Resumen de Productos
-				</Link>
-			</div>
-
 			<div className='row'>
 				{productosList.length > 0 ? (
 					productosList.map((producto) => {
@@ -129,12 +122,12 @@ const ProductList = () => {
 											<strong>Ganancia por Unidad:</strong> ${gananciaPorUnidad}
 										</p>
 										<p className='card-text'>
-											<strong>Costo Total (Costo x Existencia):</strong> ${producto.costo * producto.existencia}
+											<strong>Costo Total (Costo x Existencia):</strong> $
+											{producto.costo * producto.existencia}
 										</p>
 										<p className='card-text'>
 											<strong>Ganancia Total (Ganancia x Existencia):</strong> ${gananciaTotal}
 										</p>
-
 									</div>
 									<div className='card-footer d-flex justify-content-between'>
 										<button

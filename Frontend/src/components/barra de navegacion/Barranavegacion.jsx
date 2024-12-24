@@ -12,7 +12,6 @@ import {
 	faBoxes,
 	faUserCog,
 	faChartLine,
-	
 } from '@fortawesome/free-solid-svg-icons';
 
 const Barranavegacion = () => {
@@ -98,6 +97,10 @@ const Barranavegacion = () => {
 							<NavLink to='/gestionar-productos' className='nav-link'>
 								<FontAwesomeIcon icon={faBoxes} className='me-2' />
 								Gestionar Productos
+							</NavLink>
+							<NavLink to='/resumenProductos' className='nav-link'>
+								<FontAwesomeIcon icon={faBoxes} className='me-2' />
+								Inventario
 							</NavLink>
 
 							<NavLink to='/gestionar-usuarios' className='nav-link'>

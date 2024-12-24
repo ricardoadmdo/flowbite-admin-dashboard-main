@@ -6,7 +6,6 @@ import { faMinus, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import MotionNumber from 'motion-number';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 // Función para buscar productos por nombre similar
 const fetchProductos = async (searchTerm) => {
@@ -279,9 +278,12 @@ const AgregarVenta = () => {
 			<div className='list-group'>
 				{productos && productos.length > 0 ? (
 					productos.map((producto) => (
-						<div key={producto.uid} className='list-group-item d-flex justify-content-between align-items-center'>
+						<div
+							key={producto.uid}
+							className='list-group-item d-flex justify-content-between align-items-center'
+						>
 							<div>
-								<span className='fw-bold'>{producto.nombre}</span> - ${producto.venta} 
+								<span className='fw-bold'>{producto.nombre}</span> - ${producto.venta}
 								<span className='text-muted'> (Stock: {producto.existencia})</span>
 							</div>
 							<button className='btn btn-success' onClick={() => openModal(producto)}>
@@ -299,19 +301,38 @@ const AgregarVenta = () => {
 				<h4>Productos Seleccionados</h4>
 				<ul className='list-group'>
 					{formState.productos.map((producto) => (
-						<li key={producto.uid} className='list-group-item d-flex justify-content-between align-items-center'>
+						<li
+							key={producto.uid}
+							className='list-group-item d-flex justify-content-between align-items-center'
+						>
 							<div>
-								<span className='fw-bold'>{producto.nombre}</span> - {producto.cantidad} x ${producto.venta}
+								<span className='fw-bold'>{producto.nombre}</span> -{' '}
+								<MotionNumber
+									value={producto.cantidad}
+									format={{ notation: 'standard' }} // Intl.NumberFormat() options
+									locales // Intl.NumberFormat() locales
+								/>
+								x ${producto.venta}
 							</div>
 							<div>
-								<button className='btn btn-warning btn-sm ml-1' onClick={() => aumentarCantidad(producto.uid)}>
+								<button
+									className='btn btn-secondary btn-sm ml-1'
+									onClick={() => aumentarCantidad(producto.uid)}
+								>
 									<FontAwesomeIcon icon={faPlus} />
 								</button>
-								<button className='btn btn-danger btn-sm ml-1' onClick={() => disminuirCantidad(producto.uid)}>
-									<FontAwesomeIcon icon={faMinus} />
-								</button>
-								<button className='btn btn-danger btn-sm ml-1' onClick={() => eliminarProducto(producto.uid)}>
-									<FontAwesomeIcon icon={faTrashAlt} />
+								<button
+									className={`btn btn-sm ml-1 ${producto.cantidad > 1 ? 'btn-danger' : 'btn-danger'}`}
+									onClick={() => {
+										if (producto.cantidad > 1) {
+											disminuirCantidad(producto.uid);
+										} else {
+											eliminarProducto(producto.uid);
+										}
+									}}
+								>
+									{' '}
+									<FontAwesomeIcon icon={producto.cantidad > 1 ? faMinus : faTrashAlt} />{' '}
 								</button>
 							</div>
 						</li>
@@ -321,9 +342,16 @@ const AgregarVenta = () => {
 
 			{/* Total y acción final */}
 			<div className='d-flex justify-content-between'>
-				<h5>Total: ${formState.precioTotal}</h5>
+				<h5>
+					Total: $
+					<MotionNumber
+						value={formState.precioTotal}
+						format={{ notation: 'standard' }} // Intl.NumberFormat() options
+						locales // Intl.NumberFormat() locales
+					/>
+				</h5>
 				<button className='btn btn-success' onClick={validarVenta}>
-					Registrar Venta
+					Registrar Venta <FontAwesomeIcon icon={faPlus} />
 				</button>
 			</div>
 		</div>

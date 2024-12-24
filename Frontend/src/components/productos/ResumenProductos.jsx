@@ -2,38 +2,50 @@ import { useEffect, useState } from 'react';
 import Axios from '../../api/axiosConfig';
 import ProductSkeleton from './ProductSkeleton';
 import ErrorComponent from '../ui/ErrorComponent';
+import Pagination from '../ui/Pagination';
+
+const fetchProductos = async (page, limit) => {
+	const response = await Axios.get(`/productos`, {
+		params: { page, limit },
+	});
+	return response.data;
+};
 
 const ResumenProductos = () => {
-	const [productos, setProductos] = useState([]);
+	const [productosData, setProductosData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isError, setIsError] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [limit] = useState(8);
 
-	const fetchProductos = async () => {
+	const fetchData = async () => {
 		try {
-			const response = await Axios.get('/productos', {
-				params: { page: 1, limit: 1000 },
-			});
-			setProductos(response.data.productos || []);
+			setIsLoading(true);
+			const data = await fetchProductos(currentPage, limit);
+			setProductosData(data);
 		} catch (error) {
+			console.error('Error fetching productos:', error);
 			setIsError(true);
 		} finally {
 			setIsLoading(false);
 		}
 	};
-
 	useEffect(() => {
-		fetchProductos();
-	}, []);
+		fetchData();
+	}, [currentPage]);
 
 	if (isLoading) return <ProductSkeleton />;
-	if (isError) return <ErrorComponent message="No se pudo cargar el resumen de productos" />;
+	if (isError) return <ErrorComponent message='No se pudo cargar el resumen de productos' />;
 
-	const totalProductos = productos.length;
-	const totalGanancia = productos.reduce(
+	const productosList = productosData?.productos || [];
+	const totalPages = productosData?.totalPages || 1;
+
+	const totalProductos = productosData.productos.length;
+	const totalGanancia = productosData.productos.reduce(
 		(acc, producto) => acc + (producto.venta - producto.costo) * producto.existencia,
 		0
 	);
-	const totalCostoInventario = productos.reduce(
+	const totalCostoInventario = productosData.productos.reduce(
 		(acc, producto) => acc + producto.costo * producto.existencia,
 		0
 	);
@@ -55,26 +67,48 @@ const ResumenProductos = () => {
 			</ul>
 
 			<h3 className='text-center mb-4'>Detalles por Producto</h3>
-			<div className='list-group'>
-				{productos.map((producto) => {
-					const gananciaProducto =
-						(producto.venta - producto.costo) * producto.existencia;
-					const costoTotalProducto = producto.costo * producto.existencia;
+			<div className='table-responsive'>
+				<table className='table table-striped table-bordered'>
+					<thead className='thead-dark'>
+						<tr>
+							<th>Nombre</th>
+							<th>Código</th>
+							<th>Descripción</th>
+							<th>Precio Venta</th>
+							<th>Precio Costo</th>
+							<th>Existencia</th>
+							<th>Ganancia Total</th>
+							<th>Costo Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						{productosList.map((producto) => {
+							const gananciaProducto = (producto.venta - producto.costo) * producto.existencia;
+							const costoTotalProducto = producto.costo * producto.existencia;
 
-					return (
-						<div key={producto.uid} className='list-group-item'>
-							<h5>{producto.nombre}</h5>
-							<p><strong>Código:</strong> {producto.codigo}</p>
-							<p><strong>Descripción:</strong> {producto.descripcion}</p>
-							<p><strong>Precio Venta:</strong> ${producto.venta}</p>
-							<p><strong>Precio Costo:</strong> ${producto.costo}</p>
-							<p><strong>Existencia:</strong> {producto.existencia} unidades</p>
-							<p><strong>Ganancia Total:</strong> ${gananciaProducto.toFixed(2)}</p>
-							<p><strong>Costo Total:</strong> ${costoTotalProducto.toFixed(2)}</p>
-						</div>
-					);
-				})}
+							return (
+								<tr key={producto.uid}>
+									<td>{producto.nombre}</td>
+									<td>{producto.codigo}</td>
+									<td>{producto.descripcion}</td>
+									<td>${producto.venta.toFixed(2)}</td>
+									<td>${producto.costo.toFixed(2)}</td>
+									<td>{producto.existencia} unidades</td>
+									<td>${gananciaProducto.toFixed(2)}</td>
+									<td>${costoTotalProducto.toFixed(2)}</td>
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
 			</div>
+
+			<Pagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				handlePreviousPage={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+				handleNextPage={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+			/>
 		</div>
 	);
 };
