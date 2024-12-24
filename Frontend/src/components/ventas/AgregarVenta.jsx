@@ -48,10 +48,23 @@ const AgregarVenta = () => {
 			refetchProductos();
 			limpiarCampos();
 			Swal.fire({
-				title: '<strong>Venta registrada con éxito!</strong>',
-				html: '<i>La venta fue registrada exitosamente</i>',
+				toast: true,
+				position: 'top-end',
+				title: '<strong>Operación exitosa!</strong>',
+				text: `La venta se ha registrado correctamente`,
 				icon: 'success',
+				showConfirmButton: false,
 				timer: 3000,
+				timerProgressBar: true,
+				didOpen: (toast) => {
+					toast.addEventListener('mouseenter', Swal.stopTimer);
+					toast.addEventListener('mouseleave', Swal.resumeTimer);
+				},
+				customClass: {
+					popup: 'swal-popup-success',
+					title: 'swal-title',
+					text: 'swal-content',
+				},
 			});
 		},
 		onError: (error) => {
@@ -194,7 +207,7 @@ const AgregarVenta = () => {
 				Jazmin: 'Jazmin',
 				Ninguno: 'Ninguno',
 			},
-			inputPlaceholder: 'Selecciona Gestor, sera Ninguno por defecto',
+			inputPlaceholder: 'Selecciona Gestor, será Ninguno por defecto',
 			showCancelButton: true,
 		}).then((result) => {
 			if (result.isConfirmed) {
@@ -261,115 +274,58 @@ const AgregarVenta = () => {
 					</button>
 				</div>
 			</form>
-			<div className='row'>
-				{productos.map((producto) => (
-					<div key={producto.uid} className='col-sm-6 col-md-4 col-lg-3 mb-3'>
-						<div className='card h-100 shadow border-light'>
-							<LazyLoadImage
-								height='200px'
-								className='card-img-top'
-								src={producto.url}
-								alt={`Imagen del producto: ${producto.nombre}`}
-								effect='blur'
-								style={{ objectFit: 'contain' }}
-							/>
-							<div className='card-body'>
-								<h5 className='card-title'>{producto.nombre}</h5>
-								<p className='card-text fw-bold'>${producto.venta} CUP</p>
-								<p className='card-text'>
-									<strong>Codigo:</strong> {producto.codigo}
-								</p>
-								<p className='card-text'>
-									<strong>Precio Venta:</strong> ${producto.venta}
-								</p>
-								<p className='card-text'>
-									<strong>Precio Costo:</strong> ${producto.costo}
-								</p>
-								<p className='card-text'>
-									<strong>Existencia:</strong> {producto.existencia} unidades
-								</p>
-								<p className='card-text'>
-									<strong>Impuesto de Costo:</strong> ${producto.impuestoCosto}
-								</p>
-								<p className='card-text'>
-									<strong>Impuesto de Venta:</strong> ${producto.impuestoVenta}
-								</p>
-								{producto.existencia > 0 ? (
-									<button className='btn btn-success' onClick={() => openModal(producto)}>
-										Agregar
-									</button>
-								) : (
-									<p className='card-text text-danger fw-bold' style={{ fontSize: '20px' }}>
-										Producto Agotado
-										<u />
-									</p>
-								)}
-							</div>
-						</div>
-					</div>
-				))}
-			</div>
-			<div className='mt-4'>
-				<h3>
-					<u>Productos Agregados</u>
-				</h3>
 
+			{/* Lista de productos encontrados */}
+			<div className='list-group'>
+				{productos && productos.length > 0 ? (
+					productos.map((producto) => (
+						<div key={producto.uid} className='list-group-item d-flex justify-content-between align-items-center'>
+							<div>
+								<span className='fw-bold'>{producto.nombre}</span> - ${producto.venta} 
+								<span className='text-muted'> (Stock: {producto.existencia})</span>
+							</div>
+							<button className='btn btn-success' onClick={() => openModal(producto)}>
+								Agregar
+							</button>
+						</div>
+					))
+				) : (
+					<div className='list-group-item'>No se encontraron productos.</div>
+				)}
+			</div>
+
+			{/* Mostrar productos agregados a la venta */}
+			<div className='mb-4'>
+				<h4>Productos Seleccionados</h4>
 				<ul className='list-group'>
 					{formState.productos.map((producto) => (
-						<li
-							key={producto.uid}
-							className='list-group-item d-flex align-items-center justify-content-between'
-						>
-							<span>
-								{producto.nombre} - <MotionNumber value={producto.cantidad} format='0' /> x $
-								{producto.venta} = $
-								<MotionNumber value={producto.venta * producto.cantidad} format='0,0.00' />
-								CUP
-							</span>
-							<div className='d-flex'>
-								<button
-									className='btn btn-danger btn-sm ml-2'
-									onClick={
-										producto.cantidad > 1
-											? () => disminuirCantidad(producto.uid)
-											: () => eliminarProducto(producto.uid)
-									}
-								>
-									<FontAwesomeIcon icon={producto.cantidad === 1 ? faTrashAlt : faMinus} />
-								</button>
-								<button
-									className='btn btn-secondary btn-sm ml-2'
-									onClick={() => aumentarCantidad(producto.uid)}
-								>
+						<li key={producto.uid} className='list-group-item d-flex justify-content-between align-items-center'>
+							<div>
+								<span className='fw-bold'>{producto.nombre}</span> - {producto.cantidad} x ${producto.venta}
+							</div>
+							<div>
+								<button className='btn btn-warning btn-sm ml-1' onClick={() => aumentarCantidad(producto.uid)}>
 									<FontAwesomeIcon icon={faPlus} />
+								</button>
+								<button className='btn btn-danger btn-sm ml-1' onClick={() => disminuirCantidad(producto.uid)}>
+									<FontAwesomeIcon icon={faMinus} />
+								</button>
+								<button className='btn btn-danger btn-sm ml-1' onClick={() => eliminarProducto(producto.uid)}>
+									<FontAwesomeIcon icon={faTrashAlt} />
 								</button>
 							</div>
 						</li>
 					))}
 				</ul>
-				<div className='mt-3'>
-					<h4>
-						Total a Pagar: $<MotionNumber value={formState.precioTotal} duration={500} format='$0,0.00' />{' '}
-						CUP
-					</h4>
-					<h4>
-						Total Productos: <MotionNumber value={formState.totalProductos} format='0' /> Unidades
-					</h4>
-				</div>
 			</div>
-			<button className='btn btn-success mt-4' onClick={validarVenta}>
-				Registrar Venta
-				<svg
-					xmlns='http://www.w3.org/2000/svg'
-					width='25px'
-					height='25px'
-					viewBox='0 0 24 24'
-					fill='currentColor'
-					className='ml-2'
-				>
-					<path d='M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4zm1 5q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8' />
-				</svg>
-			</button>
+
+			{/* Total y acción final */}
+			<div className='d-flex justify-content-between'>
+				<h5>Total: ${formState.precioTotal}</h5>
+				<button className='btn btn-success' onClick={validarVenta}>
+					Registrar Venta
+				</button>
+			</div>
 		</div>
 	);
 };

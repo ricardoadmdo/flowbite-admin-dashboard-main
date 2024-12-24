@@ -79,56 +79,78 @@ const ProductList = () => {
 				</Link>
 			</div>
 
+			{/* Botón para ir al resumen de productos */}
+			<div className='text-center mb-4'>
+				<Link to='/resumenProductos' className='btn btn-success'>
+					Resumen de Productos
+				</Link>
+			</div>
+
 			<div className='row'>
 				{productosList.length > 0 ? (
-					productosList.map((producto) => (
-						<div key={producto.uid} className='col-sm-6 col-md-4 col-lg-3 mb-4'>
-							<div className='card h-100'>
-								<LazyLoadImage
-									height='200px'
-									className='card-img-top'
-									src={producto.url}
-									alt={`Imagen del producto: ${producto.nombre}`}
-									effect='blur'
-									style={{ objectFit: 'cover' }}
-								/>
+					productosList.map((producto) => {
+						const gananciaPorUnidad = producto.venta - producto.costo;
+						const gananciaTotal = gananciaPorUnidad * producto.existencia;
 
-								<div className='card-body'>
-									<h5 className='card-title'>{producto.nombre}</h5>
-									<p className='card-text'>{producto.descripcion}</p>
-									<p className='card-text'>
-										<strong>Codigo:</strong> {producto.codigo}
-									</p>
-									<p className='card-text'>
-										<strong>Precio Venta:</strong> ${producto.venta}
-									</p>
-									<p className='card-text'>
-										<strong>Precio Costo:</strong> ${producto.costo}
-									</p>
-									<p className='card-text'>
-										<strong>Existencia:</strong> {producto.existencia} unidades
-									</p>
-									<p className='card-text'>
-										<strong>Impuesto de Costo:</strong> ${producto.impuestoCosto}
-									</p>
-									<p className='card-text'>
-										<strong>Impuesto de Venta:</strong> ${producto.impuestoVenta}
-									</p>
-								</div>
-								<div className='card-footer d-flex justify-content-between'>
-									<button
-										className='btn btn-primary'
-										onClick={() => navigate(`/edit/${producto.uid}`)}
-									>
-										<FontAwesomeIcon icon={faEdit} /> Editar
-									</button>
-									<button className='btn btn-danger' onClick={() => handleDelete(producto)}>
-										<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-									</button>
+						return (
+							<div key={producto.uid} className='col-sm-6 col-md-4 col-lg-3 mb-4'>
+								<div className='card h-100'>
+									<LazyLoadImage
+										height='200px'
+										className='card-img-top'
+										src={producto.url}
+										alt={`Imagen del producto: ${producto.nombre}`}
+										effect='blur'
+										style={{ objectFit: 'contain' }}
+									/>
+
+									<div className='card-body'>
+										<h5 className='card-title'>{producto.nombre}</h5>
+										<p className='card-text'>{producto.descripcion}</p>
+										<p className='card-text'>
+											<strong>Codigo:</strong> {producto.codigo}
+										</p>
+										<p className='card-text'>
+											<strong>Precio Venta:</strong> ${producto.venta}
+										</p>
+										<p className='card-text'>
+											<strong>Precio Costo:</strong> ${producto.costo}
+										</p>
+										<p className='card-text'>
+											<strong>Existencia:</strong> {producto.existencia} unidades
+										</p>
+										<p className='card-text'>
+											<strong>Impuesto de Costo:</strong> ${producto.impuestoCosto}
+										</p>
+										<p className='card-text'>
+											<strong>Impuesto de Venta:</strong> ${producto.impuestoVenta}
+										</p>
+										<p className='card-text'>
+											<strong>Ganancia por Unidad:</strong> ${gananciaPorUnidad}
+										</p>
+										<p className='card-text'>
+											<strong>Costo Total (Costo x Existencia):</strong> ${producto.costo * producto.existencia}
+										</p>
+										<p className='card-text'>
+											<strong>Ganancia Total (Ganancia x Existencia):</strong> ${gananciaTotal}
+										</p>
+
+									</div>
+									<div className='card-footer d-flex justify-content-between'>
+										<button
+											className='btn btn-primary'
+											onClick={() => navigate(`/edit/${producto.uid}`)}
+										>
+											<FontAwesomeIcon icon={faEdit} /> Editar
+										</button>
+										<button className='btn btn-danger' onClick={() => handleDelete(producto)}>
+											<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+										</button>
+									</div>
 								</div>
 							</div>
-						</div>
-					))
+						);
+					})
 				) : (
 					<div className='col-12 text-center'>
 						<p>No hay productos disponibles.</p>

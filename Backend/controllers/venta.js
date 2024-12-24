@@ -135,6 +135,8 @@ const getVentasPorAno = async (req, res) => {
 	}
 };
 
+
+
 const deleteVenta = async (req = request, res = response) => {
 	const { id } = req.params;
 

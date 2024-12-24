@@ -11,6 +11,8 @@ import AdminRoute from './AdminRoute';
 import PrivateRoute from './PrivateRoute';
 import Error404 from '../components/Error404';
 import GraficosVentas from '../components/ventas/GraficosVentas';
+import GraficoGestorMasVendioDiario from '../components/ventas/GraficoGestorMasVendioDiario';
+import ResumenProductos from '../components/productos/ResumenProductos';
 
 const AppRouter = () => {
 	return (
@@ -38,6 +40,14 @@ const AppRouter = () => {
 						element={
 							<AdminRoute>
 								<GraficosVentas />
+							</AdminRoute>
+						}
+					/>
+										<Route
+						path='/grafico-venta-gestores'
+						element={
+							<AdminRoute>
+								<GraficoGestorMasVendioDiario />
 							</AdminRoute>
 						}
 					/>
@@ -78,6 +88,14 @@ const AppRouter = () => {
 						element={
 							<AdminRoute>
 								<ProductForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/resumenProductos'
+						element={
+							<AdminRoute>
+								<ResumenProductos />
 							</AdminRoute>
 						}
 					/>

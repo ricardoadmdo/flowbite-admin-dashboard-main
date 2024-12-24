@@ -31,10 +31,23 @@ const Login = () => {
 				dispatch(action);
 				navigate('/agregar-venta');
 				Swal.fire({
+					toast: true,
+					position: 'top-end',
 					title: 'Éxito',
 					text: 'Inicio de sesión exitoso',
+					showConfirmButton: false,
 					icon: 'success',
-					confirmButtonText: 'Aceptar',
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer);
+						toast.addEventListener('mouseleave', Swal.resumeTimer);
+					},
+					customClass: {
+						popup: 'swal-popup-success',
+						title: 'swal-title',
+						text: 'swal-content',
+					},
 				});
 			} else {
 				Swal.fire({
