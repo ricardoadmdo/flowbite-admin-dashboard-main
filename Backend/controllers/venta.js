@@ -70,6 +70,37 @@ const getVentas = async (req = request, res = response) => {
 	}
 };
 
+const getAllVentasByDay = async (req = request, res = response) => {
+	try {
+		const { day, month, year } = req.query;
+		let query = {};
+
+		// Verificar si se ha proporcionado una fecha
+		if (day && month && year) {
+			const startDate = new Date(year, month - 1, day);
+			const endDate = new Date(year, month - 1, day);
+			endDate.setHours(23, 59, 59, 999);
+
+			query.fecha = {
+				$gte: startDate,
+				$lt: endDate,
+			};
+		}
+
+		const ventas = await Venta.find(query);
+
+		res.status(200).json({
+			ventas,
+		});
+	} catch (error) {
+		console.error('Error al obtener todas las ventas del día:', error);
+		res.status(500).json({
+			msg: 'Error al obtener todas las ventas del día',
+			error: error.message,
+		});
+	}
+};
+
 const getVentasPorMes = async (req, res) => {
 	try {
 		const fechaActual = new Date();
@@ -204,4 +235,5 @@ module.exports = {
 	getVentasPorAno,
 	getVentasPorMes,
 	getVentasPorMesGestor,
+	getAllVentasByDay,
 };

@@ -18,6 +18,7 @@ const ReporteVentas = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [gananciaNeta, setGananciaNeta] = useState(0);
+	const [ventasGlobales, setVentasGlobales] = useState([]);
 
 	// Fetch ventas con paginación y fecha seleccionada
 	useEffect(() => {
@@ -33,7 +34,6 @@ const ReporteVentas = () => {
 				// Actualizar las ventas, total de páginas, etc.
 				setVentas(data.ventas);
 				setTotalPages(data.totalPages);
-				calcularGananciasYProductoMasVendido(data.ventas);
 			} catch (error) {
 				console.error('Error al obtener ventas:', error);
 				Swal.fire('Error', 'No se pudo obtener las ventas. Por favor, intenta nuevamente.', 'error');
@@ -43,11 +43,31 @@ const ReporteVentas = () => {
 		fetchVentasByDateAndPage();
 	}, [startDate, currentPage]); // Llamar cada vez que cambie la fecha o la página actual
 
+	// Fetch todas las ventas del día para calcular estadísticas globales
+	useEffect(() => {
+		const fetchAllVentasByDate = async () => {
+			try {
+				const day = startDate.getDate();
+				const month = startDate.getMonth() + 1;
+				const year = startDate.getFullYear();
+
+				const { data } = await Axios.get(`/venta/all?day=${day}&month=${month}&year=${year}`);
+				setVentasGlobales(data.ventas);
+				calcularGananciasYProductoMasVendido(data.ventas);
+			} catch (error) {
+				console.error('Error al obtener todas las ventas:', error);
+				Swal.fire('Error', 'No se pudo obtener todas las ventas. Por favor, intenta nuevamente.', 'error');
+			}
+		};
+
+		fetchAllVentasByDate();
+	}, [startDate]);
+
 	const calcularGananciasYProductoMasVendido = (ventas) => {
 		let totalGananciaCalculada = 0;
 		let totalRecaudadoCalculado = 0;
 		const productoContador = {};
-		let gananciaGestores = 0; // Variable para acumular las ganancias de los gestores
+		let gananciaGestores = 0;
 
 		ventas.forEach((venta) => {
 			let gananciaVenta = 0;
@@ -59,15 +79,14 @@ const ReporteVentas = () => {
 			totalRecaudadoCalculado += venta.precioTotal;
 			totalGananciaCalculada += gananciaVenta;
 
-			// Calcular la ganancia para cada gestor solo si no es "Ninguno"
 			if (venta.gestor !== 'Ninguno') {
-				gananciaGestores += gananciaVenta * 0.01; // Aplica el 1% solo si corresponde
+				gananciaGestores += gananciaVenta * 0.01;
 			}
 		});
 
 		setTotalGanancia(totalGananciaCalculada);
 		setTotalRecaudado(totalRecaudadoCalculado);
-		setGananciaNeta(totalGananciaCalculada - gananciaGestores); // Ganancia neta para Alejandro
+		setGananciaNeta(totalGananciaCalculada - gananciaGestores);
 
 		if (Object.keys(productoContador).length > 0) {
 			const productoMax = Object.keys(productoContador).reduce((a, b) =>
@@ -79,7 +98,6 @@ const ReporteVentas = () => {
 		}
 	};
 
-	// Función para eliminar una venta
 	const handleDeleteVenta = async (id) => {
 		Swal.fire({
 			title: '¿Estás seguro?',
@@ -104,7 +122,6 @@ const ReporteVentas = () => {
 		});
 	};
 
-	// Manejadores de paginación
 	const handlePreviousPage = () => {
 		if (currentPage > 1) {
 			setCurrentPage(currentPage - 1);
@@ -118,10 +135,9 @@ const ReporteVentas = () => {
 	};
 
 	return (
-		<div className='container  my-5'>
+		<div className='container my-5'>
 			<h2 className='text-center mb-4'>Reporte de Ventas</h2>
 
-			{/* Filtro por Fecha */}
 			<div className='d-flex justify-content-center mb-4'>
 				<DatePicker
 					selected={startDate}
@@ -131,7 +147,6 @@ const ReporteVentas = () => {
 				/>
 			</div>
 
-			{/* Total Recaudado, Ganancia Total y Producto Más Vendido */}
 			<div className='mb-4'>
 				<p>
 					<strong>Total Recaudado del Día:</strong> ${totalRecaudado.toFixed(2)} CUP
@@ -147,10 +162,8 @@ const ReporteVentas = () => {
 				</p>
 			</div>
 
-			{/* Ganancia por Gestor */}
-			<GananciaGestores ventas={ventas} porcentajeGanancia={0.01} />
+			<GananciaGestores ventas={ventasGlobales} porcentajeGanancia={0.01} />
 
-			{/* Contenedor con desplazamiento horizontal para la tabla */}
 			<div className='report-ventas__table-container'>
 				<table className='table report-ventas__table table-striped table-bordered'>
 					<thead className='thead-dark'>
@@ -212,6 +225,7 @@ const ReporteVentas = () => {
 					</tbody>
 				</table>
 			</div>
+
 			{/* Componente de Paginación */}
 			<Pagination
 				currentPage={currentPage}

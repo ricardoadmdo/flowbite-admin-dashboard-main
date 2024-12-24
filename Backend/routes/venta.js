@@ -6,6 +6,7 @@ const {
 	getVentasPorMes,
 	getVentasPorAno,
 	getVentasPorMesGestor,
+	getAllVentasByDay,
 } = require('../controllers/venta');
 const router = Router();
 
@@ -15,5 +16,7 @@ router.delete('/:id', deleteVenta); // Eliminar venta
 router.get('/mes', getVentasPorMes); // Ventas diarias del mes actual
 router.get('/gestor', getVentasPorMesGestor); // Ventas diarias del mes actual
 router.get('/ano', getVentasPorAno); // Ventas mensuales del año actual
+router.get('/ano', getVentasPorAno); // Ventas mensuales del año actual
+router.get('/all', getAllVentasByDay); // Ventas mensuales del año actual
 
 module.exports = router;
