@@ -11,7 +11,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 				style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc' }}
 			>
 				<p className='label'>{`${label} : $${payload[0].value}`}</p>
-				<p className='desc'>Total recaudado por el gestor en el mes.</p>
+				<p className='desc'>Total recaudado por el gestor en el día.</p>
 			</div>
 		);
 	}
@@ -31,21 +31,12 @@ const GraficoGestorRecaudacionMensual = () => {
 	useEffect(() => {
 		const fetchDatosGraficos = async () => {
 			try {
-				const { data: ventasMensuales } = await Axios.get('/venta/mes');
-
-				// Agrupar ventas por gestor y sumar los totales
-				const recaudacionPorGestor = ventasMensuales.reduce((acc, venta) => {
-					const { gestor, total } = venta;
-					if (!acc[gestor]) {
-						acc[gestor] = 0;
-					}
-					acc[gestor] += total;
-					return acc;
-				}, {});
+				const { data: ventasMensuales } = await Axios.get('/venta/gestor');
 
 				// Convertir el objeto en un arreglo para el gráfico
-				const datosProcesados = Object.entries(recaudacionPorGestor).map(([gestor, total]) => ({
-					name: gestor,
+				const datosProcesados = ventasMensuales.map(({ dia, gestor, total }) => ({
+					dia,
+					gestor,
 					total,
 				}));
 
@@ -72,7 +63,7 @@ const GraficoGestorRecaudacionMensual = () => {
 					}}
 				>
 					<CartesianGrid strokeDasharray='3 3' />
-					<XAxis dataKey='name' label={{ value: 'Gestores', position: 'insideBottom', offset: -5 }} />
+					<XAxis dataKey='dia' label={{ value: 'Días', position: 'insideBottom', offset: -5 }} />
 					<YAxis label={{ value: 'Total Recaudado ($)', angle: -90, position: 'insideLeft' }} />
 					<Tooltip content={<CustomTooltip />} />
 					<Legend />
@@ -82,9 +73,12 @@ const GraficoGestorRecaudacionMensual = () => {
 			<div className='mt-4'>
 				<h4 className='text-center'>Detalle de Recaudación</h4>
 				<ul className='list-group'>
-					{datosRecaudacion.map(({ name, total }) => (
-						<li key={name} className='list-group-item d-flex justify-content-between align-items-center'>
-							{name}
+					{datosRecaudacion.map(({ dia, gestor, total }) => (
+						<li
+							key={`${dia}-${gestor}`}
+							className='list-group-item d-flex justify-content-between align-items-center'
+						>
+							<span>{`Día: ${dia}, Gestor: ${gestor}`}</span>
 							<span className='badge bg-primary rounded-pill'>${total}</span>
 						</li>
 					))}

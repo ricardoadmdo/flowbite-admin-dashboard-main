@@ -101,6 +101,51 @@ const getVentasPorMes = async (req, res) => {
 		res.status(500).json({ error: 'Error al obtener las ventas del mes' });
 	}
 };
+const getVentasPorMesGestor = async (req, res) => {
+	try {
+		const fechaActual = new Date();
+		const mesActual = fechaActual.getMonth(); // Índice del mes (0-11)
+		const anioActual = fechaActual.getFullYear();
+
+		// Inicio y fin del mes
+		const inicioMes = new Date(anioActual, mesActual, 1); // 1er día del mes
+		const finMes = new Date(anioActual, mesActual + 1, 1); // 1er día del siguiente mes
+
+		const ventasMensuales = await Venta.aggregate([
+			{
+				$match: {
+					fecha: { $gte: inicioMes, $lt: finMes },
+				},
+			},
+			{
+				$group: {
+					_id: { dia: { $dayOfMonth: '$fecha' }, gestor: '$gestor' },
+					total: { $sum: '$precioTotal' },
+				},
+			},
+			{ $sort: { '_id.dia': 1, 'total': -1 } }, // Ordenar por día y luego por total en orden descendente
+		]);
+
+		// Encontrar el gestor con mayor venta por día
+		const ventasMaximasPorDia = [];
+		let currentDay = null;
+		ventasMensuales.forEach((venta) => {
+			if (venta._id.dia !== currentDay) {
+				ventasMaximasPorDia.push({
+					dia: venta._id.dia,
+					gestor: venta._id.gestor,
+					total: venta.total,
+				});
+				currentDay = venta._id.dia;
+			}
+		});
+
+		res.status(200).json(ventasMaximasPorDia);
+	} catch (error) {
+		console.error('Error al obtener las ventas del mes:', error);
+		res.status(500).json({ error: 'Error al obtener las ventas del mes' });
+	}
+};
 
 const getVentasPorAno = async (req, res) => {
 	try {
@@ -135,8 +180,6 @@ const getVentasPorAno = async (req, res) => {
 	}
 };
 
-
-
 const deleteVenta = async (req = request, res = response) => {
 	const { id } = req.params;
 
@@ -160,4 +203,5 @@ module.exports = {
 	deleteVenta,
 	getVentasPorAno,
 	getVentasPorMes,
+	getVentasPorMesGestor,
 };

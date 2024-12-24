@@ -28,16 +28,6 @@ const ProductoSchema = Schema({
 		required: [true, 'El precio de venta es obligatorio'],
 		min: 0,
 	},
-	impuestoCosto: {
-		type: Number,
-		required: [true, 'El impuesto de costo es obligatorio'],
-		min: 0,
-	},
-	impuestoVenta: {
-		type: Number,
-		required: [true, 'El impuesto de venta es obligatorio'],
-		min: 0,
-	},
 });
 
 const VentaSchema = new Schema({
