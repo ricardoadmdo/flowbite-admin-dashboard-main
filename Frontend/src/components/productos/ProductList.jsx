@@ -113,12 +113,6 @@ const ProductList = () => {
 											<strong>Existencia:</strong> {producto.existencia} unidades
 										</p>
 										<p className='card-text'>
-											<strong>Impuesto de Costo:</strong> ${producto.impuestoCosto}
-										</p>
-										<p className='card-text'>
-											<strong>Impuesto de Venta:</strong> ${producto.impuestoVenta}
-										</p>
-										<p className='card-text'>
 											<strong>Ganancia por Unidad:</strong> ${gananciaPorUnidad}
 										</p>
 										<p className='card-text'>

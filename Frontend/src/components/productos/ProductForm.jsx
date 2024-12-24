@@ -15,8 +15,6 @@ const ProductForm = () => {
 	const [existencia, setExistencia] = useState('');
 	const [costo, setCosto] = useState('');
 	const [venta, setVenta] = useState('');
-	const [impuestoCosto, setImpuestoCosto] = useState('');
-	const [impuestoVenta, setImpuestoVenta] = useState('');
 	const [url, setUrl] = useState('');
 	const [file, setFile] = useState(null);
 	const [editar, setEditar] = useState(false);
@@ -41,8 +39,6 @@ const ProductForm = () => {
 				setExistencia(producto.existencia);
 				setCosto(producto.costo);
 				setVenta(producto.venta);
-				setImpuestoCosto(producto.impuestoCosto);
-				setImpuestoVenta(producto.impuestoVenta);
 				setUrl(producto.url);
 			})
 			.catch((error) => {
@@ -82,7 +78,7 @@ const ProductForm = () => {
 		if (file) {
 			imageUrl = await uploadImageToCloudinary();
 		}
-	
+
 		try {
 			await Axios.post('/productos', {
 				nombre,
@@ -91,8 +87,6 @@ const ProductForm = () => {
 				existencia,
 				costo,
 				venta,
-				impuestoCosto,
-				impuestoVenta,
 				url: imageUrl,
 			});
 			navigate('/gestionar-productos');
@@ -130,13 +124,13 @@ const ProductForm = () => {
 			});
 		}
 	};
-	
+
 	const update = async () => {
 		let imageUrl = url;
 		if (file) {
 			imageUrl = await uploadImageToCloudinary();
 		}
-	
+
 		try {
 			await Axios.put(`/productos/${id}`, {
 				nombre,
@@ -145,8 +139,6 @@ const ProductForm = () => {
 				existencia,
 				costo,
 				venta,
-				impuestoCosto,
-				impuestoVenta,
 				url: imageUrl,
 			});
 			navigate('/gestionar-productos');
@@ -184,7 +176,6 @@ const ProductForm = () => {
 			});
 		}
 	};
-	
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -279,32 +270,6 @@ const ProductForm = () => {
 										value={venta}
 										onChange={(e) => setVenta(e.target.value)}
 										placeholder='Ingrese el precio de venta'
-										required
-										className='form-control'
-										step='any' // Allows decimal values
-									/>
-								</div>
-
-								<div className='mb-3'>
-									<label className='form-label'>Impuesto de Costo</label>
-									<input
-										type='number'
-										value={impuestoCosto}
-										onChange={(e) => setImpuestoCosto(e.target.value)}
-										placeholder='Ingrese el impuesto de costo'
-										required
-										className='form-control'
-										step='any' // Allows decimal values
-									/>
-								</div>
-
-								<div className='mb-3'>
-									<label className='form-label'>Impuesto de Venta</label>
-									<input
-										type='number'
-										value={impuestoVenta}
-										onChange={(e) => setImpuestoVenta(e.target.value)}
-										placeholder='Ingrese el impuesto de venta'
 										required
 										className='form-control'
 										step='any' // Allows decimal values
