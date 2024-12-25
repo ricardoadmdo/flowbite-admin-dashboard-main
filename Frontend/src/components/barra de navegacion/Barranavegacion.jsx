@@ -84,7 +84,7 @@ const Barranavegacion = () => {
 				<nav className='nav flex-column mt-3'>
 					<NavLink to='/agregar-venta' className='nav-link'>
 						<FontAwesomeIcon icon={faCashRegister} className='me-2' />
-						Agregar Ventas
+						Registrar Ventas
 					</NavLink>
 
 					<NavLink to='/reporte-venta' className='nav-link'>
