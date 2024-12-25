@@ -105,8 +105,8 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 											value={producto.venta}
 											onChange={(e) => handlePrecioChange(producto.uid, e.target.value)}
 											min='0'
-											step='0.01'
-											className='border-0'
+											step='1'
+											className='form-control border-0'
 											style={{ maxWidth: '80px' }}
 										/>
 									</td>
@@ -152,33 +152,38 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 			</div>
 			<div className='mt-4'>
 				<h5>Datos del Cliente</h5>
-				<div className='mb-2'>
-					Nombre:{' '}
-					<span
-						contentEditable='true'
-						className='editable'
-						onInput={(e) => setCliente({ ...cliente, nombre: e.target.innerText })}
-						dangerouslySetInnerHTML={{ __html: cliente.nombre }}
-					></span>
+				<div className='mb-2 d-flex'>
+					<span className='fw-bold'>Nombre: </span>
+					<input
+						type='text'
+						name='nombre'
+						value={cliente.nombre}
+						onChange={handleInputChange}
+						className='border-0 flex-grow-1'
+						style={{ minWidth: '50px', flex: '1' }}
+					/>
 				</div>
 				<div className='mb-2'>
-					Carnet de Identidad:{' '}
+					<span className='fw-bold'>Carnet de Identidad: </span>
 					<input
 						type='number'
 						name='carnet'
 						value={cliente.carnet}
 						onChange={handleInputChange}
-						className='border-0'
+						className='editable-input border-0 p-0'
+						style={{ minWidth: '50px', flex: '1' }}
 					/>
 				</div>
-				<div className='mb-2'>
-					Dirección:{' '}
-					<span
-						contentEditable='true'
-						className='editable'
-						onInput={(e) => setCliente({ ...cliente, direccion: e.target.innerText })}
-						dangerouslySetInnerHTML={{ __html: cliente.direccion }}
-					></span>
+				<div className='mb-2 d-flex'>
+					<span className='fw-bold'>Dirección: </span>
+					<input
+						type='text'
+						name='direccion'
+						value={cliente.direccion}
+						onChange={handleInputChange}
+						className='border-0 flex-grow-1'
+						style={{ minWidth: '50px', flex: '1' }}
+					/>
 				</div>
 				<div className='mb-2'>Firma: ____________________________________</div>
 			</div>
