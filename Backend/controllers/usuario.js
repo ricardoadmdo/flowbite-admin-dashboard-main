@@ -32,10 +32,32 @@ const createUsuario = async (req, res) => {
 
 const getUsuarios = async (req, res) => {
 	try {
-		const usuarios = await Usuario.find();
-		res.status(200).json({ usuarios });
+		const { limit = 8, page = 1, search } = req.query;
+		const offset = (page - 1) * limit;
+
+		const query = {};
+		if (search) {
+			query.nombre = new RegExp(search, 'i'); // Búsqueda insensible a mayúsculas
+		}
+
+		const [total, usuarios] = await Promise.all([
+			Usuario.countDocuments(query),
+			Usuario.find(query).skip(offset).limit(Number(limit)),
+		]);
+
+		res.json({
+			total,
+			usuarios,
+			page: Number(page),
+			limit: Number(limit),
+			totalPages: Math.ceil(total / limit),
+		});
 	} catch (error) {
-		res.status(500).json({ error: error.message });
+		console.error('Error al obtener los usuarios:', error);
+		res.status(500).json({
+			msg: 'Error al obtener los usuarios',
+			error: error.message,
+		});
 	}
 };
 

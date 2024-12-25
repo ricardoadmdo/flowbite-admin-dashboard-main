@@ -22,7 +22,6 @@ const ProductList = () => {
 	const [isError, setIsError] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit] = useState(8);
-
 	const navigate = useNavigate();
 
 	const fetchData = async () => {
