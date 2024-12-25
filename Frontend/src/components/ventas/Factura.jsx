@@ -1,57 +1,92 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import MotionNumber from 'motion-number';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faMinus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
-const Factura = React.forwardRef(({ productos, totalProductos, precioTotal, fecha, gestor }, ref) => {
+const Factura = ({ formState, aumentarCantidad, disminuirCantidad, eliminarProducto, validarVenta }) => {
 	return (
-		<div ref={ref} className='factura-container p-4 border bg-light'>
-			<h3 className='text-center'>Factura de Venta</h3>
-			<p>Fecha: {new Date(fecha).toLocaleString()}</p>
-			<p>Gestor: {gestor || 'Ninguno'}</p>
-			<table className='table'>
-				<thead>
-					<tr>
-						<th>Producto</th>
-						<th>Cantidad</th>
-						<th>Precio Unitario</th>
-						<th>Subtotal</th>
-					</tr>
-				</thead>
-				<tbody>
-					{productos.map((producto) => (
-						<tr key={producto.uid}>
-							<td>{producto.nombre}</td>
-							<td>{producto.cantidad}</td>
-							<td>${producto.venta.toFixed(2)}</td>
-							<td>${(producto.venta * producto.cantidad).toFixed(2)}</td>
-						</tr>
+		<div>
+			<div className='mb-4'>
+				<h4>Factura</h4>
+				<ul className='list-group'>
+					{formState.productos.map((producto) => (
+						<li
+							key={producto.uid}
+							className='list-group-item d-flex justify-content-between align-items-center'
+						>
+							<div>
+								<span className='fw-bold'>{producto.nombre}</span> -{' '}
+								<MotionNumber
+									value={producto.cantidad}
+									format={{ notation: 'standard' }} // Intl.NumberFormat() options
+									locales // Intl.NumberFormat() locales
+								/>
+								x ${producto.venta}
+							</div>
+							<div>
+								<button
+									className='btn btn-secondary btn-sm ml-1'
+									onClick={() => aumentarCantidad(producto.uid)}
+								>
+									<FontAwesomeIcon icon={faPlus} />
+								</button>
+								<button
+									className={`btn btn-sm ml-1 ${producto.cantidad > 1 ? 'btn-danger' : 'btn-danger'}`}
+									onClick={() => {
+										if (producto.cantidad > 1) {
+											disminuirCantidad(producto.uid);
+										} else {
+											eliminarProducto(producto.uid);
+										}
+									}}
+								>
+									{' '}
+									<FontAwesomeIcon icon={producto.cantidad > 1 ? faMinus : faTrashAlt} />{' '}
+								</button>
+							</div>
+						</li>
 					))}
-				</tbody>
-			</table>
-			<div className='text-end'>
-				<p>Total de Productos: {totalProductos}</p>
-				<h4>Total a Pagar: ${precioTotal.toFixed(2)}</h4>
+				</ul>
+			</div>
+
+			{/* Total y acción final */}
+			<div className='d-flex justify-content-between'>
+				<h5>
+					Total: $
+					<MotionNumber
+						value={formState.precioTotal}
+						format={{ notation: 'standard' }} // Intl.NumberFormat() options
+						locales // Intl.NumberFormat() locales
+					/>
+				</h5>
+				<button className='btn btn-success' onClick={validarVenta}>
+					Registrar Venta <FontAwesomeIcon icon={faPlus} />
+				</button>
 			</div>
 		</div>
 	);
-});
+};
 
-// Asigna el nombre del componente
-Factura.displayName = 'Factura';
-
-// Valida las propiedades con PropTypes
+// Validación de props
 Factura.propTypes = {
-	productos: PropTypes.arrayOf(
-		PropTypes.shape({
-			uid: PropTypes.string.isRequired,
-			nombre: PropTypes.string.isRequired,
-			cantidad: PropTypes.number.isRequired,
-			venta: PropTypes.number.isRequired,
-		})
-	).isRequired,
-	totalProductos: PropTypes.number.isRequired,
-	precioTotal: PropTypes.number.isRequired,
-	fecha: PropTypes.string.isRequired,
-	gestor: PropTypes.string,
+	formState: PropTypes.shape({
+		productos: PropTypes.arrayOf(
+			PropTypes.shape({
+				uid: PropTypes.string.isRequired,
+				nombre: PropTypes.string.isRequired,
+				cantidad: PropTypes.number.isRequired,
+				venta: PropTypes.number.isRequired,
+				existencia: PropTypes.number.isRequired,
+			})
+		).isRequired,
+		totalProductos: PropTypes.number.isRequired,
+		precioTotal: PropTypes.number.isRequired,
+		fecha: PropTypes.instanceOf(Date).isRequired,
+	}).isRequired,
+	aumentarCantidad: PropTypes.func.isRequired,
+	disminuirCantidad: PropTypes.func.isRequired,
+	eliminarProducto: PropTypes.func.isRequired,
+	validarVenta: PropTypes.func.isRequired,
 };
 
 export default Factura;

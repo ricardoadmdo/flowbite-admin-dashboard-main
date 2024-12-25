@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import Axios from '../../api/axiosConfig';
 import Swal from 'sweetalert2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import MotionNumber from 'motion-number';
 import Factura from './Factura';
 
 // Función para buscar productos por nombre similar
@@ -296,65 +293,13 @@ const AgregarVenta = () => {
 					<div className='list-group-item'>No se encontraron productos.</div>
 				)}
 			</div>
-
-			{/* Mostrar productos agregados a la venta */}
-			<div className='mb-4'>
-				<h4>Resumen de la venta</h4>
-				<ul className='list-group'>
-					{formState.productos.map((producto) => (
-						<li
-							key={producto.uid}
-							className='list-group-item d-flex justify-content-between align-items-center'
-						>
-							<div>
-								<span className='fw-bold'>{producto.nombre}</span> -{' '}
-								<MotionNumber
-									value={producto.cantidad}
-									format={{ notation: 'standard' }} // Intl.NumberFormat() options
-									locales // Intl.NumberFormat() locales
-								/>
-								x ${producto.venta}
-							</div>
-							<div>
-								<button
-									className='btn btn-secondary btn-sm ml-1'
-									onClick={() => aumentarCantidad(producto.uid)}
-								>
-									<FontAwesomeIcon icon={faPlus} />
-								</button>
-								<button
-									className={`btn btn-sm ml-1 ${producto.cantidad > 1 ? 'btn-danger' : 'btn-danger'}`}
-									onClick={() => {
-										if (producto.cantidad > 1) {
-											disminuirCantidad(producto.uid);
-										} else {
-											eliminarProducto(producto.uid);
-										}
-									}}
-								>
-									{' '}
-									<FontAwesomeIcon icon={producto.cantidad > 1 ? faMinus : faTrashAlt} />{' '}
-								</button>
-							</div>
-						</li>
-					))}
-				</ul>
-			</div>
-
-			{/* Total y acción final */}
-			<div className='d-flex justify-content-between'>
-				<h5>
-					Total: $
-					<MotionNumber
-						value={formState.precioTotal}
-						format={{ notation: 'standard' }} // Intl.NumberFormat() options
-						locales // Intl.NumberFormat() locales
-					/>
-				</h5>
-				<button className='btn btn-success' onClick={validarVenta}>
-					Registrar Venta <FontAwesomeIcon icon={faPlus} />
-				</button>
-			</div>
+			<Factura
+				formState={formState}
+				aumentarCantidad={aumentarCantidad}
+				disminuirCantidad={disminuirCantidad}
+				eliminarProducto={eliminarProducto}
+				validarVenta={validarVenta}
+			/>
 		</div>
 	);
 };
