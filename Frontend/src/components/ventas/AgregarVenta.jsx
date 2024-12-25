@@ -271,10 +271,11 @@ const AgregarVenta = () => {
 					</button>
 				</div>
 			</form>
-
 			{/* Lista de productos encontrados */}
 			<div className='list-group'>
-				{productos && productos.length > 0 ? (
+				{searchTerm && productos.length === 0 ? (
+					<div className='list-group-item'>No se encontraron productos.</div>
+				) : (
 					productos.map((producto) => (
 						<div
 							key={producto.uid}
@@ -289,10 +290,9 @@ const AgregarVenta = () => {
 							</button>
 						</div>
 					))
-				) : (
-					<div className='list-group-item'>No se encontraron productos.</div>
 				)}
 			</div>
+			{/* Separación */} <hr className='my-4' />
 			<Factura
 				formState={formState}
 				aumentarCantidad={aumentarCantidad}
