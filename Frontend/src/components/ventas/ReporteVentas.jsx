@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '../ui/Pagination';
 import '../ventas/ReporteVentas.css';
 import GananciaGestores from './GananciaGestores';
+import ReporteVentasSkeleton from './ReportedeVentaSkeleton';
 
 const ReporteVentas = () => {
 	const [ventas, setVentas] = useState([]);
@@ -19,24 +20,28 @@ const ReporteVentas = () => {
 	const [totalPages, setTotalPages] = useState(1);
 	const [gananciaNeta, setGananciaNeta] = useState(0);
 	const [ventasGlobales, setVentasGlobales] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isError, setIsError] = useState(false);
 
 	// Fetch ventas con paginación y fecha seleccionada
 	useEffect(() => {
 		const fetchVentasByDateAndPage = async () => {
+			setIsLoading(true);
+			setIsError(false);
 			try {
 				const day = startDate.getDate();
 				const month = startDate.getMonth() + 1;
 				const year = startDate.getFullYear();
-
-				// Petición al backend con la fecha seleccionada y la página actual
-				const { data } = await Axios.get(`/venta?day=${day}&month=${month}&year=${year}&page=${currentPage}`);
-
-				// Actualizar las ventas, total de páginas, etc.
+				const { data } = await Axios.get(`/venta`, {
+					params: { day, month, year, page: currentPage },
+				});
 				setVentas(data.ventas);
 				setTotalPages(data.totalPages);
 			} catch (error) {
 				console.error('Error al obtener ventas:', error);
-				Swal.fire('Error', 'No se pudo obtener las ventas. Por favor, intenta nuevamente.', 'error');
+				setIsError(true);
+			} finally {
+				setIsLoading(false);
 			}
 		};
 
@@ -50,8 +55,7 @@ const ReporteVentas = () => {
 				const day = startDate.getDate();
 				const month = startDate.getMonth() + 1;
 				const year = startDate.getFullYear();
-
-				const { data } = await Axios.get(`/venta/all?day=${day}&month=${month}&year=${year}`);
+				const { data } = await Axios.get(`/venta/all`, { params: { day, month, year } });
 				setVentasGlobales(data.ventas);
 				calcularGananciasYProductoMasVendido(data.ventas);
 			} catch (error) {
@@ -122,18 +126,6 @@ const ReporteVentas = () => {
 		});
 	};
 
-	const handlePreviousPage = () => {
-		if (currentPage > 1) {
-			setCurrentPage(currentPage - 1);
-		}
-	};
-
-	const handleNextPage = () => {
-		if (currentPage < totalPages) {
-			setCurrentPage(currentPage + 1);
-		}
-	};
-
 	return (
 		<div className='container my-5'>
 			<h2 className='text-center mb-4'>Reporte de Ventas</h2>
@@ -147,92 +139,97 @@ const ReporteVentas = () => {
 				/>
 			</div>
 
-			<div className='mb-4'>
-				<p>
-					<strong>Total Recaudado del Día:</strong> ${totalRecaudado.toFixed(2)} CUP
-				</p>
-				<p>
-					<strong>Ganancia Total del Día:</strong> ${totalGanancia.toFixed(2)} CUP
-				</p>
-				<p>
-					<strong>Ganancia Neta para Alejandro:</strong> ${gananciaNeta.toFixed(2)} CUP
-				</p>
-				<p>
-					<strong>Producto Más Vendido:</strong> {productoMasVendido || 'No hay ventas.'}
-				</p>
-			</div>
+			{isError ? (
+				<p className='text-danger'>Ocurrió un error al cargar las ventas.</p>
+			) : isLoading ? (
+				<ReporteVentasSkeleton />
+			) : (
+				<>
+					<div className='mb-4'>
+						<p>
+							<strong>Total Recaudado del Día:</strong> ${totalRecaudado.toFixed(2)} CUP
+						</p>
+						<p>
+							<strong>Ganancia Total del Día:</strong> ${totalGanancia.toFixed(2)} CUP
+						</p>
+						<p>
+							<strong>Ganancia Neta para Alejandro:</strong> ${gananciaNeta.toFixed(2)} CUP
+						</p>
+						<p>
+							<strong>Producto Más Vendido:</strong> {productoMasVendido || 'No hay ventas.'}
+						</p>
+					</div>
 
-			<GananciaGestores ventas={ventasGlobales} porcentajeGanancia={0.01} />
+					<GananciaGestores ventas={ventasGlobales} porcentajeGanancia={0.01} />
 
-			<div className='report-ventas__table-container'>
-				<table className='table report-ventas__table table-striped table-bordered'>
-					<thead className='thead-dark'>
-						<tr>
-							<th>#</th>
-							<th>Fecha</th>
-							<th>Productos</th>
-							<th>Total Recaudado</th>
-							<th>Ganancia por Venta</th>
-							<th>Gestor</th>
-							<th>Acciones</th>
-						</tr>
-					</thead>
-					<tbody>
-						{ventas.length === 0 ? (
-							<tr>
-								<td colSpan='7' className='text-center'>
-									No hay ventas para la fecha seleccionada.
-								</td>
-							</tr>
-						) : (
-							ventas.map((venta, index) => {
-								let gananciaVenta = 0;
-
-								venta.productos.forEach((producto) => {
-									gananciaVenta += (producto.venta - producto.costo) * producto.cantidad;
-								});
-
-								return (
-									<tr key={venta.uid}>
-										<td>{(currentPage - 1) * 8 + index + 1}</td>
-										<td>{new Date(venta.fecha).toLocaleTimeString()}</td>
-										<td>
-											<ul>
-												{venta.productos.map((producto, idx) => (
-													<li key={idx}>
-														{producto.nombre} - {producto.cantidad} x $
-														{producto.venta.toFixed(2)}
-													</li>
-												))}
-											</ul>
-										</td>
-										<td>${venta.precioTotal.toFixed(2)} CUP</td>
-										<td>${gananciaVenta.toFixed(2)} CUP</td>
-										<td>{venta.gestor}</td>
-										<td>
-											<button
-												className='btn btn-danger'
-												onClick={() => handleDeleteVenta(venta.uid)}
-											>
-												<FontAwesomeIcon icon={faTrashAlt} />
-												Eliminar
-											</button>
+					<div className='report-ventas__table-container'>
+						<table className='table report-ventas__table table-striped table-bordered'>
+							<thead className='thead-dark'>
+								<tr>
+									<th>#</th>
+									<th>Fecha</th>
+									<th>Productos</th>
+									<th>Total Recaudado</th>
+									<th>Ganancia por Venta</th>
+									<th>Gestor</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+								{ventas.length === 0 ? (
+									<tr>
+										<td colSpan='7' className='text-center'>
+											No hay ventas para la fecha seleccionada.
 										</td>
 									</tr>
-								);
-							})
-						)}
-					</tbody>
-				</table>
-			</div>
+								) : (
+									ventas.map((venta, index) => {
+										let gananciaVenta = 0;
 
-			{/* Componente de Paginación */}
+										venta.productos.forEach((producto) => {
+											gananciaVenta += (producto.venta - producto.costo) * producto.cantidad;
+										});
+
+										return (
+											<tr key={venta.uid}>
+												<td>{(currentPage - 1) * 8 + index + 1}</td>
+												<td>{new Date(venta.fecha).toLocaleTimeString()}</td>
+												<td>
+													<ul>
+														{venta.productos.map((producto, idx) => (
+															<li key={idx}>
+																{producto.nombre} - {producto.cantidad} x $
+																{producto.venta.toFixed(2)}
+															</li>
+														))}
+													</ul>
+												</td>
+												<td>${venta.precioTotal.toFixed(2)} CUP</td>
+												<td>${gananciaVenta.toFixed(2)} CUP</td>
+												<td>{venta.gestor}</td>
+												<td>
+													<button
+														className='btn btn-danger'
+														onClick={() => handleDeleteVenta(venta.uid)}
+													>
+														<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+													</button>
+												</td>
+											</tr>
+										);
+									})
+								)}
+							</tbody>
+						</table>
+					</div>
+				</>
+			)}
+
 			<Pagination
 				currentPage={currentPage}
 				totalPages={totalPages}
-				handlePreviousPage={handlePreviousPage}
-				handleNextPage={handleNextPage}
-				className='mt-4'
+				handlePreviousPage={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+				handleNextPage={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
 			/>
 		</div>
 	);
