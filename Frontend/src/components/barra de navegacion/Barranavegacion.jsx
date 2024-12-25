@@ -57,7 +57,7 @@ const Barranavegacion = () => {
 					</button>
 					<span className='navbar-brand mb-0 h1 d-flex align-items-center'>
 						<NavLink className='navbar-brand' to='/reporte-venta'></NavLink>
-						ServiciosBravo
+						Servicios Bravo
 					</span>
 
 					<ul className='navbar-nav'>
