@@ -2,7 +2,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
 const UsuariosSkeleton = () => {
-	const rows = Array.from({ length: 5 });
+	const rows = Array.from({ length: 8 });
 
 	return (
 		<div className='container my-5'>
