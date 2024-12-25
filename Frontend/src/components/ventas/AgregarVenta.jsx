@@ -6,6 +6,7 @@ import { faMinus, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import MotionNumber from 'motion-number';
+import Factura from './Factura';
 
 // Función para buscar productos por nombre similar
 const fetchProductos = async (searchTerm) => {
@@ -298,7 +299,7 @@ const AgregarVenta = () => {
 
 			{/* Mostrar productos agregados a la venta */}
 			<div className='mb-4'>
-				<h4>Productos Seleccionados</h4>
+				<h4>Resumen de la venta</h4>
 				<ul className='list-group'>
 					{formState.productos.map((producto) => (
 						<li
