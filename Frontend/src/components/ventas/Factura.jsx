@@ -21,11 +21,9 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 	};
 
 	const handlePrecioChange = (uid, value) => {
-		const nuevoPrecio = parseFloat(value); // Convertir a número flotante
+		const nuevoPrecio = parseFloat(value);
+		if (isNaN(nuevoPrecio)) return;
 
-		if (isNaN(nuevoPrecio)) return; // Si el valor no es un número, no hacer nada
-
-		// Actualiza el precio de ese producto en el estado
 		const productosActualizados = formState.productos.map((producto) => {
 			if (producto.uid === uid) {
 				return { ...producto, venta: nuevoPrecio };
@@ -33,13 +31,11 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 			return producto;
 		});
 
-		// Calcula el nuevo precio total
 		const precioTotal = productosActualizados.reduce(
 			(total, producto) => total + producto.cantidad * producto.venta,
 			0
 		);
 
-		// Actualiza el estado con el nuevo precio unitario y total
 		setFormState({
 			...formState,
 			productos: productosActualizados,
@@ -79,57 +75,59 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 				</div>
 			</div>
 			<div className='mb-4'>
-				<table className='table table-bordered'>
-					<thead className='table-light'>
-						<tr>
-							<th>Descripción</th>
-							<th>Precio Unitario</th>
-							<th>Cantidad</th>
-							<th>Monto</th>
-							<th className='d-print-none'>Acciones</th>
-						</tr>
-					</thead>
-					<tbody>
-						{formState.productos.map((producto) => (
-							<tr key={producto.uid}>
-								<td>{producto.nombre}</td>
-								<td>
-									$
-									<input
-										type='number'
-										value={producto.venta}
-										onChange={(e) => handlePrecioChange(producto.uid, e.target.value)} // Llama a la función para actualizar el precio
-										min='0'
-										step='0.01'
-										style={{ width: '80px' }}
-									/>
-								</td>
-								<td>{producto.cantidad}</td>
-								<td>${producto.cantidad * producto.venta}</td>
-								<td className='d-print-none'>
-									<button
-										className='btn btn-secondary btn-sm ml-1'
-										onClick={() => aumentarCantidad(producto.uid)}
-									>
-										<FontAwesomeIcon icon={faPlus} />
-									</button>
-									<button
-										className='btn btn-danger btn-sm ml-1'
-										onClick={() => {
-											if (producto.cantidad > 1) {
-												disminuirCantidad(producto.uid);
-											} else {
-												eliminarProducto(producto.uid);
-											}
-										}}
-									>
-										<FontAwesomeIcon icon={producto.cantidad > 1 ? faMinus : faTrashAlt} />
-									</button>
-								</td>
+				<div className='table-responsive'>
+					<table className='table table-bordered'>
+						<thead className='table-light'>
+							<tr>
+								<th>Descripción</th>
+								<th>Precio Unitario</th>
+								<th>Cantidad</th>
+								<th>Monto</th>
+								<th className='d-print-none'>Acciones</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{formState.productos.map((producto) => (
+								<tr key={producto.uid}>
+									<td>{producto.nombre}</td>
+									<td>
+										<input
+											type='number'
+											value={producto.venta}
+											onChange={(e) => handlePrecioChange(producto.uid, e.target.value)}
+											min='0'
+											step='0.01'
+											className='border-0'
+											style={{ maxWidth: '80px' }}
+										/>
+									</td>
+									<td>{producto.cantidad}</td>
+									<td>${producto.cantidad * producto.venta}</td>
+									<td className='d-print-none'>
+										<button
+											className='btn btn-secondary btn-sm ml-1'
+											onClick={() => aumentarCantidad(producto.uid)}
+										>
+											<FontAwesomeIcon icon={faPlus} />
+										</button>
+										<button
+											className='btn btn-danger btn-sm ml-1'
+											onClick={() => {
+												if (producto.cantidad > 1) {
+													disminuirCantidad(producto.uid);
+												} else {
+													eliminarProducto(producto.uid);
+												}
+											}}
+										>
+											<FontAwesomeIcon icon={producto.cantidad > 1 ? faMinus : faTrashAlt} />
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<div className='d-flex justify-content-end'>
 				<div className='w-25'>
@@ -147,13 +145,13 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 				<h5>Datos del Cliente</h5>
 				<div className='mb-2'>
 					Nombre:{' '}
-					<span
-						contentEditable='true'
-						style={{ border: 'none', padding: '0' }}
-						onBlur={(e) => setCliente({ ...cliente, nombre: e.target.innerText })}
-					>
-						{cliente.nombre}
-					</span>
+					<input
+						type='text'
+						name='nombre'
+						value={cliente.nombre}
+						onChange={handleInputChange}
+						className='border-0'
+					/>
 				</div>
 				<div className='mb-2'>
 					Carnet de Identidad:{' '}
@@ -162,18 +160,18 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 						name='carnet'
 						value={cliente.carnet}
 						onChange={handleInputChange}
-						style={{ border: 'none', padding: '0' }}
+						className='border-0'
 					/>
 				</div>
 				<div className='mb-2'>
 					Dirección:{' '}
-					<span
-						contentEditable='true'
-						style={{ border: 'none', padding: '0' }}
-						onBlur={(e) => setCliente({ ...cliente, direccion: e.target.innerText })}
-					>
-						{cliente.direccion}
-					</span>
+					<input
+						type='text'
+						name='direccion'
+						value={cliente.direccion}
+						onChange={handleInputChange}
+						className='border-0'
+					/>
 				</div>
 				<div className='mb-2'>Firma: ____________________________________</div>
 			</div>
