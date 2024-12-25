@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faMinus, faTrashAlt, faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faMinus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import html2pdf from 'html2pdf.js';
 
 const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad, eliminarProducto, validarVenta }) => {
@@ -55,6 +55,15 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 				jsPDF: { orientation: 'portrait' },
 			})
 			.save();
+	};
+
+	const handleValidarVenta = async () => {
+		try {
+			await validarVenta();
+			generatePDF();
+		} catch (error) {
+			console.error('Error al validar la venta:', error);
+		}
 	};
 
 	return (
@@ -145,18 +154,17 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 				<h5>Datos del Cliente</h5>
 				<div className='mb-2'>
 					Nombre:{' '}
-					<input
-						type='text'
-						name='nombre'
-						value={cliente.nombre}
-						onChange={handleInputChange}
-						className='border-0'
-					/>
+					<span
+						contentEditable='true'
+						className='editable'
+						onInput={(e) => setCliente({ ...cliente, nombre: e.target.innerText })}
+						dangerouslySetInnerHTML={{ __html: cliente.nombre }}
+					></span>
 				</div>
 				<div className='mb-2'>
 					Carnet de Identidad:{' '}
 					<input
-						type='text'
+						type='number'
 						name='carnet'
 						value={cliente.carnet}
 						onChange={handleInputChange}
@@ -165,22 +173,18 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 				</div>
 				<div className='mb-2'>
 					Dirección:{' '}
-					<input
-						type='text'
-						name='direccion'
-						value={cliente.direccion}
-						onChange={handleInputChange}
-						className='border-0'
-					/>
+					<span
+						contentEditable='true'
+						className='editable'
+						onInput={(e) => setCliente({ ...cliente, direccion: e.target.innerText })}
+						dangerouslySetInnerHTML={{ __html: cliente.direccion }}
+					></span>
 				</div>
 				<div className='mb-2'>Firma: ____________________________________</div>
 			</div>
 			<div className='d-print-none text-right'>
-				<button className='btn btn-success mr-1' onClick={validarVenta}>
+				<button className='btn btn-success mr-1' onClick={handleValidarVenta}>
 					Registrar Venta <FontAwesomeIcon icon={faPlus} />
-				</button>
-				<button className='btn btn-primary ' onClick={generatePDF}>
-					Descargar PDF <FontAwesomeIcon icon={faFilePdf} />
 				</button>
 			</div>
 		</div>

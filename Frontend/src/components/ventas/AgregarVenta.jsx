@@ -178,7 +178,7 @@ const AgregarVenta = () => {
 	};
 
 	// Validar venta
-	const validarVenta = () => {
+	const validarVenta = async () => {
 		if (formState.productos.length === 0) {
 			Swal.fire({
 				icon: 'error',
@@ -188,25 +188,26 @@ const AgregarVenta = () => {
 			return;
 		}
 
-		// Modal para seleccionar gestor
-		Swal.fire({
-			title: 'Seleccione el Gestor',
-			input: 'select',
-			inputOptions: {
-				Elena: 'Elena',
-				Milton: 'Milton',
-				Liset: 'Liset',
-				Berardo: 'Berardo',
-				Monaco: 'Mónaco',
-				AnaMaria: 'Ana María',
-				Greter: 'Greter',
-				Wilson: 'Wilson',
-				Jazmin: 'Jazmin',
-				Ninguno: 'Ninguno',
-			},
-			inputPlaceholder: 'Selecciona Gestor, será Ninguno por defecto',
-			showCancelButton: true,
-		}).then((result) => {
+		try {
+			const result = await Swal.fire({
+				title: 'Seleccione el Gestor',
+				input: 'select',
+				inputOptions: {
+					Elena: 'Elena',
+					Milton: 'Milton',
+					Liset: 'Liset',
+					Berardo: 'Berardo',
+					Monaco: 'Mónaco',
+					AnaMaria: 'Ana María',
+					Greter: 'Greter',
+					Wilson: 'Wilson',
+					Jazmin: 'Jazmin',
+					Ninguno: 'Ninguno',
+				},
+				inputPlaceholder: 'Selecciona Gestor, será Ninguno por defecto',
+				showCancelButton: true,
+			});
+
 			if (result.isConfirmed) {
 				const gestor = result.value || 'Ninguno';
 				// Asegurarse de que cada producto tenga los campos requeridos
@@ -221,7 +222,7 @@ const AgregarVenta = () => {
 				}));
 
 				// Realizar la mutación (registro de la venta)
-				ventaMutation.mutate({
+				ventaMutation.mutateAsync({
 					productos: productosValidados,
 					totalProductos: formState.totalProductos,
 					precioTotal: formState.precioTotal,
@@ -229,7 +230,9 @@ const AgregarVenta = () => {
 					gestor: gestor, // Enviar el gestor
 				});
 			}
-		});
+		} catch (error) {
+			console.error('Error al registrar la venta:', error);
+		}
 	};
 
 	// Modal para seleccionar cantidad
