@@ -21,19 +21,30 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 	};
 
 	const handlePrecioChange = (uid, value) => {
-		const nuevoPrecio = parseFloat(value);
-		if (isNaN(nuevoPrecio)) return;
+		const nuevoPrecio = parseFloat(value); // Convertir a número flotante
+
+		if (isNaN(nuevoPrecio)) return; // Si el valor no es un número, no hacer nada
+
+		// Actualiza el precio de ese producto en el estado
 		const productosActualizados = formState.productos.map((producto) => {
 			if (producto.uid === uid) {
 				return { ...producto, venta: nuevoPrecio };
 			}
 			return producto;
 		});
+
+		// Calcula el nuevo precio total
 		const precioTotal = productosActualizados.reduce(
 			(total, producto) => total + producto.cantidad * producto.venta,
 			0
 		);
-		setFormState({ ...formState, productos: productosActualizados, precioTotal });
+
+		// Actualiza el estado con el nuevo precio unitario y total
+		setFormState({
+			...formState,
+			productos: productosActualizados,
+			precioTotal,
+		});
 	};
 
 	const generatePDF = () => {
@@ -83,13 +94,15 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 							<tr key={producto.uid}>
 								<td>{producto.nombre}</td>
 								<td>
-									<span
-										contentEditable='true'
-										style={{ border: 'none', padding: '0' }}
-										onBlur={(e) => handlePrecioChange(producto.uid, e.target.innerText)}
-									>
-										${producto.venta}
-									</span>
+									$
+									<input
+										type='number'
+										value={producto.venta}
+										onChange={(e) => handlePrecioChange(producto.uid, e.target.value)} // Llama a la función para actualizar el precio
+										min='0'
+										step='0.01'
+										style={{ width: '80px' }}
+									/>
 								</td>
 								<td>{producto.cantidad}</td>
 								<td>${producto.cantidad * producto.venta}</td>
@@ -197,7 +210,6 @@ Factura.propTypes = {
 	disminuirCantidad: PropTypes.func.isRequired,
 	eliminarProducto: PropTypes.func.isRequired,
 	validarVenta: PropTypes.func.isRequired,
-	actualizarPrecio: PropTypes.func.isRequired,
 };
 
 export default Factura;

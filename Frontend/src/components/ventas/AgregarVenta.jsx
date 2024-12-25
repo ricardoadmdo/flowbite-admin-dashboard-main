@@ -295,6 +295,7 @@ const AgregarVenta = () => {
 			{/* Separación */} <hr className='my-4' />
 			<Factura
 				formState={formState}
+				setFormState={setFormState}
 				aumentarCantidad={aumentarCantidad}
 				disminuirCantidad={disminuirCantidad}
 				eliminarProducto={eliminarProducto}
