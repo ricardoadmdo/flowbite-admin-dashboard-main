@@ -216,7 +216,7 @@ const ProductForm = () => {
 								<div className='mb-3'>
 									<label className='form-label'>Código</label>
 									<input
-										type='text'
+										type='number'
 										value={codigo}
 										onChange={(e) => setCodigo(e.target.value)}
 										placeholder='Ingrese el código'
