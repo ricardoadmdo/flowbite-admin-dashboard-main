@@ -46,7 +46,7 @@ const Factura = ({
 			.from(element)
 			.set({
 				margin: 1,
-				filename: 'Factura_Servicios_Bravo.pdf',
+				filename: `Factura_Servicios_Bravo_${codigoFactura}.pdf`,
 				html2canvas: { scale: 2 },
 				jsPDF: { orientation: 'portrait' },
 			})
