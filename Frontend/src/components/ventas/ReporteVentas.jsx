@@ -167,7 +167,7 @@ const ReporteVentas = () => {
 							<thead className='thead-dark'>
 								<tr>
 									<th>#</th>
-									<th>Fecha</th>
+									<th>Hora</th>
 									<th>Productos</th>
 									<th>Total Recaudado</th>
 									<th>Ganancia por Venta</th>

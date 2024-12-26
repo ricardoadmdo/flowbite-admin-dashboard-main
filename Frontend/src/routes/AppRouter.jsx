@@ -13,6 +13,7 @@ import Error404 from '../components/Error404';
 import GraficosVentas from '../components/ventas/GraficosVentas';
 import GraficoGestorMasVendioDiario from '../components/ventas/GraficoGestorMasVendioDiario';
 import ResumenProductos from '../components/productos/ResumenProductos';
+import Footer from '../components/Footer';
 
 const AppRouter = () => {
 	return (
@@ -43,7 +44,7 @@ const AppRouter = () => {
 							</AdminRoute>
 						}
 					/>
-										<Route
+					<Route
 						path='/grafico-venta-gestores'
 						element={
 							<AdminRoute>
@@ -120,6 +121,7 @@ const LayoutWithNav = () => (
 	<>
 		<Barranavegacion />
 		<Outlet />
+		<Footer />
 	</>
 );
 
