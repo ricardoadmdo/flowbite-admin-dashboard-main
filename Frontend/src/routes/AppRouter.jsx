@@ -14,6 +14,8 @@ import GraficosVentas from '../components/ventas/GraficosVentas';
 import GraficoGestorMasVendioDiario from '../components/ventas/GraficoGestorMasVendioDiario';
 import ResumenProductos from '../components/productos/ResumenProductos';
 import Footer from '../components/Footer';
+import GestoresForm from '../components/gestores/GestoresForm';
+import GestoresList from '../components/gestores/GestoresList';
 
 const AppRouter = () => {
 	return (
@@ -33,6 +35,14 @@ const AppRouter = () => {
 						element={
 							<AdminRoute>
 								<ProductList />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/gestionar-gestores'
+						element={
+							<AdminRoute>
+								<GestoresList />
 							</AdminRoute>
 						}
 					/>
@@ -89,6 +99,22 @@ const AppRouter = () => {
 						element={
 							<AdminRoute>
 								<ProductForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/gestorform'
+						element={
+							<AdminRoute>
+								<GestoresForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='/editGestor/:id'
+						element={
+							<AdminRoute>
+								<GestoresForm />
 							</AdminRoute>
 						}
 					/>

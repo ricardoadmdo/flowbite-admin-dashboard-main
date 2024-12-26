@@ -45,6 +45,13 @@ const ClienteSchema = new Schema({
 	},
 });
 
+const GestorSchema = new Schema({
+	nombre: {
+		type: String,
+		required: [true, 'El nombre es obligatorio'],
+	},
+});
+
 const VentaSchema = new Schema({
 	productos: {
 		type: [ProductoSchema],
@@ -64,8 +71,7 @@ const VentaSchema = new Schema({
 		default: Date.now,
 	},
 	gestor: {
-		type: String,
-		enum: ['Elena', 'Milton', 'Liset', 'Berardo', 'Monaco', 'AnaMaria', 'Greter', 'Wilson', 'Jazmin', 'Ninguno'],
+		type: GestorSchema,
 		required: true,
 	},
 	codigoFactura: {
