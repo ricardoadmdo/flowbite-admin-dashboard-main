@@ -13,4 +13,4 @@ GestorSchema.methods.toJSON = function () {
 	return gestor;
 };
 
-module.exports = model('Gestor', GestorSchema);
+module.exports = model('Gestor', GestorSchema, 'gestores');

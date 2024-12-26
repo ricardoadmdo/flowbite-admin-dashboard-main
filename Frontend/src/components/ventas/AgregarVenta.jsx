@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react';
 import Axios from '../../api/axiosConfig';
 import Swal from 'sweetalert2';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Factura from './Factura';
+
+// Función para obtener los gestores
+const fetchGestores = async (page, limit) => {
+	const response = await Axios.get('/gestor', {
+		params: { page, limit },
+	});
+	return response.data.gestores;
+};
 
 // Función para buscar el último código de factura
 const fetchUltimoCodigoFactura = async () => {
@@ -18,6 +25,8 @@ const fetchProductos = async (searchTerm) => {
 };
 
 const AgregarVenta = () => {
+	const [gestores, setGestores] = useState([]);
+	const [codigoFactura, setCodigoFactura] = useState('');
 	const [formState, setFormState] = useState({
 		productos: [],
 		totalProductos: 0,
@@ -220,8 +229,6 @@ const AgregarVenta = () => {
 		}
 	};
 
-	const [codigoFactura, setCodigoFactura] = useState('');
-
 	useEffect(() => {
 		const obtenerUltimoCodigoFactura = async () => {
 			try {
@@ -233,7 +240,17 @@ const AgregarVenta = () => {
 			}
 		};
 
+		const obtenerGestores = async () => {
+			try {
+				const gestoresObtenidos = await fetchGestores(1, 100); // Ajusta los parámetros según necesites
+				setGestores(gestoresObtenidos);
+			} catch (error) {
+				console.error('Error al obtener los gestores:', error);
+			}
+		};
+
 		obtenerUltimoCodigoFactura();
+		obtenerGestores();
 	}, []);
 
 	// Validar venta
@@ -257,27 +274,25 @@ const AgregarVenta = () => {
 		}
 
 		try {
+			// Crear opciones para el modal
+			const gestoresOptions = gestores.reduce(
+				(options, gestor) => {
+					options[gestor.nombre] = gestor.nombre;
+					return options;
+				},
+				{ Ninguno: 'Ninguno' }
+			);
+
 			const result = await Swal.fire({
 				title: 'Seleccione el Gestor',
 				input: 'select',
-				inputOptions: {
-					Elena: 'Elena',
-					Milton: 'Milton',
-					Liset: 'Liset',
-					Berardo: 'Berardo',
-					Monaco: 'Mónaco',
-					AnaMaria: 'Ana María',
-					Greter: 'Greter',
-					Wilson: 'Wilson',
-					Jazmin: 'Jazmin',
-					Ninguno: 'Ninguno',
-				},
+				inputOptions: gestoresOptions,
 				inputPlaceholder: 'Selecciona Gestor, será Ninguno por defecto',
 				showCancelButton: true,
 			});
 
 			if (result.isConfirmed) {
-				const gestor = result.value || 'Ninguno';
+				const gestorSeleccionado = result.value !== 'Ninguno' ? { nombre: result.value } : {}; // Ajustar la lógica
 				// Asegúrate de que cada producto tenga los campos requeridos
 				const productosValidados = formState.productos.map((producto) => ({
 					...producto,
@@ -295,7 +310,7 @@ const AgregarVenta = () => {
 					totalProductos: formState.totalProductos,
 					precioTotal: formState.precioTotal,
 					fecha: new Date(),
-					gestor: gestor, // Enviar el gestor
+					gestor: gestorSeleccionado, // Enviar el gestor
 					codigoFactura: codigoFactura,
 					cliente: cliente, // Añadir esta línea
 				});

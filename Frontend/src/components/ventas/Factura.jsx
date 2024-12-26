@@ -218,8 +218,8 @@ Factura.propTypes = {
 		nombre: PropTypes.string.isRequired,
 		carnet: PropTypes.string.isRequired,
 		direccion: PropTypes.string.isRequired,
-	}).isRequired, // Añadir esta línea
-	handleClienteChange: PropTypes.func.isRequired, // Añadir esta línea
+	}).isRequired,
+	handleClienteChange: PropTypes.func.isRequired,
 };
 
 export default Factura;
