@@ -292,7 +292,7 @@ const AgregarVenta = () => {
 			});
 
 			if (result.isConfirmed) {
-				const gestorSeleccionado = result.value !== 'Ninguno' ? { nombre: result.value } : {}; // Ajustar la lógica
+				const gestorSeleccionado = result.value !== 'Ninguno' ? { nombre: result.value } : 'Ninguno'; // Ajustar la lógica
 				// Asegúrate de que cada producto tenga los campos requeridos
 				const productosValidados = formState.productos.map((producto) => ({
 					...producto,
@@ -310,7 +310,7 @@ const AgregarVenta = () => {
 					totalProductos: formState.totalProductos,
 					precioTotal: formState.precioTotal,
 					fecha: new Date(),
-					gestor: gestorSeleccionado, // Enviar el gestor
+					gestor: gestorSeleccionado, // Enviar el gestor como "Ninguno" si es "Ninguno"
 					codigoFactura: codigoFactura,
 					cliente: cliente, // Añadir esta línea
 				});

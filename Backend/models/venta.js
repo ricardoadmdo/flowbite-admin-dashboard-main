@@ -70,10 +70,7 @@ const VentaSchema = new Schema({
 		required: true,
 		default: Date.now,
 	},
-	gestor: {
-		type: GestorSchema,
-		required: true,
-	},
+	gestor: { type: Schema.Types.Mixed, required: true },
 	codigoFactura: {
 		type: String,
 		required: true,

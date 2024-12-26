@@ -4,7 +4,7 @@ const Producto = require('../models/producto');
 
 // Crear una nueva venta
 const createVenta = async (req, res) => {
-	const { productos, cliente, ...datos } = req.body;
+	const { productos, cliente, gestor, ...datos } = req.body;
 
 	try {
 		// Verifica que los campos requeridos estén presentes
@@ -17,8 +17,11 @@ const createVenta = async (req, res) => {
 			return res.status(400).json({ message: 'Datos del cliente incompletos' });
 		}
 
+		// Ajusta el campo gestor si es una cadena vacía
+		const gestorAjustado = gestor.nombre === '' ? 'Ninguno' : gestor.nombre;
+
 		// Crear un nuevo objeto Venta con los datos recibidos
-		const nuevaVenta = new Venta({ ...datos, productos, cliente });
+		const nuevaVenta = new Venta({ ...datos, productos, cliente, gestor: gestorAjustado });
 
 		// Guardar la nueva venta en la base de datos
 		await nuevaVenta.save();

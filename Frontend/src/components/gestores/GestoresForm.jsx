@@ -76,7 +76,7 @@ const GestoresForm = () => {
 	const update = () => {
 		Axios.put(`/gestor/${id}`, { nombre })
 			.then(() => {
-				navigate('/gestionar-gestor');
+				navigate('/gestionar-gestores');
 				Swal.fire({
 					toast: true,
 					position: 'top-end',
