@@ -152,6 +152,7 @@ const Factura = ({
 					<span className='fw-bold'>Nombre: </span>
 					<input
 						type='text'
+						placeholder='Nombre del cliente'
 						name='nombre'
 						value={cliente.nombre}
 						onChange={handleClienteChange}
@@ -163,6 +164,7 @@ const Factura = ({
 					<span className='fw-bold'>Carnet de Identidad: </span>
 					<input
 						type='number'
+						placeholder='Carnet del cliente'
 						name='carnet'
 						value={cliente.carnet}
 						onChange={handleClienteChange}
@@ -174,6 +176,7 @@ const Factura = ({
 					<span className='fw-bold'>Dirección: </span>
 					<input
 						type='text'
+						placeholder='Dirección del cliente'
 						name='direccion'
 						value={cliente.direccion}
 						onChange={handleClienteChange}
