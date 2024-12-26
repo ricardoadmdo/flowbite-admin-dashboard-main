@@ -30,6 +30,21 @@ const ProductoSchema = Schema({
 	},
 });
 
+const ClienteSchema = new Schema({
+	nombre: {
+		type: String,
+		required: [true, 'El nombre es obligatorio'],
+	},
+	carnet: {
+		type: String,
+		required: [true, 'El carnet de identidad es obligatorio'],
+	},
+	direccion: {
+		type: String,
+		required: [true, 'La dirección es obligatoria'],
+	},
+});
+
 const VentaSchema = new Schema({
 	productos: {
 		type: [ProductoSchema],
@@ -51,6 +66,15 @@ const VentaSchema = new Schema({
 	gestor: {
 		type: String,
 		enum: ['Elena', 'Milton', 'Liset', 'Berardo', 'Monaco', 'AnaMaria', 'Greter', 'Wilson', 'Jazmin', 'Ninguno'],
+		required: true,
+	},
+	codigoFactura: {
+		type: String,
+		required: true,
+		unique: true,
+	},
+	cliente: {
+		type: ClienteSchema,
 		required: true,
 	},
 });

@@ -171,6 +171,8 @@ const ReporteVentas = () => {
 									<th>Productos</th>
 									<th>Total Recaudado</th>
 									<th>Ganancia por Venta</th>
+									<th>Factura</th>
+									<th>Datos del Cliente</th>
 									<th>Gestor</th>
 									<th>Acciones</th>
 								</tr>
@@ -206,6 +208,21 @@ const ReporteVentas = () => {
 												</td>
 												<td>${venta.precioTotal.toFixed(2)} CUP</td>
 												<td>${gananciaVenta.toFixed(2)} CUP</td>
+												<td>{venta.codigoFactura}</td>
+												<td>
+													<ul style={{ paddingLeft: '15px', listStyleType: 'none' }}>
+														<li>
+															<strong>Nombre:</strong> {venta.cliente.nombre}
+														</li>
+														<li>
+															<strong>Carnet:</strong> {venta.cliente.carnet}
+														</li>
+														<li>
+															<strong>Dirección:</strong> {venta.cliente.direccion}
+														</li>
+													</ul>
+												</td>
+
 												<td>{venta.gestor}</td>
 												<td>
 													<button

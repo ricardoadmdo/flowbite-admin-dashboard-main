@@ -5,6 +5,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Factura from './Factura';
 
+// Función para buscar el último código de factura
+const fetchUltimoCodigoFactura = async () => {
+	const response = await Axios.get('/venta/ultimo-codigo-factura');
+	return response.data.ultimoCodigoFactura;
+};
+
 // Función para buscar productos por nombre similar
 const fetchProductos = async (searchTerm) => {
 	const response = await Axios.get(`/productos?search=${searchTerm}`);
@@ -19,6 +25,19 @@ const AgregarVenta = () => {
 		fecha: new Date(),
 	});
 	const [searchTerm, setSearchTerm] = useState('');
+	const [cliente, setCliente] = useState({
+		nombre: '',
+		carnet: '',
+		direccion: '',
+	});
+
+	const handleClienteChange = (e) => {
+		const { name, value } = e.target;
+		setCliente({
+			...cliente,
+			[name]: value,
+		});
+	};
 
 	const queryClient = useQueryClient();
 	const refetchProductos = () => {
@@ -41,7 +60,7 @@ const AgregarVenta = () => {
 
 	const ventaMutation = useMutation({
 		mutationFn: (newVenta) => Axios.post('/venta', newVenta),
-		onSuccess: () => {
+		onSuccess: async () => {
 			refetchProductos();
 			limpiarCampos();
 			Swal.fire({
@@ -63,6 +82,15 @@ const AgregarVenta = () => {
 					text: 'swal-content',
 				},
 			});
+
+			// Obtener y actualizar el nuevo código de factura después de registrar la venta
+			try {
+				const ultimoCodigoFactura = await fetchUltimoCodigoFactura();
+				const nuevoCodigoFactura = generarCodigoFactura(ultimoCodigoFactura);
+				setCodigoFactura(nuevoCodigoFactura);
+			} catch (error) {
+				console.error('Error al obtener el nuevo código de factura:', error);
+			}
 		},
 		onError: (error) => {
 			console.log(error);
@@ -81,6 +109,7 @@ const AgregarVenta = () => {
 			precioTotal: 0,
 			fecha: new Date(),
 		});
+		setCliente({ nombre: '', carnet: '', direccion: '' });
 	};
 
 	// Función para agregar productos seleccionados y sus cantidades
@@ -177,6 +206,36 @@ const AgregarVenta = () => {
 		});
 	};
 
+	const generarCodigoFactura = (ultimoCodigoFactura) => {
+		if (ultimoCodigoFactura) {
+			const [dia, mes, numero] = ultimoCodigoFactura.split('/');
+			const nuevoNumero = (parseInt(numero) + 1).toString().padStart(2, '0');
+			return `${dia}/${mes}/${nuevoNumero}`;
+		} else {
+			const fecha = new Date();
+			const dia = fecha.getDate().toString().padStart(2, '0');
+			const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+			const numero = '01';
+			return `${dia}/${mes}/${numero}`;
+		}
+	};
+
+	const [codigoFactura, setCodigoFactura] = useState('');
+
+	useEffect(() => {
+		const obtenerUltimoCodigoFactura = async () => {
+			try {
+				const ultimoCodigoFactura = await fetchUltimoCodigoFactura();
+				const nuevoCodigoFactura = generarCodigoFactura(ultimoCodigoFactura);
+				setCodigoFactura(nuevoCodigoFactura);
+			} catch (error) {
+				console.error('Error al obtener el último código de factura:', error);
+			}
+		};
+
+		obtenerUltimoCodigoFactura();
+	}, []);
+
 	// Validar venta
 	const validarVenta = async () => {
 		if (formState.productos.length === 0) {
@@ -184,6 +243,15 @@ const AgregarVenta = () => {
 				icon: 'error',
 				title: 'No hay productos',
 				text: 'Debe agregar al menos un producto a la venta',
+			});
+			return;
+		}
+
+		if (!cliente.nombre || !cliente.carnet || !cliente.direccion) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Datos del cliente incompletos',
+				text: 'Debe completar todos los datos del cliente',
 			});
 			return;
 		}
@@ -210,7 +278,7 @@ const AgregarVenta = () => {
 
 			if (result.isConfirmed) {
 				const gestor = result.value || 'Ninguno';
-				// Asegurarse de que cada producto tenga los campos requeridos
+				// Asegúrate de que cada producto tenga los campos requeridos
 				const productosValidados = formState.productos.map((producto) => ({
 					...producto,
 					existencia: producto.existencia || 0,
@@ -228,6 +296,8 @@ const AgregarVenta = () => {
 					precioTotal: formState.precioTotal,
 					fecha: new Date(),
 					gestor: gestor, // Enviar el gestor
+					codigoFactura: codigoFactura,
+					cliente: cliente, // Añadir esta línea
 				});
 			}
 		} catch (error) {
@@ -303,6 +373,9 @@ const AgregarVenta = () => {
 				disminuirCantidad={disminuirCantidad}
 				eliminarProducto={eliminarProducto}
 				validarVenta={validarVenta}
+				codigoFactura={codigoFactura}
+				cliente={cliente}
+				handleClienteChange={handleClienteChange}
 			/>
 		</div>
 	);

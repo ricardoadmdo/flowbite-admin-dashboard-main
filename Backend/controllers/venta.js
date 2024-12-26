@@ -4,7 +4,7 @@ const Producto = require('../models/producto');
 
 // Crear una nueva venta
 const createVenta = async (req, res) => {
-	const { productos, ...datos } = req.body;
+	const { productos, cliente, ...datos } = req.body;
 
 	try {
 		// Verifica que los campos requeridos estén presentes
@@ -12,8 +12,13 @@ const createVenta = async (req, res) => {
 			return res.status(400).json({ message: 'Campos requeridos faltantes' });
 		}
 
+		// Verifica que los datos del cliente no estén vacíos
+		if (!cliente.nombre || !cliente.carnet || !cliente.direccion) {
+			return res.status(400).json({ message: 'Datos del cliente incompletos' });
+		}
+
 		// Crear un nuevo objeto Venta con los datos recibidos
-		const nuevaVenta = new Venta({ ...datos, productos });
+		const nuevaVenta = new Venta({ ...datos, productos, cliente });
 
 		// Guardar la nueva venta en la base de datos
 		await nuevaVenta.save();
@@ -67,6 +72,17 @@ const getVentas = async (req = request, res = response) => {
 			msg: 'Error al obtener las ventas',
 			error: error.message,
 		});
+	}
+};
+
+const getUltimoCodigoFactura = async (req, res) => {
+	try {
+		const ultimaVenta = await Venta.findOne().sort({ fecha: -1 }).exec();
+		const ultimoCodigoFactura = ultimaVenta ? ultimaVenta.codigoFactura : null;
+		res.status(200).json({ ultimoCodigoFactura });
+	} catch (error) {
+		console.error('Error al obtener el último código de factura:', error.message);
+		res.status(500).json({ message: 'Error al obtener el último código de factura' });
 	}
 };
 
@@ -236,4 +252,5 @@ module.exports = {
 	getVentasPorMes,
 	getVentasPorMesGestor,
 	getAllVentasByDay,
+	getUltimoCodigoFactura,
 };

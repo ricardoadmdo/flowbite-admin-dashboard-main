@@ -1,24 +1,20 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import html2pdf from 'html2pdf.js';
-
-const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad, eliminarProducto, validarVenta }) => {
+const Factura = ({
+	formState,
+	setFormState,
+	aumentarCantidad,
+	disminuirCantidad,
+	eliminarProducto,
+	validarVenta,
+	codigoFactura,
+	cliente,
+	handleClienteChange, // Recibe la función del padre
+}) => {
 	const facturaRef = useRef();
-	const [cliente, setCliente] = useState({
-		nombre: '',
-		carnet: '',
-		direccion: '',
-	});
-
-	const handleInputChange = (e) => {
-		const { name, value } = e.target;
-		setCliente({
-			...cliente,
-			[name]: value,
-		});
-	};
 
 	const handlePrecioChange = (uid, value) => {
 		const nuevoPrecio = parseFloat(value);
@@ -74,7 +70,7 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 			<div className='mb-4'>
 				<div className='d-flex justify-content-between'>
 					<span className='fw-bold'>Servicios Bravo</span>
-					<span className='fw-bold'>Código: 12345</span> {/* Ejemplo de código de factura */}
+					<span className='fw-bold'>Código: {codigoFactura}</span>
 				</div>
 				<div className='text-start mt-2'>
 					<span>Falgueras entre auditor y Santa Catalina, Empresa de fósforos ENFOS Cerro, La Habana</span>
@@ -158,7 +154,7 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 						type='text'
 						name='nombre'
 						value={cliente.nombre}
-						onChange={handleInputChange}
+						onChange={handleClienteChange}
 						className='border-0 flex-grow-1'
 						style={{ minWidth: '50px', flex: '1' }}
 					/>
@@ -169,7 +165,7 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 						type='number'
 						name='carnet'
 						value={cliente.carnet}
-						onChange={handleInputChange}
+						onChange={handleClienteChange}
 						className='editable-input border-0 p-0'
 						style={{ minWidth: '50px', flex: '1' }}
 					/>
@@ -180,7 +176,7 @@ const Factura = ({ formState, setFormState, aumentarCantidad, disminuirCantidad,
 						type='text'
 						name='direccion'
 						value={cliente.direccion}
-						onChange={handleInputChange}
+						onChange={handleClienteChange}
 						className='border-0 flex-grow-1'
 						style={{ minWidth: '50px', flex: '1' }}
 					/>
@@ -217,6 +213,13 @@ Factura.propTypes = {
 	disminuirCantidad: PropTypes.func.isRequired,
 	eliminarProducto: PropTypes.func.isRequired,
 	validarVenta: PropTypes.func.isRequired,
+	codigoFactura: PropTypes.string.isRequired,
+	cliente: PropTypes.shape({
+		nombre: PropTypes.string.isRequired,
+		carnet: PropTypes.string.isRequired,
+		direccion: PropTypes.string.isRequired,
+	}).isRequired, // Añadir esta línea
+	handleClienteChange: PropTypes.func.isRequired, // Añadir esta línea
 };
 
 export default Factura;
