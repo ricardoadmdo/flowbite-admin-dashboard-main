@@ -42,8 +42,8 @@ const UsuarioList = () => {
 
 	const deleteUsuario = async (usuario) => {
 		const result = await Swal.fire({
-			title: `¿Está seguro que desea eliminar el usuario <strong>${usuario.nombre}</strong>?`,
-			text: 'El usuario será eliminado!',
+			title: 'Eliminar',
+			html: `¿Está seguro que desea eliminar el usuario <strong>${usuario.nombre}</strong>?`,
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonText: 'Sí, eliminar',
