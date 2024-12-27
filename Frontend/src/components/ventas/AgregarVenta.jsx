@@ -179,39 +179,57 @@ const AgregarVenta = () => {
 		});
 	};
 
-	const aumentarCantidad = (productoId) => {
+	const aumentarCantidad = (uid, cantidad = 1) => {
 		setFormState((prevState) => {
-			const nuevosProductos = prevState.productos.map((p) =>
-				p.uid === productoId ? { ...p, cantidad: p.cantidad + 1 } : p
+			const productosActualizados = prevState.productos.map((producto) => {
+				if (producto.uid === uid) {
+					const nuevaCantidad = producto.cantidad + cantidad;
+					if (nuevaCantidad <= producto.existencia) {
+						return { ...producto, cantidad: nuevaCantidad };
+					} else {
+						Swal.fire({
+							icon: 'warning',
+							title: 'No hay suficiente Stock',
+							text: 'La cantidad introducida sobrepasa el stock',
+						});
+					}
+				}
+				return producto;
+			});
+
+			const precioTotal = productosActualizados.reduce(
+				(total, producto) => total + producto.cantidad * producto.venta,
+				0
 			);
 
-			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
-			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
-
-			return {
-				...prevState,
-				productos: nuevosProductos,
-				totalProductos,
-				precioTotal,
-			};
+			return { ...prevState, productos: productosActualizados, precioTotal };
 		});
 	};
 
-	const disminuirCantidad = (productoId) => {
+	const disminuirCantidad = (uid, cantidad = 1) => {
 		setFormState((prevState) => {
-			const nuevosProductos = prevState.productos.map((p) =>
-				p.uid === productoId ? { ...p, cantidad: p.cantidad - 1 } : p
+			const productosActualizados = prevState.productos.map((producto) => {
+				if (producto.uid === uid) {
+					const nuevaCantidad = producto.cantidad - cantidad;
+					if (nuevaCantidad >= 1) {
+						return { ...producto, cantidad: nuevaCantidad };
+					} else {
+						Swal.fire({
+							icon: 'error',
+							title: 'La cantidad no puede ser menor a 1',
+							text: 'No puedes registrar un producto negativo',
+						});
+					}
+				}
+				return producto;
+			});
+
+			const precioTotal = productosActualizados.reduce(
+				(total, producto) => total + producto.cantidad * producto.venta,
+				0
 			);
 
-			const totalProductos = nuevosProductos.reduce((acc, p) => acc + p.cantidad, 0);
-			const precioTotal = nuevosProductos.reduce((acc, p) => acc + p.venta * p.cantidad, 0);
-
-			return {
-				...prevState,
-				productos: nuevosProductos,
-				totalProductos,
-				precioTotal,
-			};
+			return { ...prevState, productos: productosActualizados, precioTotal };
 		});
 	};
 
