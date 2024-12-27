@@ -89,12 +89,7 @@ const ProductList = () => {
     const totalPages = productosData?.totalPages || 1;
 
     return (
-        <div className='container-fluid d-flex justify-content-center align-items-center vh-100'
-			style={{
-				backgroundImage: `url(${background})`,
-				backgroundSize: 'cover',
-				backgroundPosition: 'center center',
-			}}
+        <div className='container md-5'
 		>
             <h2 className='text-center mb-4'>Lista de Productos</h2>
 
