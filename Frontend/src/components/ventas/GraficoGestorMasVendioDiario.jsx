@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 CustomTooltip.propTypes = {
 	active: PropTypes.bool,
 	payload: PropTypes.arrayOf(PropTypes.object),
-	label: PropTypes.string,
+	label: PropTypes.number,
 };
 
 const GraficoGestorRecaudacionMensual = () => {
