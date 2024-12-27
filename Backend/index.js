@@ -35,6 +35,7 @@ app.use('/api/usuarios', require('./routes/usuario'));
 app.use('/api/productos', require('./routes/producto'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/venta', require('./routes/venta'));
+app.use('/api/gestor', require('./routes/gestor'));
 
 //Escuchar peticiones.
 app.listen(process.env.PORT, () => {

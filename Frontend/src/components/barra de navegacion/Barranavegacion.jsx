@@ -98,6 +98,10 @@ const Barranavegacion = () => {
 								<FontAwesomeIcon icon={faBoxes} className='me-2' />
 								Gestionar Productos
 							</NavLink>
+							<NavLink to='/gestionar-gestores' className='nav-link'>
+								<FontAwesomeIcon icon={faUserCog} className='me-2' />
+								Gestionar Gestores
+							</NavLink>
 							<NavLink to='/resumenProductos' className='nav-link'>
 								<FontAwesomeIcon icon={faBoxes} className='me-2' />
 								Inventario

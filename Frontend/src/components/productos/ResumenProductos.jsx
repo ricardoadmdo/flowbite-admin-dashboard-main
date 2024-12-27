@@ -34,6 +34,18 @@ const ResumenProductos = () => {
 		fetchData();
 	}, []);
 
+	// Obtener fecha actual y formatearla
+	const obtenerFechaFormateada = () => {
+		const fecha = new Date();
+		return fecha
+			.toLocaleDateString('es-ES', {
+				day: '2-digit',
+				month: '2-digit',
+				year: 'numeric',
+			})
+			.replace(/\//g, '-'); // Cambiar barras por guiones
+	};
+
 	const handlePrint = async () => {
 		try {
 			const data = await fetchProductos();
@@ -41,9 +53,10 @@ const ResumenProductos = () => {
 
 			setTimeout(() => {
 				const element = componentRef.current;
+				const fechaFormateada = obtenerFechaFormateada();
 				const opt = {
 					margin: 0.5,
-					filename: 'Resumen de Productos.pdf',
+					filename: `Reporte_de_Inventario_${fechaFormateada}.pdf`, // Incluye la fecha en el nombre del archivo
 					image: { type: 'jpeg', quality: 0.98 },
 					html2canvas: { scale: 2 },
 					jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
@@ -53,11 +66,6 @@ const ResumenProductos = () => {
 		} catch (error) {
 			console.error('Error fetching all productos for printing:', error);
 		}
-	};
-
-	const getCurrentDate = () => {
-		const date = new Date();
-		return date.toLocaleDateString();
 	};
 
 	if (isLoading) return <ProductSkeleton />;
@@ -84,13 +92,12 @@ const ResumenProductos = () => {
 				<h4 className='text-center'>Existencia de Productos</h4>
 				<div className='d-flex justify-content-between mb-4'>
 					<span>Área: Almacén</span>
-					<span>{getCurrentDate()}</span>
+					<span>{obtenerFechaFormateada()}</span>
 				</div>
 				<ul className='list-group mb-4'>
 					<li className='list-group-item'>
 						<strong>Total de Productos:</strong> {totalProductos}
 					</li>
-
 					<li className='list-group-item'>
 						<strong>Total Costo de Inventario:</strong> ${totalCostoInventario.toFixed(2)}
 					</li>
@@ -101,7 +108,6 @@ const ResumenProductos = () => {
 						<strong>Total Ganancia Esperada:</strong> ${totalGanancia.toFixed(2)}
 					</li>
 				</ul>
-
 				<h5 className='text-center mb-4'>Servicios Bravo</h5>
 				<div className='table-responsive'>
 					<table className='table table-striped table-bordered'>

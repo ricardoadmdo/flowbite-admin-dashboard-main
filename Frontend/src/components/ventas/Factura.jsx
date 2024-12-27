@@ -46,7 +46,7 @@ const Factura = ({
 			.from(element)
 			.set({
 				margin: 1,
-				filename: 'Factura_Servicios_Bravo.pdf',
+				filename: `Factura_Servicios_Bravo_${codigoFactura}.pdf`,
 				html2canvas: { scale: 2 },
 				jsPDF: { orientation: 'portrait' },
 			})
@@ -152,6 +152,7 @@ const Factura = ({
 					<span className='fw-bold'>Nombre: </span>
 					<input
 						type='text'
+						placeholder='Nombre del cliente'
 						name='nombre'
 						value={cliente.nombre}
 						onChange={handleClienteChange}
@@ -163,6 +164,7 @@ const Factura = ({
 					<span className='fw-bold'>Carnet de Identidad: </span>
 					<input
 						type='number'
+						placeholder='Carnet del cliente'
 						name='carnet'
 						value={cliente.carnet}
 						onChange={handleClienteChange}
@@ -174,6 +176,7 @@ const Factura = ({
 					<span className='fw-bold'>Dirección: </span>
 					<input
 						type='text'
+						placeholder='Dirección del cliente'
 						name='direccion'
 						value={cliente.direccion}
 						onChange={handleClienteChange}
@@ -218,8 +221,8 @@ Factura.propTypes = {
 		nombre: PropTypes.string.isRequired,
 		carnet: PropTypes.string.isRequired,
 		direccion: PropTypes.string.isRequired,
-	}).isRequired, // Añadir esta línea
-	handleClienteChange: PropTypes.func.isRequired, // Añadir esta línea
+	}).isRequired,
+	handleClienteChange: PropTypes.func.isRequired,
 };
 
 export default Factura;
