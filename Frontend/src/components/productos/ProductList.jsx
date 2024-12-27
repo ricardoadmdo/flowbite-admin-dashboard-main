@@ -44,7 +44,8 @@ const ProductList = () => {
 
 	const handleDelete = async (producto) => {
 		const result = await Swal.fire({
-			title: `¿Está seguro de eliminar el producto ${producto.nombre}?`,
+			title: `Eliminar`,
+			html: `¿Está seguro de eliminar el producto <strong>${producto.nombre}</strong>?`,
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonText: 'Sí, eliminar',

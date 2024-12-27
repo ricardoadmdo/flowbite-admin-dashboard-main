@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import html2pdf from 'html2pdf.js';
+
 const Factura = ({
 	formState,
 	setFormState,
@@ -12,8 +13,30 @@ const Factura = ({
 	validarVenta,
 	codigoFactura,
 	cliente,
-	handleClienteChange, // Recibe la función del padre
+	handleClienteChange,
 }) => {
+	const [cantidadInput, setCantidadInput] = useState({});
+
+	const handleInputChange = (uid, value) => {
+		const cantidad = parseInt(value, 10);
+		if (!isNaN(cantidad) && cantidad > 0) {
+			setCantidadInput((prev) => ({
+				...prev,
+				[uid]: cantidad,
+			}));
+		}
+	};
+
+	const handleAumentarCantidad = (uid) => {
+		const cantidad = cantidadInput[uid] || 1; // Usa la cantidad del input o 1 como predeterminado.
+		aumentarCantidad(uid, cantidad);
+	};
+
+	const handleDisminuirCantidad = (uid) => {
+		const cantidad = cantidadInput[uid] || 1; // Usa la cantidad del input o 1 como predeterminado.
+		disminuirCantidad(uid, cantidad);
+	};
+
 	const facturaRef = useRef();
 
 	const handlePrecioChange = (uid, value) => {
@@ -109,24 +132,38 @@ const Factura = ({
 									<td>{producto.cantidad}</td>
 									<td>${producto.cantidad * producto.venta}</td>
 									<td className='d-print-none'>
-										<button
-											className='btn btn-secondary btn-sm ml-1'
-											onClick={() => aumentarCantidad(producto.uid)}
-										>
-											<FontAwesomeIcon icon={faPlus} />
-										</button>
-										<button
-											className='btn btn-danger btn-sm ml-1'
-											onClick={() => {
-												if (producto.cantidad > 1) {
-													disminuirCantidad(producto.uid);
-												} else {
-													eliminarProducto(producto.uid);
-												}
-											}}
-										>
-											<FontAwesomeIcon icon={producto.cantidad > 1 ? faMinus : faTrashAlt} />
-										</button>
+										<div className='d-flex align-items-center'>
+											{/* Input para cantidad */}
+											<input
+												type='number'
+												min='1'
+												step='1'
+												value={cantidadInput[producto.uid] || ''}
+												onChange={(e) => handleInputChange(producto.uid, e.target.value)}
+												className='form-control form-control-sm mr-2'
+												style={{ maxWidth: '70px' }}
+											/>
+											{/* Botón para aumentar */}
+											<button
+												className='btn btn-secondary btn-sm ml-1'
+												onClick={() => handleAumentarCantidad(producto.uid)}
+											>
+												<FontAwesomeIcon icon={faPlus} />
+											</button>
+											{/* Botón para disminuir */}
+											<button
+												className='btn btn-danger btn-sm ml-1'
+												onClick={() => {
+													if (producto.cantidad > 1) {
+														handleDisminuirCantidad(producto.uid);
+													} else {
+														eliminarProducto(producto.uid);
+													}
+												}}
+											>
+												<FontAwesomeIcon icon={producto.cantidad > 1 ? faMinus : faTrashAlt} />
+											</button>
+										</div>
 									</td>
 								</tr>
 							))}

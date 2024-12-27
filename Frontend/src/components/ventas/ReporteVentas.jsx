@@ -104,12 +104,10 @@ const ReporteVentas = () => {
 
 	const handleDeleteVenta = async (id) => {
 		Swal.fire({
-			title: '¿Estás seguro?',
-			text: 'No podrás revertir esto',
+			title: `Eliminar`,
+			html: `¿Está seguro que desea eliminar esta venta, no podrá revertir esta acción?`,
 			icon: 'warning',
 			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
 			confirmButtonText: 'Sí, eliminar',
 			cancelButtonText: 'Cancelar',
 		}).then(async (result) => {
