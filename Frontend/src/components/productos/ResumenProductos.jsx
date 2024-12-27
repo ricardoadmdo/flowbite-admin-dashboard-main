@@ -81,7 +81,7 @@ const ResumenProductos = () => {
 	const totalVentaInventario = productosList.reduce((acc, producto) => acc + producto.venta * producto.existencia, 0);
 
 	return (
-		<div className='container my-5' style={{ fontSize: '0.8rem' }}>
+		<div className='container my-5'>
 			<div className='text-end'>
 				<button onClick={handlePrint} className='btn btn-primary'>
 					<FontAwesomeIcon icon={faPrint} /> Imprimir
