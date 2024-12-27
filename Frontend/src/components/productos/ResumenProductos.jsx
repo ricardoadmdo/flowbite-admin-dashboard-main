@@ -89,7 +89,7 @@ const ResumenProductos = () => {
 			</div>
 
 			<div ref={componentRef}>
-				<h4 className='text-center'>Existencia de Productos</h4>
+				<h4 className='text-center mb-4 text-primary fw-bold'>Existencia de Productos</h4>
 				<div className='d-flex justify-content-between mb-4'>
 					<span>Área: Almacén</span>
 					<span>{obtenerFechaFormateada()}</span>
@@ -108,10 +108,10 @@ const ResumenProductos = () => {
 						<strong>Total Ganancia Esperada:</strong> ${totalGanancia.toFixed(2)}
 					</li>
 				</ul>
-				<h5 className='text-center mb-4'>Servicios Bravo</h5>
-				<div className='table-responsive'>
-					<table className='table table-striped table-bordered'>
-						<thead className='thead-dark'>
+				<h5 className='text-center mb-4 text-primary fw-bold'>Servicios Bravo</h5>
+				<div className='table-responsive rounded shadow-sm'>
+					<table className='table table-bordered table-striped'>
+						<thead className='bg-gradient text-white' style={{ backgroundColor: '#007BFF' }}>
 							<tr>
 								<th>Código</th>
 								<th>Descripción</th>
@@ -123,7 +123,7 @@ const ResumenProductos = () => {
 								<th>Ganancia Total</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody className='align-middle' style={{ color: 'black' }}>
 							{productosList.map((producto) => {
 								const gananciaProducto = (producto.venta - producto.costo) * producto.existencia;
 								const costoTotalProducto = producto.costo * producto.existencia;

@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '../ui/Pagination';
-import '../ventas/ReporteVentas.css';
+
 import GananciaGestores from './GananciaGestores';
 import ReporteVentasSkeleton from './ReportedeVentaSkeleton';
 
@@ -128,7 +128,7 @@ const ReporteVentas = () => {
 
 	return (
 		<div className='container my-5'>
-			<h2 className='text-center mb-4'>Reporte de Ventas</h2>
+			<h2 className='text-center mb-4 text-primary fw-bold'>Reporte de Ventas</h2>
 
 			<div className='d-flex justify-content-center mb-4'>
 				<DatePicker
@@ -162,9 +162,9 @@ const ReporteVentas = () => {
 
 					<GananciaGestores ventas={ventasGlobales} porcentajeGanancia={0.01} />
 
-					<div className='report-ventas__table-container'>
-						<table className='table report-ventas__table table-striped table-bordered'>
-							<thead className='thead-dark'>
+					<div className='table-responsive rounded shadow-sm'>
+						<table className='table table-bordered table-striped'>
+							<thead className='bg-gradient text-white' style={{ backgroundColor: '#007BFF' }}>
 								<tr>
 									<th>#</th>
 									<th>Hora</th>
@@ -177,7 +177,7 @@ const ReporteVentas = () => {
 									<th>Acciones</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody className='align-middle'>
 								{ventas.length === 0 ? (
 									<tr>
 										<td colSpan='7' className='text-center'>
@@ -225,12 +225,15 @@ const ReporteVentas = () => {
 
 												<td>{venta.gestor}</td>
 												<td>
+												<div className='d-flex flex-wrap justify-content-end gap-2'>
 													<button
-														className='btn btn-danger'
+													    type='button'
+														className='btn btn-danger btn-sm shadow-sm'
 														onClick={() => handleDeleteVenta(venta.uid)}
 													>
 														<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
 													</button>
+												</div>	
 												</td>
 											</tr>
 										);
