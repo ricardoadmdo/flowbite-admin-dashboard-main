@@ -77,59 +77,55 @@ const UsuarioList = () => {
 
 	return (
 		<div className='container my-5'>
-			<h2 className='text-center mb-4 text-primary fw-bold'>Lista de Usuarios</h2>
+			<h2 className='text-center mb-4'>Lista de Usuarios</h2>
 			<div className='text-center mb-4'>
-				<Link to='/usuarioform' className='btn btn-success btn-lg px-4 shadow'>
-					<i className='fas fa-plus-circle'></i> Agregar Nuevo Usuario
+				<Link to='/usuarioform' className='btn btn-success'>
+					Agregar Nuevo Usuario
 				</Link>
 			</div>
-			<div className='table-responsive rounded shadow-sm'>
-				<table className='table table-bordered table-striped'>
-					<thead className='bg-gradient text-white' style={{ backgroundColor: '#007BFF' }}>
+			<div className='table-responsive'>
+				<table className='table table-striped table-bordered'>
+					<thead className='thead-dark'>
 						<tr>
 							<th>Nombre</th>
 							<th>Usuario</th>
 							<th>Rol</th>
-							<th className='text-end'>Acciones</th>
+							<th>Acciones</th>
 						</tr>
 					</thead>
-					<tbody className='align-middle'>
+					<tbody>
 						{usuariosList.map((val) => (
 							<tr key={val.uid}>
 								<td>{val.nombre}</td>
 								<td>{val.usuario}</td>
 								<td>{val.rol}</td>
-								<td className='text-end'>
-									<div className='d-flex flex-wrap justify-content-end gap-2'>
-										<button
-											type='button'
-											className='btn btn-primary btn-sm shadow-sm'
-											onClick={() => navigate(`/editUser/${val.uid}`)}
-										>
-											<FontAwesomeIcon icon={faEdit} /> Editar
-										</button>
-										<button
-											type='button'
-											className='btn btn-danger btn-sm shadow-sm'
-											onClick={() => deleteUsuario(val)}
-										>
-											<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-										</button>
-									</div>
+								<td className='d-flex justify-content-between'>
+									<button
+										type='button'
+										className='btn btn-outline-secondary'
+										onClick={() => navigate(`/editUser/${val.uid}`)}
+									>
+										<FontAwesomeIcon icon={faEdit} /> Editar
+									</button>
+									<button
+										type='button'
+										className='btn btn-outline-danger'
+										onClick={() => deleteUsuario(val)}
+									>
+										<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+									</button>
 								</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
 			</div>
-			<div className='d-flex justify-content-center mt-4'>
-				<Pagination
-					currentPage={currentPage}
-					totalPages={totalPages}
-					handlePreviousPage={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
-					handleNextPage={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
-				/>
-			</div>
+			<Pagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				handlePreviousPage={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+				handleNextPage={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+			/>
 		</div>
 	);
 };

@@ -8,7 +8,7 @@ import ErrorComponent from '../ui/ErrorComponent';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-
+import '../productos/ProductList.css';
 
 const fetchProductos = async (page, limit) => {
 	const response = await Axios.get(`/productos`, {
