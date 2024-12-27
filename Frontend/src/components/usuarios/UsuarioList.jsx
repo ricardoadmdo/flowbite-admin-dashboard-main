@@ -41,6 +41,16 @@ const UsuarioList = () => {
 	}, [currentPage]);
 
 	const deleteUsuario = async (usuario) => {
+		if (usuario.rol === 'Administrador') {
+			Swal.fire({
+				title: 'Error',
+				text: 'No se puede eliminar un usuario con rol Administrador',
+				icon: 'error',
+				confirmButtonText: 'Aceptar',
+			});
+			return;
+		}
+
 		const result = await Swal.fire({
 			title: 'Eliminar',
 			html: `¿Está seguro que desea eliminar el usuario <strong>${usuario.nombre}</strong>?`,

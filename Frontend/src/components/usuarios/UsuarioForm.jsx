@@ -78,7 +78,6 @@ const UsuarioForm = () => {
 				});
 			});
 	};
-	
 	const update = () => {
 		Axios.put(`/usuarios/${id}`, { nombre, contrasena, usuario, rol })
 			.then(() => {
@@ -104,11 +103,17 @@ const UsuarioForm = () => {
 				});
 			})
 			.catch((error) => {
+				let errorMessage = 'Hubo un error al actualizar el usuario. Por favor, intente de nuevo.';
+
+				if (error.response && error.response.data && error.response.data.error) {
+					errorMessage = error.response.data.error;
+				}
+
 				console.error('Hubo un error al actualizar el usuario:', error);
 				Swal.fire({
 					icon: 'error',
 					title: 'Error al actualizar',
-					text: 'Hubo un error al actualizar el usuario. Por favor, intente de nuevo.',
+					text: errorMessage,
 					confirmButtonText: 'Aceptar',
 					customClass: {
 						popup: 'swal-popup-error',
@@ -118,8 +123,6 @@ const UsuarioForm = () => {
 				});
 			});
 	};
-	
-	
 
 	const handleSubmit = (event) => {
 		event.preventDefault();

@@ -85,6 +85,11 @@ const updateUsuario = async (req, res) => {
 			return res.status(404).json({ message: 'Usuario no encontrado' });
 		}
 
+		// No permitir cambiar el rol de un administrador
+		if (usuarioExistente.rol === 'Administrador' && rol && rol !== 'Administrador') {
+			return res.status(400).json({ error: 'No se puede cambiar el rol de un Administrador' });
+		}
+
 		// Verificar si el nombre de usuario ya está en uso por otro usuario
 		const usuarioDuplicado = await Usuario.findOne({ usuario, _id: { $ne: id } });
 		if (usuarioDuplicado) {
@@ -114,13 +119,16 @@ const updateUsuario = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
-
 const deleteUsuario = async (req, res) => {
 	const { id } = req.params;
 
 	try {
 		const usuario = await Usuario.findById(id);
 		if (usuario) {
+			// No permitir eliminar un usuario con rol Administrador
+			if (usuario.rol === 'Administrador') {
+				return res.status(403).json({ message: 'No se puede eliminar un usuario con rol Administrador' });
+			}
 			await usuario.deleteOne();
 			res.status(200).json({ message: 'Usuario eliminado' });
 		} else {
