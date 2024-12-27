@@ -110,7 +110,7 @@ const ResumenProductos = () => {
 				</ul>
 				<h5 className='text-center mb-4'>Servicios Bravo</h5>
 				<div className='table-responsive'>
-					<table className='table table-striped table-bordered'>
+					<table className='table table-striped table-bordered rounded-3 overflow-hidden'>
 						<thead className='thead-dark'>
 							<tr>
 								<th>Código</th>

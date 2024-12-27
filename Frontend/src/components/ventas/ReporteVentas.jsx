@@ -161,7 +161,7 @@ const ReporteVentas = () => {
 					<GananciaGestores ventas={ventasGlobales} porcentajeGanancia={0.01} />
 
 					<div className='report-ventas__table-container'>
-						<table className='table report-ventas__table table-striped table-bordered'>
+						<table className='table report-ventas__table table-striped table-bordered rounded-3 overflow-hidden'>
 							<thead className='thead-dark'>
 								<tr>
 									<th>#</th>
