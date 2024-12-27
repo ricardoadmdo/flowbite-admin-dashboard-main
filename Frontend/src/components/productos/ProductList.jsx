@@ -70,14 +70,16 @@ const ProductList = () => {
 		Swal.fire({
 			title: `Detalles de ${producto.nombre}`,
 			html: `
-                <p><strong>Código:</strong> ${producto.descripcion}</p>
+                <p><strong>Descripción:</strong> ${producto.descripcion}</p>
                 <p><strong>Código:</strong> ${producto.codigo}</p>
                 <p><strong>Precio Venta:</strong> $${producto.venta}</p>
                 <p><strong>Precio Costo:</strong> $${producto.costo}</p>
                 <p><strong>Existencia:</strong> ${producto.existencia} unidades</p>
                 <p><strong>Ganancia por Unidad:</strong> $${gananciaPorUnidad}</p>
-                <p><strong>Costo Total:</strong> $${producto.costo * producto.existencia}</p>
-                <p><strong>Ganancia Total:</strong> $${gananciaTotal}</p>
+                <p><strong>Costo Total de todos los ${producto.nombre}:</strong> $${
+				producto.costo * producto.existencia
+			}</p>
+                <p><strong>Ganancia Total de todos los ${producto.nombre}:</strong> $${gananciaTotal}</p>
             `,
 			icon: 'info',
 			confirmButtonText: 'Cerrar',
@@ -117,16 +119,16 @@ const ProductList = () => {
 								<div className='card-body'>
 									<h5 className='card-title'>{producto.nombre}</h5>
 									<p>
-										<strong>Código:</strong> ${producto.codigo}
+										<strong>Código:</strong> {producto.codigo}
 									</p>
 									<p>
-										<strong>Precio Venta:</strong> $${producto.venta}
+										<strong>Precio Venta:</strong> ${producto.venta}
 									</p>
 									<p>
-										<strong>Precio Costo:</strong> $${producto.costo}
+										<strong>Precio Costo:</strong> ${producto.costo}
 									</p>
 									<p>
-										<strong>Existencia:</strong> ${producto.existencia} unidades
+										<strong>Existencia:</strong> {producto.existencia} unidades
 									</p>
 									<button
 										className='btn btn-outline-primary'

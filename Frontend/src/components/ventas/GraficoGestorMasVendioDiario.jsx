@@ -64,14 +64,14 @@ const GraficoGestorRecaudacionMensual = () => {
 				>
 					<CartesianGrid strokeDasharray='3 3' />
 					<XAxis dataKey='dia' label={{ value: 'Días', position: 'insideBottom', offset: -5 }} />
-					<YAxis label={{ value: 'Total Recaudado ($)', angle: -90, position: 'insideLeft' }} />
+					<YAxis label={{ value: 'Total Recaudado', angle: -90, position: 'insideLeft' }} />
 					<Tooltip content={<CustomTooltip />} />
 					<Legend />
 					<Bar dataKey='total' barSize={20} fill='#8884d8' />
 				</BarChart>
 			</ResponsiveContainer>
 			<div className='mt-4'>
-				<h4 className='text-center'>Detalle de Recaudación</h4>
+				<h4 className='text-center'>Detalles de Recaudación</h4>
 				<ul className='list-group'>
 					{datosRecaudacion.map(({ dia, gestor, total }) => (
 						<li
