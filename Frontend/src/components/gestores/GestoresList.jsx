@@ -42,13 +42,11 @@ const GestoresList = () => {
 
 	const deleteGestor = async (gestor) => {
 		const result = await Swal.fire({
-			title: `¿Está seguro que desea eliminar el gestor <strong>${gestor.nombre}</strong>?`,
-			text: 'El gestor será eliminado!',
+			title: `Eliminar`,
+			html: `¿Está seguro que desea eliminar el gestor <strong>${gestor.nombre}</strong>?`,
 			icon: 'warning',
 			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Sí, eliminar!',
+			confirmButtonText: 'Sí, eliminar',
 			cancelButtonText: 'Cancelar',
 		});
 
