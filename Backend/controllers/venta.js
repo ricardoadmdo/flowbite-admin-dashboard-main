@@ -80,7 +80,7 @@ const getVentas = async (req = request, res = response) => {
 
 const getUltimoCodigoFactura = async (req, res) => {
 	try {
-		const ultimaVenta = await Venta.findOne().sort({ fecha: -1 }).exec();
+		const ultimaVenta = await Venta.findOne({}, { codigoFactura: 1 }).sort({ fecha: -1 }).exec();
 		const ultimoCodigoFactura = ultimaVenta ? ultimaVenta.codigoFactura : null;
 		res.status(200).json({ ultimoCodigoFactura });
 	} catch (error) {

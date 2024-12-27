@@ -234,17 +234,22 @@ const AgregarVenta = () => {
 	};
 
 	const generarCodigoFactura = (ultimoCodigoFactura) => {
+		const fechaActual = new Date();
+		const diaActual = fechaActual.getDate().toString().padStart(2, '0');
+		const mesActual = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+
 		if (ultimoCodigoFactura) {
 			const [dia, mes, numero] = ultimoCodigoFactura.split('/');
-			const nuevoNumero = (parseInt(numero) + 1).toString().padStart(2, '0');
-			return `${dia}/${mes}/${nuevoNumero}`;
-		} else {
-			const fecha = new Date();
-			const dia = fecha.getDate().toString().padStart(2, '0');
-			const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-			const numero = '01';
-			return `${dia}/${mes}/${numero}`;
+			if (dia === diaActual && mes === mesActual) {
+				const nuevoNumero = (parseInt(numero) + 1).toString().padStart(2, '0');
+				localStorage.setItem('ultimoCodigoFactura', `${dia}/${mes}/${nuevoNumero}`);
+				return `${dia}/${mes}/${nuevoNumero}`;
+			}
 		}
+
+		const nuevoCodigo = `${diaActual}/${mesActual}/01`;
+		localStorage.setItem('ultimoCodigoFactura', nuevoCodigo);
+		return nuevoCodigo;
 	};
 
 	useEffect(() => {

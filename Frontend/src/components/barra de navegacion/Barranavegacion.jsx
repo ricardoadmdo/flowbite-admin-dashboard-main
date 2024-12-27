@@ -94,6 +94,10 @@ const Barranavegacion = () => {
 
 					{user.rol === 'Administrador' && (
 						<>
+							<div className='mt-3 px-3'>
+								<h6 className='text-uppercase text-secondary fw-bold'>Opciones de Administrador</h6>
+							</div>
+							<div className='dropdown-divider'></div>
 							<NavLink to='/gestionar-productos' className='nav-link'>
 								<FontAwesomeIcon icon={faBoxes} className='me-2' />
 								Gestionar Productos
@@ -106,20 +110,17 @@ const Barranavegacion = () => {
 								<FontAwesomeIcon icon={faBoxes} className='me-2' />
 								Inventario
 							</NavLink>
-
 							<NavLink to='/gestionar-usuarios' className='nav-link'>
 								<FontAwesomeIcon icon={faUserCog} className='me-2' />
 								Gestionar Usuarios
 							</NavLink>
-
 							<NavLink to='/grafico-ventas' className='nav-link'>
 								<FontAwesomeIcon icon={faChartLine} className='me-2' />
-								Graficos de Ventas
+								Gráficos de Ventas
 							</NavLink>
-
 							<NavLink to='/grafico-venta-gestores' className='nav-link'>
 								<FontAwesomeIcon icon={faChartLine} className='me-2' />
-								Grafico mas ventas por gestor
+								Gráfico más ventas por gestor
 							</NavLink>
 						</>
 					)}

@@ -46,9 +46,7 @@ const UsuarioList = () => {
 			text: 'El usuario será eliminado!',
 			icon: 'warning',
 			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Sí, eliminar!',
+			confirmButtonText: 'Sí, eliminar',
 			cancelButtonText: 'Cancelar',
 		});
 
@@ -94,29 +92,31 @@ const UsuarioList = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{usuariosList.map((val) => (
-							<tr key={val.uid}>
-								<td>{val.nombre}</td>
-								<td>{val.usuario}</td>
-								<td>{val.rol}</td>
-								<td className='d-flex justify-content-between'>
-									<button
-										type='button'
-										className='btn btn-outline-secondary'
-										onClick={() => navigate(`/editUser/${val.uid}`)}
-									>
-										<FontAwesomeIcon icon={faEdit} /> Editar
-									</button>
-									<button
-										type='button'
-										className='btn btn-outline-danger'
-										onClick={() => deleteUsuario(val)}
-									>
-										<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-									</button>
-								</td>
-							</tr>
-						))}
+						{usuariosList
+							.filter((val) => val.nombre !== 'Developer') // Filtrar usuarios cuyo nombre es 'developer'
+							.map((val) => (
+								<tr key={val.uid}>
+									<td>{val.nombre}</td>
+									<td>{val.usuario}</td>
+									<td>{val.rol}</td>
+									<td className='d-flex justify-content-between'>
+										<button
+											type='button'
+											className='btn btn-outline-secondary'
+											onClick={() => navigate(`/editUser/${val.uid}`)}
+										>
+											<FontAwesomeIcon icon={faEdit} /> Editar
+										</button>
+										<button
+											type='button'
+											className='btn btn-outline-danger'
+											onClick={() => deleteUsuario(val)}
+										>
+											<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+										</button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</div>
