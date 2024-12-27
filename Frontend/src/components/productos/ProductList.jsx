@@ -138,12 +138,12 @@ const ProductList = () => {
 
 								<div className='card-footer d-flex justify-content-between'>
 									<button
-										className='btn btn-primary'
+										className='btn btn-outline-secondary'
 										onClick={() => navigate(`/edit/${producto.uid}`)}
 									>
 										<FontAwesomeIcon icon={faEdit} /> Editar
 									</button>
-									<button className='btn btn-danger' onClick={() => handleDelete(producto)}>
+									<button className='btn btn-outline-danger' onClick={() => handleDelete(producto)}>
 										<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
 									</button>
 								</div>
