@@ -265,7 +265,7 @@ const AgregarVenta = () => {
 
 		const obtenerGestores = async () => {
 			try {
-				const gestoresObtenidos = await fetchGestores(1, 100); // Ajusta los parámetros según necesites
+				const gestoresObtenidos = await fetchGestores(1, 100);
 				setGestores(gestoresObtenidos);
 			} catch (error) {
 				console.error('Error al obtener los gestores:', error);
@@ -312,7 +312,7 @@ const AgregarVenta = () => {
 			});
 
 			if (result.isConfirmed) {
-				const gestorSeleccionado = result.value !== 'Ninguno' ? { nombre: result.value } : 'Ninguno'; // Ajustar la lógica
+				const gestorSeleccionado = result.value !== 'Ninguno' ? { nombre: result.value } : 'Ninguno';
 				// Asegúrate de que cada producto tenga los campos requeridos
 				const productosValidados = formState.productos.map((producto) => ({
 					...producto,
