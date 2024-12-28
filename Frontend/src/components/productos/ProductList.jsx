@@ -143,7 +143,7 @@ const ProductList = () => {
 										</div>
 										<div className='mb-2 d-flex justify-content-between'>
 											<span className='text-muted'>Ganancia del Gestor:</span>
-											<span className='fw-bold text-success'>${producto.precioGestor}</span>
+											<span className='fw-bold text-primary'>${producto.precioGestor}</span>
 										</div>
 
 										<div className='d-flex justify-content-between'>

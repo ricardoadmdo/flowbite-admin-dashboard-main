@@ -1,10 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import Axios from '../../api/axiosConfig';
 import ProductSkeleton from './ProductSkeleton';
 import ErrorComponent from '../ui/ErrorComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPrint } from '@fortawesome/free-solid-svg-icons';
 import html2pdf from 'html2pdf.js';
+import { AuthContext } from '../../auth/authContext';
 
 const fetchProductos = async () => {
 	const response = await Axios.get(`/productos/all`);
@@ -12,6 +13,7 @@ const fetchProductos = async () => {
 };
 
 const ResumenProductos = () => {
+	const { user } = useContext(AuthContext);
 	const [productosData, setProductosData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isError, setIsError] = useState(false);
@@ -77,8 +79,17 @@ const ResumenProductos = () => {
 		(acc, producto) => acc + (producto.venta - producto.costo) * producto.existencia,
 		0
 	);
+	const totalGananciaNeta = productosList.reduce(
+		(acc, producto) => acc + (producto.venta - producto.costo - producto.precioGestor) * producto.existencia,
+		0
+	);
 	const totalCostoInventario = productosList.reduce((acc, producto) => acc + producto.costo * producto.existencia, 0);
 	const totalVentaInventario = productosList.reduce((acc, producto) => acc + producto.venta * producto.existencia, 0);
+	const totalVentaInventarioSinGestor = productosList.reduce(
+		(acc, producto) => acc + producto.venta * producto.existencia - producto.precioGestor * producto.existencia,
+		0
+	);
+	const totalGestor = productosList.reduce((acc, producto) => acc + producto.precioGestor * producto.existencia, 0);
 
 	return (
 		<div className='container my-5'>
@@ -98,14 +109,32 @@ const ResumenProductos = () => {
 					<li className='list-group-item'>
 						<strong>Total de Productos:</strong> {totalProductos}
 					</li>
+					{user.rol === 'Administrador' && (
+						<>
+							<li className='list-group-item'>
+								<strong>Total Costo de Inventario:</strong> ${totalCostoInventario.toFixed(2)}
+							</li>
+
+							<li className='list-group-item'>
+								<strong>Total Ganancia Esperada (sin quitar el precio del gestor):</strong> $
+								{totalGanancia.toFixed(2)}
+							</li>
+
+							<li className='list-group-item'>
+								<strong>Total Ganancia Neta para Alejandro (quitando el precio del gestor):</strong> $
+								{totalGananciaNeta.toFixed(2)}
+							</li>
+						</>
+					)}
 					<li className='list-group-item'>
-						<strong>Total Costo de Inventario:</strong> ${totalCostoInventario.toFixed(2)}
+						<strong>Total de Venta (sin quitar gestor):</strong> ${totalVentaInventario.toFixed(2)}
 					</li>
 					<li className='list-group-item'>
-						<strong>Total de Venta:</strong> ${totalVentaInventario.toFixed(2)}
+						<strong>Total de Venta (con gestor quitado):</strong> $
+						{totalVentaInventarioSinGestor.toFixed(2)}
 					</li>
 					<li className='list-group-item'>
-						<strong>Total Ganancia Esperada:</strong> ${totalGanancia.toFixed(2)}
+						<strong>Total de Gestor:</strong> ${totalGestor.toFixed(2)}
 					</li>
 				</ul>
 				<h5 className='text-center mb-4'>Servicios Bravo</h5>
@@ -116,11 +145,15 @@ const ResumenProductos = () => {
 								<th>Código</th>
 								<th>Descripción</th>
 								<th>Existencia</th>
-								<th>Costo</th>
+								{user.rol === 'Administrador' && <th>Costo</th>}
 								<th>Venta</th>
-								<th>Imp-Costo</th>
+								<th>Venta sin Gestor</th>
+								{user.rol === 'Administrador' && <th>Imp-Costo</th>}
 								<th>Imp-Venta</th>
-								<th>Ganancia Total</th>
+								<th>Imp-Venta sin Gestor</th>
+								{user.rol === 'Administrador' && <th>Ganancia Total</th>}
+								{user.rol === 'Administrador' && <th>Ganancia Neta</th>}
+								<th>Ganancia Gestor</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -128,17 +161,26 @@ const ResumenProductos = () => {
 								const gananciaProducto = (producto.venta - producto.costo) * producto.existencia;
 								const costoTotalProducto = producto.costo * producto.existencia;
 								const ventaTotalProducto = producto.venta * producto.existencia;
+								const ventaTotalProductoSinGestor =
+									producto.venta * producto.existencia - producto.precioGestor * producto.existencia;
+								const gananciaSinGestor =
+									(producto.venta - producto.precioGestor - producto.costo) * producto.existencia;
+								const gananciaGestor = producto.precioGestor * producto.existencia;
 
 								return (
 									<tr key={producto.uid}>
 										<td>{producto.codigo}</td>
 										<td>{producto.descripcion}</td>
 										<td>{producto.existencia}</td>
-										<td>${producto.costo.toFixed(2)}</td>
+										{user.rol === 'Administrador' && <td>${producto.costo.toFixed(2)}</td>}
 										<td>${producto.venta.toFixed(2)}</td>
-										<td>${costoTotalProducto.toFixed(2)}</td>
+										<td>${producto.precioGestor.toFixed(2)}</td>
+										{user.rol === 'Administrador' && <td>${costoTotalProducto.toFixed(2)}</td>}
 										<td>${ventaTotalProducto.toFixed(2)}</td>
-										<td>${gananciaProducto.toFixed(2)}</td>
+										<td>${ventaTotalProductoSinGestor.toFixed(2)}</td>
+										{user.rol === 'Administrador' && <td>${gananciaProducto.toFixed(2)}</td>}
+										{user.rol === 'Administrador' && <td>${gananciaSinGestor.toFixed(2)}</td>}
+										<td>{gananciaGestor.toFixed(2)}</td>
 									</tr>
 								);
 							})}
