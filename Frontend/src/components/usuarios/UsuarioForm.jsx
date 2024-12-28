@@ -138,7 +138,7 @@ const UsuarioForm = () => {
 			<div className='row justify-content-center'>
 				<div className='col-md-6'>
 					<div className='card shadow-sm'>
-						<div className='card-body'>
+						<div className='card-body bg-light'>
 							<h2 className='text-center mb-4'>{editar ? 'Editar Usuario' : 'Agregar Nuevo Usuario'}</h2>
 							<form onSubmit={handleSubmit}>
 								<div className='mb-3'>

@@ -1,14 +1,30 @@
-/* styles.css */
-.product-list-container {
-    background-image: url('../../images/login.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100%; /* Asegura que ocupe todo el alto disponible */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box; /* Asegura que el padding no aumente el tamaño */
+.product-card {
+	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.product-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-img-wrapper {
+	overflow: hidden;
+}
+
+.img-overlay {
+	background: rgba(0, 0, 0, 0.3);
+	opacity: 0;
+	transition: opacity 0.2s ease-in-out;
+}
+
+.product-card:hover .img-overlay {
+	opacity: 1;
+}
+
+.btn {
+	transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+	transform: translateY(-1px);
 }

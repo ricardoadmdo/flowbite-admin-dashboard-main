@@ -126,7 +126,7 @@ const GestoresForm = () => {
 		<div className='container animate__animated animate__fadeIn my-4'>
 			<div className='row justify-content-center'>
 				<div className='col-md-6'>
-					<div className='card shadow-sm'>
+					<div className='card shadow-sm bg-light'>
 						<div className='card-body'>
 							<h2 className='text-center mb-4'>{editar ? 'Editar Gestor' : 'Agregar Nuevo Gestor'}</h2>
 							<form onSubmit={handleSubmit}>
