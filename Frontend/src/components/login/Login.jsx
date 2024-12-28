@@ -58,7 +58,7 @@ const Login = () => {
 				});
 			}
 		} catch (error) {
-			console.error('Error durante la autenticación:', error);
+			console.error('Error durante la autenticación:', error.response ? error.response.data : error.message);
 			Swal.fire({
 				title: 'Error',
 				text: 'Error durante la autenticación',

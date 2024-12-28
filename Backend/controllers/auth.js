@@ -6,21 +6,18 @@ const login = async (req, res) => {
 	const { usuario, contrasena } = req.body;
 
 	try {
-		// Busca el usuario en la base de datos
 		const user = await Usuario.findOne({ usuario });
 
 		if (!user) {
 			return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
 		}
 
-		// Compara la contraseña ingresada con la almacenada en la base de datos
 		const isMatch = await bcryptjs.compare(contrasena, user.contrasena);
 
 		if (!isMatch) {
 			return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
 		}
 
-		// Si el usuario y la contraseña son correctos
 		res.json({
 			success: true,
 			message: 'Inicio de sesión exitoso',

@@ -78,8 +78,9 @@ const UsuarioForm = () => {
 				});
 			});
 	};
+
 	const update = () => {
-		Axios.put(`/usuarios/${id}`, { nombre, contrasena, usuario, rol })
+		Axios.put(`/usuarios/${id}`, { nombre, usuario, rol })
 			.then(() => {
 				navigate('/gestionar-usuarios');
 				Swal.fire({
