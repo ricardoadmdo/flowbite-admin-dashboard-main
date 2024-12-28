@@ -1,5 +1,13 @@
 const { Router } = require('express');
-const { productosPost, productosGet, productosPut, productoDelete, getProductoPorId, productosBuscar } = require('../controllers/producto');
+const {
+	productosPost,
+	productosGet,
+	productosPut,
+	productoDelete,
+	getProductoPorId,
+	productosBuscar,
+	productosGetAll,
+} = require('../controllers/producto');
 
 const router = Router();
 
@@ -8,6 +16,9 @@ router.post('/', productosPost);
 
 // Obtener todos los Producto
 router.get('/', productosGet);
+
+// Obtener todos los Producto con Paginacion
+router.get('/all', productosGetAll);
 
 // Obtener 1 producto por su id
 router.get('/:id', getProductoPorId);

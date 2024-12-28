@@ -7,7 +7,7 @@ import { faPrint } from '@fortawesome/free-solid-svg-icons';
 import html2pdf from 'html2pdf.js';
 
 const fetchProductos = async () => {
-	const response = await Axios.get(`/productos`);
+	const response = await Axios.get(`/productos/all`);
 	return response.data;
 };
 

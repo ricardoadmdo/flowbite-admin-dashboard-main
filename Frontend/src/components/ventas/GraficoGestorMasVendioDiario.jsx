@@ -33,8 +33,13 @@ const GraficoGestorRecaudacionMensual = () => {
 			try {
 				const { data: ventasMensuales } = await Axios.get('/venta/gestor');
 
+				// Filtrar ventas donde el gestor no es "Ninguno" o vacío
+				const datosFiltrados = ventasMensuales.filter(
+					({ gestor }) => gestor.toLowerCase() !== 'Ninguno' && gestor.trim().length > 0
+				);
+
 				// Convertir el objeto en un arreglo para el gráfico
-				const datosProcesados = ventasMensuales.map(({ dia, gestor, total }) => ({
+				const datosProcesados = datosFiltrados.map(({ dia, gestor, total }) => ({
 					dia,
 					gestor,
 					total,

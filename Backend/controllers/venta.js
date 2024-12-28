@@ -151,6 +151,7 @@ const getVentasPorMes = async (req, res) => {
 		res.status(500).json({ error: 'Error al obtener las ventas del mes' });
 	}
 };
+
 const getVentasPorMesGestor = async (req, res) => {
 	try {
 		const fechaActual = new Date();
@@ -176,10 +177,13 @@ const getVentasPorMesGestor = async (req, res) => {
 			{ $sort: { '_id.dia': 1, 'total': -1 } }, // Ordenar por día y luego por total en orden descendente
 		]);
 
+		// Filtrar gestores que no son "Ninguno"
+		const ventasFiltradas = ventasMensuales.filter((venta) => venta._id.gestor.toLowerCase() !== 'ninguno');
+
 		// Encontrar el gestor con mayor venta por día
 		const ventasMaximasPorDia = [];
 		let currentDay = null;
-		ventasMensuales.forEach((venta) => {
+		ventasFiltradas.forEach((venta) => {
 			if (venta._id.dia !== currentDay) {
 				ventasMaximasPorDia.push({
 					dia: venta._id.dia,

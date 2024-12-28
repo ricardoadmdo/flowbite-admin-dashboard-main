@@ -32,6 +32,23 @@ const productosGet = async (req, res) => {
 	}
 };
 
+const productosGetAll = async (req, res) => {
+	try {
+		const productos = await Producto.find();
+
+		res.json({
+			total: productos.length,
+			productos,
+		});
+	} catch (error) {
+		console.error('Error al obtener los productos:', error);
+		res.status(500).json({
+			msg: 'Error al obtener los productos',
+			error: error.message,
+		});
+	}
+};
+
 const productosBuscar = async (req, res) => {
 	const { page, limit, search } = req.query;
 	const productos = await Producto.find({
@@ -86,8 +103,8 @@ const productosPut = async (req, res) => {
 		productoExistente.existencia = existencia !== undefined ? existencia : productoExistente.existencia;
 		productoExistente.costo = costo !== undefined ? costo : productoExistente.costo;
 		productoExistente.venta = venta !== undefined ? venta : productoExistente.venta;
-		productoExistente.url = url !== undefined ? url : productoExistente.url;
 		productoExistente.precioGestor = precioGestor !== undefined ? precioGestor : productoExistente.precioGestor;
+		productoExistente.url = url !== undefined ? url : productoExistente.url;
 
 		await productoExistente.save();
 		res.status(200).json(productoExistente);
@@ -128,6 +145,7 @@ const productoDelete = async (req, res) => {
 
 module.exports = {
 	productosGet,
+	productosGetAll,
 	productosPut,
 	productosPost,
 	productoDelete,

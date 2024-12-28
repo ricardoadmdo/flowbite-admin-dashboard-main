@@ -93,11 +93,18 @@ const ReporteVentas = () => {
 		setTotalRecaudado(totalRecaudadoCalculado);
 		setGananciaNeta(totalGananciaCalculada - gananciaGestores);
 
-		if (Object.keys(productoContador).length > 0) {
-			const productoMax = Object.keys(productoContador).reduce((a, b) =>
-				productoContador[a] > productoContador[b] ? a : b
+		// Encontrar los productos más vendidos
+		const maxCantidad = Math.max(...Object.values(productoContador));
+		const productosMasVendidos = Object.keys(productoContador).filter(
+			(producto) => productoContador[producto] === maxCantidad
+		);
+
+		if (productosMasVendidos.length > 1) {
+			setProductoMasVendido(
+				`Empatados: ${productosMasVendidos.join(' y ')} con ${maxCantidad} unidades cada uno.`
 			);
-			setProductoMasVendido(productoMax);
+		} else if (productosMasVendidos.length === 1) {
+			setProductoMasVendido(`${productosMasVendidos[0]} con ${maxCantidad} unidades.`);
 		} else {
 			setProductoMasVendido('No hay ventas.');
 		}
