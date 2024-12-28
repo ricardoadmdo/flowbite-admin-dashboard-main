@@ -41,9 +41,9 @@ const AppRouter = () => {
 					<Route
 						path='/gestionar-gestores'
 						element={
-							<AdminRoute>
+							<PrivateRoute>
 								<GestoresList />
-							</AdminRoute>
+							</PrivateRoute>
 						}
 					/>
 					<Route
@@ -121,9 +121,9 @@ const AppRouter = () => {
 					<Route
 						path='/resumenProductos'
 						element={
-							<AdminRoute>
+							<PrivateRoute>
 								<ResumenProductos />
-							</AdminRoute>
+							</PrivateRoute>
 						}
 					/>
 					<Route

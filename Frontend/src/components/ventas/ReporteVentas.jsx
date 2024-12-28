@@ -80,14 +80,13 @@ const ReporteVentas = () => {
 			venta.productos.forEach((producto) => {
 				gananciaVenta += (producto.venta - producto.costo) * producto.cantidad;
 				productoContador[producto.nombre] = (productoContador[producto.nombre] || 0) + producto.cantidad;
+				if (venta.gestor !== 'Ninguno') {
+					gananciaGestores += (producto.precioGestor || 0) * producto.cantidad;
+				}
 			});
 
 			totalRecaudadoCalculado += venta.precioTotal;
 			totalGananciaCalculada += gananciaVenta;
-
-			if (venta.gestor !== 'Ninguno') {
-				gananciaGestores += gananciaVenta * 0.01;
-			}
 		});
 
 		setTotalGanancia(totalGananciaCalculada);
@@ -149,12 +148,14 @@ const ReporteVentas = () => {
 						<p>
 							<strong>Total Recaudado del Día:</strong> ${totalRecaudado.toFixed(2)} CUP
 						</p>
-						<p>
-							<strong>Ganancia Total del Día:</strong> ${totalGanancia.toFixed(2)} CUP
-						</p>
 						{user.rol === 'Administrador' && (
 							<p>
-								{' '}
+								<strong>Ganancia Total del Día:</strong> ${totalGanancia.toFixed(2)} CUP
+							</p>
+						)}
+
+						{user.rol === 'Administrador' && (
+							<p>
 								<strong>Ganancia Neta para Alejandro:</strong> ${gananciaNeta.toFixed(2)} CUP{' '}
 							</p>
 						)}
@@ -173,7 +174,7 @@ const ReporteVentas = () => {
 									<th>Hora</th>
 									<th>Productos</th>
 									<th>Total Recaudado</th>
-									<th>Ganancia por Venta</th>
+									{user.rol === 'Administrador' && <th>Ganancia por Venta</th>}
 									<th>Factura</th>
 									<th>Datos del Cliente</th>
 									<th>Gestor</th>
@@ -210,7 +211,9 @@ const ReporteVentas = () => {
 													</ul>
 												</td>
 												<td>${venta.precioTotal.toFixed(2)} CUP</td>
-												<td>${gananciaVenta.toFixed(2)} CUP</td>
+												{user.rol === 'Administrador' && (
+													<td>${gananciaVenta.toFixed(2)} CUP</td>
+												)}
 												<td>{venta.codigoFactura}</td>
 												<td>
 													<ul style={{ paddingLeft: '15px', listStyleType: 'none' }}>
