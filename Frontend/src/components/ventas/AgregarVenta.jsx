@@ -298,13 +298,10 @@ const AgregarVenta = () => {
 
 		try {
 			// Crear opciones para el modal
-			const gestoresOptions = gestores.reduce(
-				(options, gestor) => {
-					options[gestor.nombre] = gestor.nombre;
-					return options;
-				},
-				{ Ninguno: 'Ninguno' }
-			);
+			const gestoresOptions = gestores.reduce((options, gestor) => {
+				options[gestor.nombre] = gestor.nombre;
+				return options;
+			}, {});
 
 			const result = await Swal.fire({
 				title: 'Seleccione el Gestor',
@@ -322,6 +319,7 @@ const AgregarVenta = () => {
 					existencia: producto.existencia || 0,
 					costo: producto.costo || 0,
 					venta: producto.venta || 0,
+					precioGestor: producto.precioGestor || 0,
 					impuestoCosto: producto.impuestoCosto || 0,
 					impuestoVenta: producto.impuestoVenta || 0,
 					codigo: producto.codigo || 0,
@@ -333,9 +331,9 @@ const AgregarVenta = () => {
 					totalProductos: formState.totalProductos,
 					precioTotal: formState.precioTotal,
 					fecha: new Date(),
-					gestor: gestorSeleccionado, // Enviar el gestor como "Ninguno" si es "Ninguno"
+					gestor: gestorSeleccionado,
 					codigoFactura: codigoFactura,
-					cliente: cliente, // Añadir esta línea
+					cliente: cliente,
 				});
 			}
 		} catch (error) {
@@ -394,7 +392,7 @@ const AgregarVenta = () => {
 						>
 							<div>
 								<span className='fw-bold'>{producto.nombre}</span> - ${producto.venta}
-								<span className='text-muted'> (Stock: {producto.existencia})</span>
+								<span className='text-muted'> (Disponible: {producto.existencia} unidades)</span>
 							</div>
 							<button className='btn btn-success' onClick={() => openModal(producto)}>
 								Agregar
@@ -403,7 +401,7 @@ const AgregarVenta = () => {
 					))
 				)}
 			</div>
-			{/* Separación */} <hr className='my-4' />
+			<hr className='my-4' />
 			<Factura
 				formState={formState}
 				setFormState={setFormState}

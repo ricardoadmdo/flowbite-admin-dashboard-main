@@ -112,14 +112,14 @@ const UsuarioList = () => {
 									<td className='d-flex justify-content-between'>
 										<button
 											type='button'
-											className='btn btn-outline-secondary'
+											className='btn btn-secondary'
 											onClick={() => navigate(`/editUser/${val.uid}`)}
 										>
 											<FontAwesomeIcon icon={faEdit} /> Editar
 										</button>
 										<button
 											type='button'
-											className='btn btn-outline-danger'
+											className='btn btn-danger'
 											onClick={() => deleteUsuario(val)}
 										>
 											<FontAwesomeIcon icon={faTrashAlt} /> Eliminar

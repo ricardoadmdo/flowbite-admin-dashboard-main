@@ -72,8 +72,9 @@ const ProductList = () => {
 			html: `
                 <p><strong>Descripción:</strong> ${producto.descripcion}</p>
                 <p><strong>Código:</strong> ${producto.codigo}</p>
-                <p><strong>Precio Venta:</strong> $${producto.venta}</p>
                 <p><strong>Precio Costo:</strong> $${producto.costo}</p>
+                <p><strong>Precio Venta:</strong> $${producto.venta}</p>
+                <p><strong>Ganancia del Gestor:</strong> $${producto.precioGestor}</p>
                 <p><strong>Existencia:</strong> ${producto.existencia} unidades</p>
                 <p><strong>Ganancia por Unidad:</strong> $${gananciaPorUnidad}</p>
                 <p><strong>Costo Total de todos los ${producto.nombre}:</strong> $${
@@ -133,13 +134,18 @@ const ProductList = () => {
 											<span className='fw-medium'>{producto.codigo}</span>
 										</div>
 										<div className='mb-2 d-flex justify-content-between'>
+											<span className='text-muted'>Precio Costo:</span>
+											<span className='fw-medium text-danger'>${producto.costo}</span>
+										</div>
+										<div className='mb-2 d-flex justify-content-between'>
 											<span className='text-muted'>Precio Venta:</span>
 											<span className='fw-bold text-success'>${producto.venta}</span>
 										</div>
 										<div className='mb-2 d-flex justify-content-between'>
-											<span className='text-muted'>Precio Costo:</span>
-											<span className='fw-medium text-danger'>${producto.costo}</span>
+											<span className='text-muted'>Ganancia del Gestor:</span>
+											<span className='fw-bold text-success'>${producto.precioGestor}</span>
 										</div>
+
 										<div className='d-flex justify-content-between'>
 											<span className='text-muted'>Existencia:</span>
 											<span className='fw-medium'>
@@ -151,13 +157,13 @@ const ProductList = () => {
 
 								<div className='card-footer bg-transparent border-top-0 d-flex gap-2 p-3'>
 									<button
-										className='btn btn-outline-secondary flex-grow-1 d-flex align-items-center justify-content-center gap-2'
+										className='btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center gap-2'
 										onClick={() => navigate(`/edit/${producto.uid}`)}
 									>
 										<Edit size={16} /> Editar
 									</button>
 									<button
-										className='btn btn-outline-danger flex-grow-1 d-flex align-items-center justify-content-center gap-2'
+										className='btn btn-danger flex-grow-1 d-flex align-items-center justify-content-center gap-2'
 										onClick={() => handleDelete(producto)}
 									>
 										<Trash2 size={16} /> Eliminar

@@ -15,6 +15,7 @@ const ProductForm = () => {
 	const [existencia, setExistencia] = useState('');
 	const [costo, setCosto] = useState('');
 	const [venta, setVenta] = useState('');
+	const [precioGestor, setPrecioGestor] = useState('');
 	const [url, setUrl] = useState('');
 	const [file, setFile] = useState(null);
 	const [editar, setEditar] = useState(false);
@@ -39,6 +40,7 @@ const ProductForm = () => {
 				setExistencia(producto.existencia);
 				setCosto(producto.costo);
 				setVenta(producto.venta);
+				setPrecioGestor(producto.precioGestor);
 				setUrl(producto.url);
 			})
 			.catch((error) => {
@@ -87,6 +89,7 @@ const ProductForm = () => {
 				existencia,
 				costo,
 				venta,
+				precioGestor,
 				url: imageUrl,
 			});
 			navigate('/gestionar-productos');
@@ -139,6 +142,7 @@ const ProductForm = () => {
 				existencia,
 				costo,
 				venta,
+				precioGestor,
 				url: imageUrl,
 			});
 			navigate('/gestionar-productos');
@@ -147,7 +151,7 @@ const ProductForm = () => {
 				position: 'top-end',
 				icon: 'success',
 				title: '¡Actualización exitosa!',
-				text: `El producto con código "${codigo}" se ha actualizado con éxito.`,
+				text: `El producto "${nombre}" se ha actualizado con éxito.`,
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
@@ -251,7 +255,7 @@ const ProductForm = () => {
 								</div>
 
 								<div className='mb-3'>
-									<label className='form-label'>Costo</label>
+									<label className='form-label'>Precio de Costo</label>
 									<input
 										type='number'
 										value={costo}
@@ -264,12 +268,24 @@ const ProductForm = () => {
 								</div>
 
 								<div className='mb-3'>
-									<label className='form-label'>Venta</label>
+									<label className='form-label'>Precio de Venta</label>
 									<input
 										type='number'
 										value={venta}
 										onChange={(e) => setVenta(e.target.value)}
 										placeholder='Ingrese el precio de venta'
+										required
+										className='form-control'
+										step='any' // Allows decimal values
+									/>
+								</div>
+								<div className='mb-3'>
+									<label className='form-label'>Ganancia para el Gestor</label>
+									<input
+										type='number'
+										value={precioGestor}
+										onChange={(e) => setPrecioGestor(e.target.value)}
+										placeholder='Ingrese la ganancia para el gestor'
 										required
 										className='form-control'
 										step='any' // Allows decimal values
@@ -287,7 +303,7 @@ const ProductForm = () => {
 												: 'Arrastra una imagen o haz clic para seleccionarla'}
 										</p>
 									</div>
-									{uploading && <p className='text-info'>Subiendo imagen, por favor espera...</p>}{' '}
+									{uploading && <p className='text-dark'>Subiendo imagen, por favor espera...</p>}{' '}
 									{/* Loading message */}
 								</div>
 

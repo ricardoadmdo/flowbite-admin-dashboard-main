@@ -48,7 +48,7 @@ const productosBuscar = async (req, res) => {
 };
 
 const productosPost = async (req, res) => {
-	const { nombre, codigo, descripcion, existencia, costo, venta, url } = req.body;
+	const { nombre, codigo, descripcion, existencia, costo, venta, url, precioGestor } = req.body;
 
 	try {
 		const newProducto = new Producto({
@@ -59,6 +59,7 @@ const productosPost = async (req, res) => {
 			costo,
 			venta,
 			url,
+			precioGestor,
 		});
 
 		await newProducto.save();
@@ -71,7 +72,7 @@ const productosPost = async (req, res) => {
 
 const productosPut = async (req, res) => {
 	const { id } = req.params;
-	const { nombre, codigo, descripcion, existencia, costo, venta, url } = req.body;
+	const { nombre, codigo, descripcion, existencia, costo, venta, url, precioGestor } = req.body;
 
 	try {
 		const productoExistente = await Producto.findById(id);
@@ -86,6 +87,7 @@ const productosPut = async (req, res) => {
 		productoExistente.costo = costo !== undefined ? costo : productoExistente.costo;
 		productoExistente.venta = venta !== undefined ? venta : productoExistente.venta;
 		productoExistente.url = url !== undefined ? url : productoExistente.url;
+		productoExistente.precioGestor = precioGestor !== undefined ? precioGestor : productoExistente.precioGestor;
 
 		await productoExistente.save();
 		res.status(200).json(productoExistente);

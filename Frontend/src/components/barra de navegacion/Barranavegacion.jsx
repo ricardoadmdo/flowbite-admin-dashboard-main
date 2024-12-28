@@ -92,6 +92,16 @@ const Barranavegacion = () => {
 						Reporte de Ventas
 					</NavLink>
 
+					<NavLink to='/gestionar-gestores' className='nav-link'>
+						<FontAwesomeIcon icon={faUserCog} className='me-2' />
+						Gestionar Gestores
+					</NavLink>
+
+					<NavLink to='/resumenProductos' className='nav-link'>
+						<FontAwesomeIcon icon={faBoxes} className='me-2' />
+						Inventario
+					</NavLink>
+
 					{user.rol === 'Administrador' && (
 						<>
 							<div className='mt-3 px-3'>
@@ -102,14 +112,7 @@ const Barranavegacion = () => {
 								<FontAwesomeIcon icon={faBoxes} className='me-2' />
 								Gestionar Productos
 							</NavLink>
-							<NavLink to='/gestionar-gestores' className='nav-link'>
-								<FontAwesomeIcon icon={faUserCog} className='me-2' />
-								Gestionar Gestores
-							</NavLink>
-							<NavLink to='/resumenProductos' className='nav-link'>
-								<FontAwesomeIcon icon={faBoxes} className='me-2' />
-								Inventario
-							</NavLink>
+
 							<NavLink to='/gestionar-usuarios' className='nav-link'>
 								<FontAwesomeIcon icon={faUserCog} className='me-2' />
 								Gestionar Usuarios

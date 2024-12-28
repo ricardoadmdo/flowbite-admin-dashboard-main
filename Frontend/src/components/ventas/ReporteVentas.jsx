@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Axios from '../../api/axiosConfig';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,6 +7,7 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '../ui/Pagination';
 import '../ventas/ReporteVentas.css';
+import { AuthContext } from '../../auth/authContext';
 import GananciaGestores from './GananciaGestores';
 import ReporteVentasSkeleton from './ReportedeVentaSkeleton';
 
@@ -22,6 +23,7 @@ const ReporteVentas = () => {
 	const [ventasGlobales, setVentasGlobales] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isError, setIsError] = useState(false);
+	const { user } = useContext(AuthContext);
 
 	// Fetch ventas con paginación y fecha seleccionada
 	useEffect(() => {
@@ -150,9 +152,12 @@ const ReporteVentas = () => {
 						<p>
 							<strong>Ganancia Total del Día:</strong> ${totalGanancia.toFixed(2)} CUP
 						</p>
-						<p>
-							<strong>Ganancia Neta para Alejandro:</strong> ${gananciaNeta.toFixed(2)} CUP
-						</p>
+						{user.rol === 'Administrador' && (
+							<p>
+								{' '}
+								<strong>Ganancia Neta para Alejandro:</strong> ${gananciaNeta.toFixed(2)} CUP{' '}
+							</p>
+						)}
 						<p>
 							<strong>Producto Más Vendido:</strong> {productoMasVendido || 'No hay ventas.'}
 						</p>

@@ -28,6 +28,11 @@ const ProductoSchema = Schema({
 		required: [true, 'El precio de venta es obligatorio'],
 		min: 0,
 	},
+	precioGestor: {
+		type: Number,
+		required: [true, 'El precio del gestor es obligatorio'],
+		min: 0,
+	},
 	url: {
 		type: String,
 		required: [true, 'La URL de la imagen es obligatoria'],

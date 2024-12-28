@@ -96,16 +96,12 @@ const GestoresList = () => {
 								<td className='d-flex justify-content-between'>
 									<button
 										type='button'
-										className='btn btn-outline-secondary'
+										className='btn btn-secondary'
 										onClick={() => navigate(`/editGestor/${val.uid}`)}
 									>
 										<FontAwesomeIcon icon={faEdit} /> Editar
 									</button>
-									<button
-										type='button'
-										className='btn btn-outline-danger'
-										onClick={() => deleteGestor(val)}
-									>
+									<button type='button' className='btn btn-danger' onClick={() => deleteGestor(val)}>
 										<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
 									</button>
 								</td>
