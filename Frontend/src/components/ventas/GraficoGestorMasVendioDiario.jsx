@@ -11,7 +11,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 				style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc' }}
 			>
 				<p className='label'>{`${label} : $${payload[0].value}`}</p>
-				<p className='desc'>Total recaudado por el gestor en el día.</p>
+				<p className='desc'>Total vendido por el gestor.</p>
 			</div>
 		);
 	}
@@ -56,7 +56,7 @@ const GraficoGestorRecaudacionMensual = () => {
 
 	return (
 		<div className='container my-5'>
-			<h2 className='text-center mb-4'>Recaudación Mensual por Gestor</h2>
+			<h2 className='text-center mb-4'>Total Vendido por Gestores en el Mes</h2>
 			<ResponsiveContainer width='100%' height={300}>
 				<BarChart
 					data={datosRecaudacion}
