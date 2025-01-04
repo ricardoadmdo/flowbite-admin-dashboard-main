@@ -98,7 +98,7 @@ const ProductForm = () => {
 				position: 'top-end',
 				icon: 'success',
 				title: '¡Registro exitoso!',
-				text: `El producto "${nombre}" se ha registrado con éxito.`,
+				text: `El producto "${nombre}" se ha registrado con éxito 📦.`,
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
@@ -151,7 +151,7 @@ const ProductForm = () => {
 				position: 'top-end',
 				icon: 'success',
 				title: '¡Actualización exitosa!',
-				text: `El producto "${nombre}" se ha actualizado con éxito.`,
+				text: `El producto "${nombre}" se ha actualizado con éxito📦🔄.`,
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
@@ -308,7 +308,16 @@ const ProductForm = () => {
 								</div>
 
 								<div className='d-grid'>
-									<button type='submit' className='btn btn-success'>
+									<button 
+									type='submit' 
+									className='btn btn-success'
+									disabled={uploading}
+									>
+								{uploading && (
+								<div className="spinner-border spinner-border-sm me-2" role="status">
+									<span className="visually-hidden">Cargando...</span>
+								</div>
+							    )}
 										{editar ? 'Actualizar' : 'Guardar'}
 									</button>
 								</div>

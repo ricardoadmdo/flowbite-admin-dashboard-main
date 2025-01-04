@@ -76,7 +76,7 @@ const AgregarVenta = () => {
 				toast: true,
 				position: 'top-end',
 				title: '<strong>Operación exitosa!</strong>',
-				text: `La venta se ha registrado correctamente`,
+				text: `La venta se ha registrado correctamente 💰`,
 				icon: 'success',
 				showConfirmButton: false,
 				timer: 3000,
