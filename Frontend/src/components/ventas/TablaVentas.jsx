@@ -1,13 +1,14 @@
+import { useIsMutating } from "@tanstack/react-query";
 import PropTypes from "prop-types";
-import { useState } from "react";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from "sweetalert2";
 
 const TablaVentas = ({ ventas, user, handleDeleteVenta }) => {
-	const [loadingVentas, setLoadingVentas] = useState({}); // Estado para manejar el loading de cada venta
+	// Obtén el estado de mutaciones activas
+	const mutating = useIsMutating();
 
-	const handleEliminarConLoading = async (ventaId) => {
+	const handleEliminarConConfirmacion = (ventaId) => {
 		Swal.fire({
 			title: "Eliminar",
 			html: "¿Está seguro que desea eliminar esta venta? No podrá revertir esta acción.",
@@ -15,16 +16,9 @@ const TablaVentas = ({ ventas, user, handleDeleteVenta }) => {
 			showCancelButton: true,
 			confirmButtonText: "Sí, eliminar",
 			cancelButtonText: "Cancelar",
-		}).then(async (result) => {
+		}).then((result) => {
 			if (result.isConfirmed) {
-				setLoadingVentas((prevState) => ({ ...prevState, [ventaId]: true }));
-				try {
-					await handleDeleteVenta(ventaId);
-				} catch (error) {
-					console.error("Error al eliminar venta:", error);
-				} finally {
-					setLoadingVentas((prevState) => ({ ...prevState, [ventaId]: false }));
-				}
+				handleDeleteVenta(ventaId);
 			}
 		});
 	};
@@ -57,6 +51,9 @@ const TablaVentas = ({ ventas, user, handleDeleteVenta }) => {
 						const gananciaVenta = venta.productos.reduce((acum, producto) => {
 							return acum + (producto.venta - producto.costo) * producto.cantidad;
 						}, 0);
+
+						// Verifica si esta venta está en proceso de eliminación
+						const isDeleting = mutating > 0; // O usa un filtro si hay más de una mutación activa
 
 						return (
 							<tr key={venta.uid}>
@@ -92,10 +89,10 @@ const TablaVentas = ({ ventas, user, handleDeleteVenta }) => {
 								<td>
 									<button
 										className="btn btn-danger d-flex align-items-center justify-content-center"
-										onClick={() => handleEliminarConLoading(venta.uid)}
-										disabled={loadingVentas[venta.uid]} // Verifica este valor
+										onClick={() => handleEliminarConConfirmacion(venta.uid)}
+										disabled={isDeleting} // Botón deshabilitado mientras elimina
 									>
-										{loadingVentas[venta.uid] ? (
+										{isDeleting ? (
 											<span
 												className="spinner-border spinner-border-sm"
 												role="status"

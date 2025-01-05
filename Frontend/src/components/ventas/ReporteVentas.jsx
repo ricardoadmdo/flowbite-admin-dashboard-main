@@ -1,9 +1,8 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Pagination from "../ui/Pagination";
 import Swal from "sweetalert2";
-import Axios from "../../api/axiosConfig";
 import "../ventas/ReporteVentas.css";
 import { AuthContext } from "../../auth/authContext";
 import ReporteVentasSkeleton from "./ReportedeVentaSkeleton";
@@ -13,45 +12,29 @@ import { calcularEstadisticas, useVentasGlobales, useVentasPaginadas } from "../
 import GananciaGestores from "./GananciaGestores";
 
 const ReporteVentas = () => {
-	const [ventasLocales, setVentasLocales] = useState([]);
-	const [reload, setReload] = useState(false);
 	const [startDate, setStartDate] = useState(new Date());
 	const [currentPage, setCurrentPage] = useState(1);
 	const { user } = useContext(AuthContext);
 
-	const { ventas, totalPages, isLoading, isError, eliminarVenta } = useVentasPaginadas(
-		startDate,
-		currentPage,
-		reload
-	);
+	const { ventas, totalPages, isLoading, isError, eliminarVenta } = useVentasPaginadas(startDate, currentPage);
 	const ventasGlobales = useVentasGlobales(startDate);
 
 	const { totalGanancia, totalRecaudado, gananciaNeta, productoMasVendido } = calcularEstadisticas(ventasGlobales);
 
-	useEffect(() => {
-		if (!isLoading && !isError) {
-			setVentasLocales(ventas); // Sincroniza con los datos del hook
-		}
-	}, [ventas, isLoading, isError]);
-
-	const handleDeleteVenta = async (id) => {
-		try {
-			await Axios.delete(`/venta/${id}`);
-			setReload(!reload); // Forzar recarga del hook
-			eliminarVenta(id);
-			Swal.fire("¡Eliminada!", "La venta ha sido eliminada.", "success");
-		} catch (error) {
-			console.error("Error al eliminar la venta:", error);
-			Swal.fire("Error", "No se pudo eliminar la venta.", "error");
-		}
-	};
-
-	const handlePreviousPage = () => {
-		if (currentPage > 1) setCurrentPage(currentPage - 1);
-	};
-
-	const handleNextPage = () => {
-		if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+	const handleDeleteVenta = (id) => {
+		eliminarVenta.mutate(id, {
+			onError: () => {
+				Swal.fire("Error", "No se pudo eliminar la venta.", "error");
+			},
+			onSuccess: () => {
+				Swal.fire({
+					title: "Venta eliminada!",
+					html: `<i>La venta ha sido eliminada con éxito.</i>`,
+					icon: "success",
+					timer: 3000,
+				});
+			},
+		});
 	};
 
 	return (
@@ -73,14 +56,14 @@ const ReporteVentas = () => {
 				<>
 					<Estadisticas {...{ totalGanancia, totalRecaudado, gananciaNeta, productoMasVendido, user }} />
 					<GananciaGestores ventas={ventasGlobales} />
-					<TablaVentas ventas={ventasLocales} user={user} handleDeleteVenta={handleDeleteVenta} />
+					<TablaVentas ventas={ventas} user={user} handleDeleteVenta={handleDeleteVenta} />
 				</>
 			)}
 			<Pagination
 				currentPage={currentPage}
 				totalPages={totalPages}
-				handlePreviousPage={handlePreviousPage}
-				handleNextPage={handleNextPage}
+				handlePreviousPage={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+				handleNextPage={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
 			/>
 		</div>
 	);

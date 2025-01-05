@@ -1,66 +1,59 @@
-import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Axios from "../api/axiosConfig";
 
 export const useVentasPaginadas = (startDate, currentPage) => {
-	const [ventas, setVentas] = useState([]);
-	const [totalPages, setTotalPages] = useState(1);
-	const [isLoading, setIsLoading] = useState(true);
-	const [isError, setIsError] = useState(false);
+	const queryClient = useQueryClient();
 
-	useEffect(() => {
-		const fetchVentas = async () => {
-			setIsLoading(true);
-			setIsError(false);
-			try {
-				const { data } = await Axios.get("/venta", {
-					params: {
-						day: startDate.getDate(),
-						month: startDate.getMonth() + 1,
-						year: startDate.getFullYear(),
-						page: currentPage,
-					},
-				});
-				setVentas(data.ventas);
-				setTotalPages(data.totalPages);
-			} catch (error) {
-				console.error("Error al obtener ventas:", error);
-				setIsError(true);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchVentas();
-	}, [startDate, currentPage]);
+	// Obtener ventas paginadas
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ["ventasPaginadas", startDate, currentPage],
+		queryFn: async () => {
+			const { data } = await Axios.get("/venta", {
+				params: {
+					day: startDate.getDate(),
+					month: startDate.getMonth() + 1,
+					year: startDate.getFullYear(),
+					page: currentPage,
+				},
+			});
+			return data;
+		},
+		keepPreviousData: true, // Mantener los datos previos al cambiar de página
+	});
 
-	const eliminarVenta = (id) => {
-		setVentas((prevVentas) => prevVentas.filter((venta) => venta.uid !== id));
+	// Eliminar venta
+	const eliminarVenta = useMutation({
+		mutationFn: (id) => Axios.delete(`/venta/${id}`),
+		onSuccess: () => {
+			queryClient.invalidateQueries(["ventasPaginadas", startDate, currentPage]); // Refrescar ventas
+		},
+	});
+
+	return {
+		ventas: data?.ventas || [],
+		totalPages: data?.totalPages || 1,
+		isLoading,
+		isError,
+		eliminarVenta,
 	};
-
-	return { ventas, totalPages, isLoading, isError, eliminarVenta };
 };
 
 export const useVentasGlobales = (startDate) => {
-	const [ventasGlobales, setVentasGlobales] = useState([]);
+	const { data } = useQuery({
+		queryKey: ["ventasGlobales", startDate],
+		queryFn: async () => {
+			const { data } = await Axios.get("/venta/all", {
+				params: {
+					day: startDate.getDate(),
+					month: startDate.getMonth() + 1,
+					year: startDate.getFullYear(),
+				},
+			});
+			return data.ventas;
+		},
+	});
 
-	useEffect(() => {
-		const fetchAllVentas = async () => {
-			try {
-				const { data } = await Axios.get("/venta/all", {
-					params: {
-						day: startDate.getDate(),
-						month: startDate.getMonth() + 1,
-						year: startDate.getFullYear(),
-					},
-				});
-				setVentasGlobales(data.ventas);
-			} catch (error) {
-				console.error("Error al obtener todas las ventas:", error);
-			}
-		};
-		fetchAllVentas();
-	}, [startDate]);
-
-	return ventasGlobales;
+	return data || [];
 };
 
 export const calcularEstadisticas = (ventas) => {
