@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UsuariosSkeleton from "./UsuariosSkeleton";
 import ErrorComponent from "../ui/ErrorComponent";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchUsuarios } from "../../api/usuarios";
+import { fetchUsuarios } from "../../api/fetchData";
 
 const useUsuarios = (page, limit) => {
 	return useQuery({

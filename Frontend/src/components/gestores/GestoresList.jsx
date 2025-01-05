@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GestoresSkeleton from "./GestoresSkeleton";
 import ErrorComponent from "../ui/ErrorComponent";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchGestores } from "../../api/gestores";
+import { fetchGestores } from "../../api/fetchData";
 
 const useGestores = (page, limit) => {
 	return useQuery({
