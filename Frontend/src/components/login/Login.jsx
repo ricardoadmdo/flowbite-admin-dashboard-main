@@ -36,7 +36,7 @@ const Login = () => {
 					toast: true,
 					position: "top-end",
 					title: "Éxito",
-					text: "Inicio de sesión exitos 🧑🏻",
+					text: "Inicio de sesión exitoso 🧑🏻",
 					showConfirmButton: false,
 					icon: "success",
 					timer: 3000,
