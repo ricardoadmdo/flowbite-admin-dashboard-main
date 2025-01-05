@@ -1,0 +1,149 @@
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Swal from "sweetalert2";
+
+const TablaVentas = ({ ventas, user, handleDeleteVenta }) => {
+	const [loadingVentas, setLoadingVentas] = useState({}); // Estado para manejar el loading de cada venta
+
+	const handleEliminarConLoading = async (ventaId) => {
+		Swal.fire({
+			title: "Eliminar",
+			html: "¿Está seguro que desea eliminar esta venta? No podrá revertir esta acción.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Sí, eliminar",
+			cancelButtonText: "Cancelar",
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				setLoadingVentas((prevState) => ({ ...prevState, [ventaId]: true }));
+				try {
+					await handleDeleteVenta(ventaId);
+				} catch (error) {
+					console.error("Error al eliminar venta:", error);
+				} finally {
+					setLoadingVentas((prevState) => ({ ...prevState, [ventaId]: false }));
+				}
+			}
+		});
+	};
+
+	return (
+		<table className="table table-striped table-bordered">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Hora</th>
+					<th>Productos</th>
+					<th>Total Recaudado</th>
+					{user.rol === "Administrador" && <th>Ganancia por Venta</th>}
+					<th>Factura</th>
+					<th>Datos del Cliente</th>
+					<th>Gestor</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				{ventas.length === 0 ? (
+					<tr>
+						<td colSpan="9" className="text-center">
+							No hay ventas para la fecha seleccionada.
+						</td>
+					</tr>
+				) : (
+					ventas.map((venta, index) => {
+						// Calcular ganancia por venta
+						const gananciaVenta = venta.productos.reduce((acum, producto) => {
+							return acum + (producto.venta - producto.costo) * producto.cantidad;
+						}, 0);
+
+						return (
+							<tr key={venta.uid}>
+								<td>{index + 1}</td>
+								<td>{new Date(venta.fecha).toLocaleTimeString()}</td>
+								<td>
+									<ul>
+										{venta.productos.map((producto, idx) => (
+											<li key={idx}>
+												{producto.nombre} - {producto.cantidad} x $
+												{producto.venta?.toFixed(2) || "0.00"}
+											</li>
+										))}
+									</ul>
+								</td>
+								<td>${venta.precioTotal?.toFixed(2) || "0.00"} CUP</td>
+								{user.rol === "Administrador" && <td>${gananciaVenta.toFixed(2)} CUP</td>}
+								<td>{venta.codigoFactura || "N/A"}</td>
+								<td>
+									<ul>
+										<li>
+											<strong>Nombre:</strong> {venta.cliente?.nombre || "N/A"}
+										</li>
+										<li>
+											<strong>Carnet:</strong> {venta.cliente?.carnet || "N/A"}
+										</li>
+										<li>
+											<strong>Dirección:</strong> {venta.cliente?.direccion || "N/A"}
+										</li>
+									</ul>
+								</td>
+								<td>{venta.gestor || "N/A"}</td>
+								<td>
+									<button
+										className="btn btn-danger d-flex align-items-center justify-content-center"
+										onClick={() => handleEliminarConLoading(venta.uid)}
+										disabled={loadingVentas[venta.uid]} // Verifica este valor
+									>
+										{loadingVentas[venta.uid] ? (
+											<span
+												className="spinner-border spinner-border-sm"
+												role="status"
+												aria-hidden="true"
+											></span>
+										) : (
+											<>
+												<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+											</>
+										)}
+									</button>
+								</td>
+							</tr>
+						);
+					})
+				)}
+			</tbody>
+		</table>
+	);
+};
+
+TablaVentas.propTypes = {
+	ventas: PropTypes.arrayOf(
+		PropTypes.shape({
+			uid: PropTypes.string.isRequired,
+			fecha: PropTypes.string.isRequired,
+			precioTotal: PropTypes.number.isRequired,
+			productos: PropTypes.arrayOf(
+				PropTypes.shape({
+					nombre: PropTypes.string.isRequired,
+					cantidad: PropTypes.number.isRequired,
+					venta: PropTypes.number.isRequired,
+					costo: PropTypes.number.isRequired,
+				}).isRequired
+			).isRequired,
+			gestor: PropTypes.string,
+			codigoFactura: PropTypes.string,
+			cliente: PropTypes.shape({
+				nombre: PropTypes.string,
+				carnet: PropTypes.string,
+				direccion: PropTypes.string,
+			}),
+		})
+	).isRequired,
+	user: PropTypes.shape({
+		rol: PropTypes.string.isRequired,
+	}).isRequired,
+	handleDeleteVenta: PropTypes.func.isRequired,
+};
+
+export default TablaVentas;
