@@ -63,7 +63,7 @@ const Login = () => {
 			console.error("Error durante la autenticación:", error.response ? error.response.data : error.message);
 			Swal.fire({
 				title: "Error",
-				text: "Error durante la autenticación",
+				text: "Usuario o contraseña incorrectos",
 				icon: "error",
 				confirmButtonText: "Aceptar",
 			});
