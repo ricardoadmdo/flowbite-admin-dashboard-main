@@ -1,89 +1,103 @@
-import { useState, useEffect } from 'react';
-import Axios from '../../api/axiosConfig';
-import Swal from 'sweetalert2';
-import { Link, useNavigate } from 'react-router-dom';
-import Pagination from '../ui/Pagination';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import GestoresSkeleton from './GestoresSkeleton';
-import ErrorComponent from '../ui/ErrorComponent';
+import { useState, useEffect } from "react";
+import Axios from "../../api/axiosConfig";
+import Swal from "sweetalert2";
+import { Link, useNavigate } from "react-router-dom";
+import Pagination from "../ui/Pagination";
+import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import GestoresSkeleton from "./GestoresSkeleton";
+import ErrorComponent from "../ui/ErrorComponent";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchGestores } from "../../api/gestores";
 
-const fetchGestor = async (page, limit) => {
-	const response = await Axios.get(`/gestor`, {
-		params: { page, limit },
+const useGestores = (page, limit) => {
+	return useQuery({
+		queryKey: ["gestor", page, limit],
+		queryFn: () => fetchGestores(page, limit),
+		keepPreviousData: true,
+		staleTime: 5000,
+		select: (data) => ({
+			gestores: data?.gestores || [],
+			totalPages: data?.totalPages || 1,
+		}),
 	});
-	return response.data;
 };
 
 const GestoresList = () => {
-	const [gestoresData, setGestoresData] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [isError, setIsError] = useState(false);
+	const queryClient = useQueryClient();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit] = useState(8);
 	const navigate = useNavigate();
 
-	const fetchData = async () => {
-		try {
-			setIsLoading(true);
-			const data = await fetchGestor(currentPage, limit);
-			setGestoresData(data);
-		} catch (error) {
-			console.error('Error fetching gestores:', error);
-			setIsError(true);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const { data, isLoading, isError, refetch } = useGestores(currentPage, limit);
 
 	useEffect(() => {
-		fetchData();
-	}, [currentPage]);
+		queryClient.prefetchQuery({
+			queryKey: ["gestor", currentPage + 1, limit],
+			queryFn: () => fetchGestores(currentPage + 1, limit),
+		});
+	}, [currentPage, limit, queryClient]);
 
 	const deleteGestor = async (gestor) => {
 		const result = await Swal.fire({
 			title: `Eliminar`,
 			html: `¿Está seguro que desea eliminar el gestor <strong>${gestor.nombre}</strong>?`,
-			icon: 'warning',
+			icon: "warning",
 			showCancelButton: true,
-			confirmButtonText: 'Sí, eliminar',
-			cancelButtonText: 'Cancelar',
+			confirmButtonText: "Sí, eliminar",
+			cancelButtonText: "Cancelar",
 		});
 
 		if (result.isConfirmed) {
 			try {
 				await Axios.delete(`/gestor/${gestor.uid}`);
-				fetchData();
+				queryClient.invalidateQueries({ queryKey: ["gestores"], exact: true });
 				Swal.fire({
-					title: 'Gestor eliminado!',
+					title: "Gestor eliminado!",
 					html: `<i>El gestor <strong>${gestor.nombre}</strong> ha sido eliminado con éxito.</i>`,
-					icon: 'success',
+					icon: "success",
 					timer: 3000,
 				});
 			} catch (error) {
-				console.error('Error eliminando gestor:', error);
-				Swal.fire('Error', 'No se pudo eliminar el gestor', 'error');
+				console.error("Error eliminando gestor:", error);
+				Swal.fire("Error", "No se pudo eliminar el gestor", "error");
 			}
 		}
 	};
 
 	if (isLoading) return <GestoresSkeleton />;
-	if (isError) return <ErrorComponent message='No se pudo cargar la lista de gestor' />;
+	if (isError) {
+		return (
+			<ErrorComponent message="No se pudo cargar la lista de gestores">
+				<button onClick={() => refetch()} disabled={isLoading} className="btn btn-primary">
+					Reintentar
+				</button>
+			</ErrorComponent>
+		);
+	}
 
-	const gestoresList = gestoresData?.gestores || [];
-	const totalPages = gestoresData?.totalPages || 1;
+	const gestoresList = data?.gestores || [];
+	const totalPages = data?.totalPages || 1;
+
+	const handlePreviousPage = () => {
+		if (currentPage > 1) setCurrentPage(currentPage - 1);
+	};
+
+	const handleNextPage = () => {
+		if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+	};
 
 	return (
-		<div className='container my-5'>
-			<h2 className='text-center mb-4'>Lista de Gestores</h2>
-			<div className='text-center mb-4'>
-				<Link to='/gestorform' className='btn btn-success'>
+		<div className="container my-5">
+			<h2 className="text-center mb-4">Lista de Gestores</h2>
+			<div className="text-center mb-4">
+				<Link to="/gestorform" className="btn btn-success">
 					Agregar Nuevo Gestor
 				</Link>
 			</div>
-			<div className='table-responsive'>
-				<table className='table table-striped table-bordered rounded-3 overflow-hidden'>
-					<thead className='thead-dark'>
+			<div className="table-responsive">
+				<table className="table table-striped table-bordered rounded-3 overflow-hidden">
+					<thead className="thead-dark">
 						<tr>
 							<th>Nombre</th>
 							<th>Acciones</th>
@@ -93,15 +107,15 @@ const GestoresList = () => {
 						{gestoresList.map((val) => (
 							<tr key={val.uid}>
 								<td>{val.nombre}</td>
-								<td className='d-flex justify-content-between'>
+								<td className="d-flex justify-content-between">
 									<button
-										type='button'
-										className='btn btn-secondary'
+										type="button"
+										className="btn btn-secondary"
 										onClick={() => navigate(`/editGestor/${val.uid}`)}
 									>
 										<FontAwesomeIcon icon={faEdit} /> Editar
 									</button>
-									<button type='button' className='btn btn-danger' onClick={() => deleteGestor(val)}>
+									<button type="button" className="btn btn-danger" onClick={() => deleteGestor(val)}>
 										<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
 									</button>
 								</td>
@@ -110,12 +124,14 @@ const GestoresList = () => {
 					</tbody>
 				</table>
 			</div>
-			<Pagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				handlePreviousPage={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
-				handleNextPage={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
-			/>
+			{totalPages > 1 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					handlePreviousPage={handlePreviousPage}
+					handleNextPage={handleNextPage}
+				/>
+			)}
 		</div>
 	);
 };

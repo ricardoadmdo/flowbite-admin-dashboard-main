@@ -1,99 +1,121 @@
-import { useState, useEffect } from 'react';
-import Axios from '../../api/axiosConfig';
-import Swal from 'sweetalert2';
-import { Link, useNavigate } from 'react-router-dom';
-import Pagination from '../ui/Pagination';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UsuariosSkeleton from './UsuariosSkeleton';
-import ErrorComponent from '../ui/ErrorComponent';
+import { useState, useEffect } from "react";
+import Axios from "../../api/axiosConfig";
+import Swal from "sweetalert2";
+import { Link, useNavigate } from "react-router-dom";
+import Pagination from "../ui/Pagination";
+import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import UsuariosSkeleton from "./UsuariosSkeleton";
+import ErrorComponent from "../ui/ErrorComponent";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchUsuarios } from "../../api/usuarios";
 
-const fetchUsuarios = async (page, limit) => {
-	const response = await Axios.get(`/usuarios`, {
-		params: { page, limit },
+const useUsuarios = (page, limit) => {
+	return useQuery({
+		queryKey: ["usuarios", page, limit],
+		queryFn: () => fetchUsuarios(page, limit),
+		keepPreviousData: true,
+		staleTime: 5000,
+		select: (data) => ({
+			usuarios: data?.usuarios || [],
+			totalPages: data?.totalPages || 1,
+		}),
 	});
-	return response.data;
 };
 
 const UsuarioList = () => {
-	const [usuariosData, setUsuariosData] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [isError, setIsError] = useState(false);
+	const queryClient = useQueryClient();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit] = useState(8);
 	const navigate = useNavigate();
 
-	const fetchData = async () => {
-		try {
-			setIsLoading(true);
-			const data = await fetchUsuarios(currentPage, limit);
-			setUsuariosData(data);
-		} catch (error) {
-			console.error('Error fetching usuarios:', error);
-			setIsError(true);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const { data, isLoading, isError, refetch } = useUsuarios(currentPage, limit);
 
 	useEffect(() => {
-		fetchData();
-	}, [currentPage]);
+		queryClient.prefetchQuery({
+			queryKey: ["usuarios", currentPage + 1, limit],
+			queryFn: () => fetchUsuarios(currentPage + 1, limit),
+		});
+	}, [currentPage, limit, queryClient]);
 
 	const deleteUsuario = async (usuario) => {
-		if (usuario.rol === 'Administrador') {
+		if (usuario.rol === "Administrador") {
 			Swal.fire({
-				title: 'Error',
-				text: 'No se puede eliminar un usuario con rol Administrador',
-				icon: 'error',
-				confirmButtonText: 'Aceptar',
+				title: "Error",
+				text: "No se puede eliminar un usuario con rol Administrador",
+				icon: "error",
+				confirmButtonText: "Aceptar",
 			});
 			return;
 		}
 
-		const result = await Swal.fire({
-			title: 'Eliminar',
-			html: `¿Está seguro que desea eliminar el usuario <strong>${usuario.nombre}</strong>?`,
-			icon: 'warning',
-			showCancelButton: true,
-			confirmButtonText: 'Sí, eliminar',
-			cancelButtonText: 'Cancelar',
-		});
+		try {
+			const result = await Swal.fire({
+				title: `Eliminar Usuario: ${usuario.nombre}`,
+				html: `<p>¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.</p>`,
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Eliminar",
+				cancelButtonText: "Cancelar",
+			});
 
-		if (result.isConfirmed) {
-			try {
+			if (result.isConfirmed) {
 				await Axios.delete(`/usuarios/${usuario.uid}`);
-				fetchData();
+				queryClient.invalidateQueries({ queryKey: ["usuarios"], exact: true });
+
 				Swal.fire({
-					title: 'Usuario eliminado!',
+					title: "Usuario eliminado!",
 					html: `<i>El usuario <strong>${usuario.nombre}</strong> ha sido eliminado con éxito.</i>`,
-					icon: 'success',
+					icon: "success",
 					timer: 3000,
 				});
-			} catch (error) {
-				console.error('Error eliminando usuario:', error);
-				Swal.fire('Error', 'No se pudo eliminar el usuario', 'error');
 			}
+		} catch (error) {
+			console.error("Error eliminando usuario:", error);
+			Swal.fire("Error", "No se pudo eliminar el usuario", "error");
 		}
 	};
 
-	if (isLoading) return <UsuariosSkeleton />;
-	if (isError) return <ErrorComponent message='No se pudo cargar la lista de usuarios' />;
+	if (isLoading) {
+		return (
+			<div role="status" aria-live="polite">
+				<UsuariosSkeleton />
+			</div>
+		);
+	}
 
-	const usuariosList = usuariosData?.usuarios || [];
-	const totalPages = usuariosData?.totalPages || 1;
+	if (isError) {
+		return (
+			<ErrorComponent message="No se pudo cargar la lista de usuarios">
+				<button onClick={() => refetch()} disabled={isLoading} className="btn btn-primary">
+					Reintentar
+				</button>
+			</ErrorComponent>
+		);
+	}
+
+	const usuariosList = data?.usuarios || [];
+	const totalPages = data?.totalPages || 1;
+
+	const handlePreviousPage = () => {
+		if (currentPage > 1) setCurrentPage(currentPage - 1);
+	};
+
+	const handleNextPage = () => {
+		if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+	};
 
 	return (
-		<div className='container my-5'>
-			<h2 className='text-center mb-4'>Lista de Usuarios</h2>
-			<div className='text-center mb-4'>
-				<Link to='/usuarioform' className='btn btn-success'>
+		<div className="container my-5">
+			<h2 className="text-center mb-4">Lista de Usuarios</h2>
+			<div className="text-center mb-4">
+				<Link to="/usuarioform" className="btn btn-success">
 					Agregar Nuevo Usuario
 				</Link>
 			</div>
-			<div className='table-responsive'>
-				<table className='table table-striped table-bordered rounded-3 overflow-hidden'>
-					<thead className='thead-dark'>
+			<div className="table-responsive">
+				<table className="table table-striped table-bordered rounded-3 overflow-hidden">
+					<thead className="thead-dark">
 						<tr>
 							<th>Nombre</th>
 							<th>Usuario</th>
@@ -103,23 +125,23 @@ const UsuarioList = () => {
 					</thead>
 					<tbody>
 						{usuariosList
-							.filter((val) => val.nombre !== 'Developer') // Filtrar usuarios cuyo nombre es 'developer'
+							.filter((val) => val.nombre !== "Developer") // Filtrar usuarios cuyo nombre es 'developer'
 							.map((val) => (
 								<tr key={val.uid}>
 									<td>{val.nombre}</td>
 									<td>{val.usuario}</td>
 									<td>{val.rol}</td>
-									<td className='d-flex justify-content-between'>
+									<td className="d-flex justify-content-between">
 										<button
-											type='button'
-											className='btn btn-secondary'
+											type="button"
+											className="btn btn-secondary"
 											onClick={() => navigate(`/editUser/${val.uid}`)}
 										>
 											<FontAwesomeIcon icon={faEdit} /> Editar
 										</button>
 										<button
-											type='button'
-											className='btn btn-danger'
+											type="button"
+											className="btn btn-danger"
 											onClick={() => deleteUsuario(val)}
 										>
 											<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
@@ -130,12 +152,14 @@ const UsuarioList = () => {
 					</tbody>
 				</table>
 			</div>
-			<Pagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				handlePreviousPage={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
-				handleNextPage={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
-			/>
+			{totalPages > 1 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					handlePreviousPage={handlePreviousPage}
+					handleNextPage={handleNextPage}
+				/>
+			)}
 		</div>
 	);
 };
