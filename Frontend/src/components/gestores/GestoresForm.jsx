@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const GestoresForm = () => {
+	const [spinner, setSpinner] = useState(false)
 	const [nombre, setNombre] = useState('');
 	const [editar, setEditar] = useState(false);
 	const { id } = useParams();
@@ -114,6 +115,7 @@ const GestoresForm = () => {
 	};
 
 	const handleSubmit = (event) => {
+		setSpinner(!spinner)
 		event.preventDefault();
 		if (editar) {
 			update();
@@ -143,7 +145,16 @@ const GestoresForm = () => {
 								</div>
 
 								<div className='d-grid'>
-									<button type='submit' className='btn btn-success btn-lg'>
+									<button 
+									type='submit' 
+									className='btn btn-success btn-lg'
+									disabled={spinner}
+									>
+									{spinner && (
+								    <div className="spinner-border spinner-border-sm me-2" role="status">
+								    	<span className="visually-hidden">Cargando...</span>
+								    </div>
+							        )}
 										{editar ? 'Actualizar' : 'Registrar'}
 									</button>
 								</div>
