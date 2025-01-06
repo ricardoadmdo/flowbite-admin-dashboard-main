@@ -1,44 +1,42 @@
-import { useState, useEffect } from 'react';
-import Axios from '../../api/axiosConfig';
-import Swal from 'sweetalert2';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Factura from './Factura';
-
-// Función para obtener los gestores
-const fetchGestores = async (page, limit) => {
-	const response = await Axios.get('/gestor', {
-		params: { page, limit },
-	});
-	return response.data.gestores;
-};
-
-// Función para buscar el último código de factura
-const fetchUltimoCodigoFactura = async () => {
-	const response = await Axios.get('/venta/ultimo-codigo-factura');
-	return response.data.ultimoCodigoFactura;
-};
-
-// Función para buscar productos por nombre similar
-const fetchProductos = async (searchTerm) => {
-	const response = await Axios.get(`/productos?search=${searchTerm}`);
-	return response.data.productos;
-};
+import { useState, useEffect } from "react";
+import Axios from "../../api/axiosConfig";
+import Swal from "sweetalert2";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Factura from "./Factura";
+import { fetchGestores, fetchProductosName, fetchUltimoCodigoFactura } from "../../api/fetchData";
+import BuscarProductoSkeleton from "./BuscarProductoSkeleton";
 
 const AgregarVenta = () => {
-	const [spinner, setSpinner] = useState(false)
+	const [spinner] = useState(false);
 	const [gestores, setGestores] = useState([]);
-	const [codigoFactura, setCodigoFactura] = useState('');
+	const [codigoFactura, setCodigoFactura] = useState("");
 	const [formState, setFormState] = useState({
 		productos: [],
 		totalProductos: 0,
 		precioTotal: 0,
 		fecha: new Date(),
 	});
-	const [searchTerm, setSearchTerm] = useState('');
+	const [searchTerm, setSearchTerm] = useState("");
 	const [cliente, setCliente] = useState({
-		nombre: '',
-		carnet: '',
-		direccion: '',
+		nombre: "",
+		carnet: "",
+		direccion: "",
+	});
+
+	const queryClient = useQueryClient();
+	const refetchProductos = () => {
+		queryClient.invalidateQueries(["productos"]);
+	};
+
+	// Búsqueda de productos usando react-query
+	const {
+		data: productos = [],
+		refetch,
+		isFetching,
+	} = useQuery({
+		queryKey: ["productos", searchTerm],
+		queryFn: () => fetchProductosName(searchTerm),
+		enabled: false, // Solo hacer la búsqueda cuando el término de búsqueda cambie
 	});
 
 	const handleClienteChange = (e) => {
@@ -49,18 +47,6 @@ const AgregarVenta = () => {
 		});
 	};
 
-	const queryClient = useQueryClient();
-	const refetchProductos = () => {
-		queryClient.invalidateQueries(['productos']);
-	};
-
-	// Búsqueda de productos usando react-query
-	const { data: productos = [], refetch, isFetching } = useQuery({
-		queryKey: ['productos', searchTerm],
-		queryFn: () => fetchProductos(searchTerm),
-		enabled: false, // Solo hacer la búsqueda cuando el término de búsqueda cambie
-	});
-
 	// Actualiza la búsqueda cuando el usuario escribe
 	useEffect(() => {
 		if (searchTerm) {
@@ -69,27 +55,27 @@ const AgregarVenta = () => {
 	}, [searchTerm, refetch]);
 
 	const ventaMutation = useMutation({
-		mutationFn: (newVenta) => Axios.post('/venta', newVenta),
+		mutationFn: (newVenta) => Axios.post("/venta", newVenta),
 		onSuccess: async () => {
 			refetchProductos();
 			limpiarCampos();
 			Swal.fire({
 				toast: true,
-				position: 'top-end',
-				title: '<strong>Operación exitosa!</strong>',
+				position: "top-end",
+				title: "<strong>Operación exitosa!</strong>",
 				text: `La venta se ha registrado correctamente 💰`,
-				icon: 'success',
+				icon: "success",
 				showConfirmButton: false,
 				timer: 3000,
 				timerProgressBar: true,
 				didOpen: (toast) => {
-					toast.addEventListener('mouseenter', Swal.stopTimer);
-					toast.addEventListener('mouseleave', Swal.resumeTimer);
+					toast.addEventListener("mouseenter", Swal.stopTimer);
+					toast.addEventListener("mouseleave", Swal.resumeTimer);
 				},
 				customClass: {
-					popup: 'swal-popup-success',
-					title: 'swal-title',
-					text: 'swal-content',
+					popup: "swal-popup-success",
+					title: "swal-title",
+					text: "swal-content",
 				},
 			});
 
@@ -99,15 +85,15 @@ const AgregarVenta = () => {
 				const nuevoCodigoFactura = generarCodigoFactura(ultimoCodigoFactura);
 				setCodigoFactura(nuevoCodigoFactura);
 			} catch (error) {
-				console.error('Error al obtener el nuevo código de factura:', error);
+				console.error("Error al obtener el nuevo código de factura:", error);
 			}
 		},
 		onError: (error) => {
 			console.log(error);
 			Swal.fire({
-				icon: 'error',
-				title: 'Error al registrar la venta',
-				text: error.response?.data?.error || 'Error desconocido al registrar la venta',
+				icon: "error",
+				title: "Error al registrar la venta",
+				text: error.response?.data?.error || "Error desconocido al registrar la venta",
 			});
 		},
 	});
@@ -119,7 +105,7 @@ const AgregarVenta = () => {
 			precioTotal: 0,
 			fecha: new Date(),
 		});
-		setCliente({ nombre: '', carnet: '', direccion: '' });
+		setCliente({ nombre: "", carnet: "", direccion: "" });
 	};
 
 	// Función para agregar productos seleccionados y sus cantidades
@@ -132,8 +118,8 @@ const AgregarVenta = () => {
 				// Verificar si la cantidad excede la existencia
 				if (nuevosProductos[index].cantidad + cantidad > producto.existencia) {
 					Swal.fire({
-						icon: 'warning',
-						title: 'Cantidad excedida',
+						icon: "warning",
+						title: "Cantidad excedida",
 						text: `Solo quedan ${producto.existencia} unidades de este producto.`,
 					});
 					return prevState;
@@ -143,8 +129,8 @@ const AgregarVenta = () => {
 			} else {
 				if (cantidad > producto.existencia) {
 					Swal.fire({
-						icon: 'warning',
-						title: 'Cantidad excedida',
+						icon: "warning",
+						title: "Cantidad excedida",
 						text: `Solo quedan ${producto.existencia} unidades de este producto.`,
 					});
 					return prevState;
@@ -189,9 +175,9 @@ const AgregarVenta = () => {
 						return { ...producto, cantidad: nuevaCantidad };
 					} else {
 						Swal.fire({
-							icon: 'warning',
-							title: 'No hay suficiente Stock',
-							text: 'La cantidad introducida sobrepasa el stock',
+							icon: "warning",
+							title: "No hay suficiente Stock",
+							text: "La cantidad introducida sobrepasa el stock",
 						});
 					}
 				}
@@ -216,9 +202,9 @@ const AgregarVenta = () => {
 						return { ...producto, cantidad: nuevaCantidad };
 					} else {
 						Swal.fire({
-							icon: 'error',
-							title: 'La cantidad no puede ser menor a 1',
-							text: 'No puedes registrar un producto negativo',
+							icon: "error",
+							title: "La cantidad no puede ser menor a 1",
+							text: "No puedes registrar un producto negativo",
 						});
 					}
 				}
@@ -236,20 +222,20 @@ const AgregarVenta = () => {
 
 	const generarCodigoFactura = (ultimoCodigoFactura) => {
 		const fechaActual = new Date();
-		const diaActual = fechaActual.getDate().toString().padStart(2, '0');
-		const mesActual = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+		const diaActual = fechaActual.getDate().toString().padStart(2, "0");
+		const mesActual = (fechaActual.getMonth() + 1).toString().padStart(2, "0");
 
 		if (ultimoCodigoFactura) {
-			const [dia, mes, numero] = ultimoCodigoFactura.split('/');
+			const [dia, mes, numero] = ultimoCodigoFactura.split("/");
 			if (dia === diaActual && mes === mesActual) {
-				const nuevoNumero = (parseInt(numero) + 1).toString().padStart(2, '0');
-				localStorage.setItem('ultimoCodigoFactura', `${dia}/${mes}/${nuevoNumero}`);
+				const nuevoNumero = (parseInt(numero) + 1).toString().padStart(2, "0");
+				localStorage.setItem("ultimoCodigoFactura", `${dia}/${mes}/${nuevoNumero}`);
 				return `${dia}/${mes}/${nuevoNumero}`;
 			}
 		}
 
 		const nuevoCodigo = `${diaActual}/${mesActual}/01`;
-		localStorage.setItem('ultimoCodigoFactura', nuevoCodigo);
+		localStorage.setItem("ultimoCodigoFactura", nuevoCodigo);
 		return nuevoCodigo;
 	};
 
@@ -260,16 +246,16 @@ const AgregarVenta = () => {
 				const nuevoCodigoFactura = generarCodigoFactura(ultimoCodigoFactura);
 				setCodigoFactura(nuevoCodigoFactura);
 			} catch (error) {
-				console.error('Error al obtener el último código de factura:', error);
+				console.error("Error al obtener el último código de factura:", error);
 			}
 		};
 
 		const obtenerGestores = async () => {
 			try {
 				const gestoresObtenidos = await fetchGestores(1, 100);
-				setGestores(gestoresObtenidos);
+				setGestores(gestoresObtenidos.gestores);
 			} catch (error) {
-				console.error('Error al obtener los gestores:', error);
+				console.error("Error al obtener los gestores:", error);
 			}
 		};
 
@@ -281,18 +267,18 @@ const AgregarVenta = () => {
 	const validarVenta = async () => {
 		if (formState.productos.length === 0) {
 			Swal.fire({
-				icon: 'error',
-				title: 'No hay productos',
-				text: 'Debe agregar al menos un producto a la venta',
+				icon: "error",
+				title: "No hay productos",
+				text: "Debe agregar al menos un producto a la venta",
 			});
 			return;
 		}
 
 		if (!cliente.nombre || !cliente.carnet || !cliente.direccion) {
 			Swal.fire({
-				icon: 'error',
-				title: 'Datos del cliente incompletos',
-				text: 'Debe completar todos los datos del cliente',
+				icon: "error",
+				title: "Datos del cliente incompletos",
+				text: "Debe completar todos los datos del cliente",
 			});
 			return;
 		}
@@ -305,15 +291,15 @@ const AgregarVenta = () => {
 			}, {});
 
 			const result = await Swal.fire({
-				title: 'Seleccione el Gestor',
-				input: 'select',
+				title: "Seleccione el Gestor",
+				input: "select",
 				inputOptions: gestoresOptions,
-				inputPlaceholder: 'Selecciona Gestor, será Ninguno por defecto',
+				inputPlaceholder: "Selecciona Gestor, será Ninguno por defecto",
 				showCancelButton: true,
 			});
 
 			if (result.isConfirmed) {
-				const gestorSeleccionado = result.value !== 'Ninguno' ? { nombre: result.value } : 'Ninguno';
+				const gestorSeleccionado = result.value !== "Ninguno" ? { nombre: result.value } : "Ninguno";
 				// Asegúrate de que cada producto tenga los campos requeridos
 				const productosValidados = formState.productos.map((producto) => ({
 					...producto,
@@ -338,25 +324,25 @@ const AgregarVenta = () => {
 				});
 			}
 		} catch (error) {
-			console.error('Error al registrar la venta:', error);
+			console.error("Error al registrar la venta:", error);
 		}
 	};
 
 	// Modal para seleccionar cantidad
 	const openModal = (producto) => {
 		Swal.fire({
-			title: 'Ingrese la cantidad',
-			input: 'number',
+			title: "Ingrese la cantidad",
+			input: "number",
 			inputAttributes: {
 				min: 1,
-				autocapitalize: 'off',
+				autocapitalize: "off",
 			},
-			inputValue: '1',
+			inputValue: "1",
 			showCancelButton: true,
-			confirmButtonText: 'Agregar',
+			confirmButtonText: "Agregar",
 			preConfirm: (cantidad) => {
 				if (!cantidad || cantidad < 1) {
-					Swal.showValidationMessage('Debe ingresar una cantidad válida');
+					Swal.showValidationMessage("Debe ingresar una cantidad válida");
 					return false;
 				}
 				agregarProducto(producto, parseInt(cantidad));
@@ -365,52 +351,54 @@ const AgregarVenta = () => {
 	};
 
 	return (
-		<div className='container animate__animated animate__fadeIn mt-4 my-5'>
-			<h2 className='text-center mb-4'>Registrar Ventas</h2>
-			<form onSubmit={(e) => e.preventDefault()} className='mb-4'>
-				<div className='input-group'>
+		<div className="container animate__animated animate__fadeIn mt-4 my-5">
+			<h2 className="text-center mb-4">Registrar Ventas</h2>
+
+			<form onSubmit={(e) => e.preventDefault()} className="mb-4">
+				<div className="input-group">
 					<input
-						type='text'
-						className='form-control'
-						placeholder='Buscar un producto...'
+						type="text"
+						className="form-control"
+						placeholder="Buscar un producto..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						disabled = {spinner}
+						disabled={spinner}
 					/>
-                      <button className='btn btn-primary' type='button' onClick={() => refetch()}>
-                        {isFetching ? (
-                          <div className="spinner-border spinner-border-sm me-2" role="status">
-                            <span className="visually-hidden">Cargando...</span>
-                          </div>
-                        ) : (
-                          'Buscar'
-                        )}
-                      </button>
-
+					<button className="btn btn-primary" type="button" onClick={() => refetch()}>
+						{isFetching ? (
+							<div className="spinner-border spinner-border-sm me-2" role="status">
+								<span className="visually-hidden">Cargando...</span>
+							</div>
+						) : (
+							"Buscar"
+						)}
+					</button>
 				</div>
 			</form>
 			{/* Lista de productos encontrados */}
-			<div className='list-group'>
-				{searchTerm && productos.length === 0 ? (
-					<div className='list-group-item'>No se encontraron productos.</div>
+			<div className="list-group">
+				{isFetching ? (
+					<BuscarProductoSkeleton lines={5} />
+				) : searchTerm && productos.length === 0 ? (
+					<div className="list-group-item">No se encontraron productos.</div>
 				) : (
 					productos.map((producto) => (
 						<div
 							key={producto.uid}
-							className='list-group-item d-flex justify-content-between align-items-center'
+							className="list-group-item d-flex justify-content-between align-items-center"
 						>
 							<div>
-								<span className='fw-bold'>{producto.nombre}</span> - ${producto.venta}
-								<span className='text-muted'> (Disponible: {producto.existencia} unidades)</span>
+								<span className="fw-bold">{producto.nombre}</span> - ${producto.venta}
+								<span className="text-muted"> (Disponible: {producto.existencia} unidades)</span>
 							</div>
-							<button className='btn btn-success' onClick={() => openModal(producto)}>
+							<button className="btn btn-success" onClick={() => openModal(producto)}>
 								Agregar
 							</button>
 						</div>
 					))
 				)}
 			</div>
-			<hr className='my-4' />
+			<hr className="my-4" />
 			<Factura
 				formState={formState}
 				setFormState={setFormState}
