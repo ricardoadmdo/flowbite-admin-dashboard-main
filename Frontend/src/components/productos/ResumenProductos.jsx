@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import html2pdf from "html2pdf.js";
 import { AuthContext } from "../../auth/authContext";
+import "./ResumenProductos.css";
 
 const fetchProductos = async () => {
 	const response = await Axios.get(`/productos/all`);
@@ -50,23 +51,30 @@ const ResumenProductos = () => {
 
 	const handlePrint = async () => {
 		try {
-			const data = await fetchProductos();
-			setProductosData(data);
+			// Selección del elemento a convertir
+			const element = componentRef.current;
 
-			setTimeout(() => {
-				const element = componentRef.current;
-				const fechaFormateada = obtenerFechaFormateada();
-				const opt = {
-					margin: 0.5,
-					filename: `Reporte_de_Inventario_${fechaFormateada}.pdf`, // Incluye la fecha en el nombre del archivo
-					image: { type: "jpeg", quality: 0.98 },
-					html2canvas: { scale: 2 },
-					jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
-				};
-				html2pdf().from(element).set(opt).save();
-			}, 500);
+			// Configuración del PDF
+			const fechaFormateada = obtenerFechaFormateada();
+			const opt = {
+				margin: 5, // Márgenes uniformes
+				filename: `Reporte_de_Inventario_${fechaFormateada}.pdf`,
+				image: { type: "jpeg", quality: 0.98 },
+				html2canvas: {
+					scale: 2, // Mejor calidad para evitar cortes
+					useCORS: true, // Soporte para recursos externos
+				},
+				jsPDF: {
+					unit: "mm",
+					format: "a3", // Cambiar a A3 para más espacio
+					orientation: "landscape", // Orientación horizontal
+				},
+			};
+
+			// Crear el PDF
+			await html2pdf().set(opt).from(element).save();
 		} catch (error) {
-			console.error("Error fetching all productos for printing:", error);
+			console.error("Error al generar el PDF:", error);
 		}
 	};
 
@@ -76,9 +84,10 @@ const ResumenProductos = () => {
 	const productosList = productosData?.productos || [];
 	const totalProductos = productosList.length;
 	const totalGanancia = productosList.reduce(
-		(acc, producto) => acc + (producto.venta - producto.costo) * producto.existencia,
+		(acc, producto) => acc + ((producto.venta || 0) - (producto.costo || 0)) * (producto.existencia || 0),
 		0
 	);
+
 	const totalGananciaNeta = productosList.reduce(
 		(acc, producto) => acc + (producto.venta - producto.costo - producto.precioGestor) * producto.existencia,
 		0
@@ -92,7 +101,7 @@ const ResumenProductos = () => {
 	const totalGestor = productosList.reduce((acc, producto) => acc + producto.precioGestor * producto.existencia, 0);
 
 	return (
-		<div className="container my-5">
+		<div className={`container my-5 ${user.rol === "Administrador" ? "admin-view" : ""}`}>
 			<div className="text-end">
 				<button onClick={handlePrint} className="btn btn-primary">
 					<FontAwesomeIcon icon={faPrint} /> Imprimir
@@ -114,32 +123,27 @@ const ResumenProductos = () => {
 							<li className="list-group-item">
 								<strong>Total Costo de Inventario:</strong> ${totalCostoInventario.toFixed(2)}
 							</li>
-
 							<li className="list-group-item">
-								<strong>Total Ganancia Esperada (sin quitar el precio del gestor):</strong> $
-								{totalGanancia.toFixed(2)}
+								<strong>Total Ganancia Esperada:</strong> ${totalGanancia.toFixed(2)}
 							</li>
-
 							<li className="list-group-item">
-								<strong>Total Ganancia Neta para Alejandro (quitando el precio del gestor):</strong> $
-								{totalGananciaNeta.toFixed(2)}
+								<strong>Total Ganancia Neta:</strong> ${totalGananciaNeta.toFixed(2)}
 							</li>
 						</>
 					)}
 					<li className="list-group-item">
-						<strong>Total de Venta (sin quitar gestor):</strong> ${totalVentaInventario.toFixed(2)}
+						<strong>Total de Venta (sin gestor):</strong> ${totalVentaInventario.toFixed(2)}
 					</li>
 					<li className="list-group-item">
-						<strong>Total de Venta (con gestor quitado):</strong> $
-						{totalVentaInventarioSinGestor.toFixed(2)}
+						<strong>Total de Venta (con gestor):</strong> ${totalVentaInventarioSinGestor.toFixed(2)}
 					</li>
 					<li className="list-group-item">
-						<strong>Total de Gestor:</strong> ${totalGestor.toFixed(2)}
+						<strong>Total Gestor:</strong> ${totalGestor.toFixed(2)}
 					</li>
 				</ul>
 				<h5 className="text-center mb-4">Servicios Bravo</h5>
 				<div className="table-responsive">
-					<table className="table table-striped table-bordered rounded-3 overflow-hidden">
+					<table className="table table-striped table-bordered rounded-3 overflow-hidden custom-table">
 						<thead className="thead-dark">
 							<tr>
 								<th>Código</th>
@@ -157,33 +161,40 @@ const ResumenProductos = () => {
 							</tr>
 						</thead>
 						<tbody>
-							{productosList.map((producto) => {
-								const gananciaProducto = (producto.venta - producto.costo) * producto.existencia;
-								const costoTotalProducto = producto.costo * producto.existencia;
-								const ventaTotalProducto = producto.venta * producto.existencia;
-								const ventaTotalProductoSinGestor =
-									producto.venta * producto.existencia - producto.precioGestor * producto.existencia;
-								const gananciaSinGestor =
-									(producto.venta - producto.precioGestor - producto.costo) * producto.existencia;
-								const gananciaGestor = producto.precioGestor * producto.existencia;
-
-								return (
-									<tr key={producto.uid}>
-										<td>{producto.codigo}</td>
-										<td>{producto.descripcion}</td>
-										<td>{producto.existencia}</td>
-										{user.rol === "Administrador" && <td>${producto.costo.toFixed(2)}</td>}
-										<td>${producto.venta.toFixed(2)}</td>
-										<td>${producto.precioGestor.toFixed(2)}</td>
-										{user.rol === "Administrador" && <td>${costoTotalProducto.toFixed(2)}</td>}
-										<td>${ventaTotalProducto.toFixed(2)}</td>
-										<td>${ventaTotalProductoSinGestor.toFixed(2)}</td>
-										{user.rol === "Administrador" && <td>${gananciaProducto.toFixed(2)}</td>}
-										{user.rol === "Administrador" && <td>${gananciaSinGestor.toFixed(2)}</td>}
-										<td>{gananciaGestor.toFixed(2)}</td>
-									</tr>
-								);
-							})}
+							{productosList.map((producto) => (
+								<tr key={producto.uid}>
+									<td>{producto.codigo}</td>
+									<td>{producto.nombre}</td>
+									<td>{producto.existencia}</td>
+									{user.rol === "Administrador" && <td>${producto.costo.toFixed(2)}</td>}
+									<td>${producto.venta.toFixed(2)}</td>
+									<td>${producto.precioGestor.toFixed(2)}</td>
+									{user.rol === "Administrador" && (
+										<td>${(producto.costo * producto.existencia).toFixed(2)}</td>
+									)}
+									<td>${(producto.venta * producto.existencia).toFixed(2)}</td>
+									<td>
+										$
+										{(
+											producto.venta * producto.existencia -
+											producto.precioGestor * producto.existencia
+										).toFixed(2)}
+									</td>
+									{user.rol === "Administrador" && (
+										<td>${((producto.venta - producto.costo) * producto.existencia).toFixed(2)}</td>
+									)}
+									{user.rol === "Administrador" && (
+										<td>
+											$
+											{(
+												(producto.venta - producto.precioGestor - producto.costo) *
+												producto.existencia
+											).toFixed(2)}
+										</td>
+									)}
+									<td>${(producto.precioGestor * producto.existencia).toFixed(2)}</td>
+								</tr>
+							))}
 						</tbody>
 					</table>
 				</div>
