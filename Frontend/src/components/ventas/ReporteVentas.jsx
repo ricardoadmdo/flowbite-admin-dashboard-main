@@ -40,8 +40,10 @@ const ReporteVentas = () => {
 	return (
 		<div className="container my-5">
 			<h2 className="text-center mb-4">Reporte de Ventas</h2>
-			<div className="d-flex justify-content-center mb-4">
+			<div className="d-flex flex-column align-items-center mb-4">
+				<label htmlFor="datepicker">Seleccione una fecha:</label>{" "}
 				<DatePicker
+					id="datepicker"
 					selected={startDate}
 					onChange={setStartDate}
 					dateFormat="dd/MM/yyyy"
