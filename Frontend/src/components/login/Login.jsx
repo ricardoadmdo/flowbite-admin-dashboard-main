@@ -36,7 +36,7 @@ const Login = () => {
 					toast: true,
 					position: "top-end",
 					title: "Éxito",
-					text: "Inicio de sesión exitos 🧑🏻",
+					text: "Inicio de sesión exitoso 🧑🏻",
 					showConfirmButton: false,
 					icon: "success",
 					timer: 3000,
@@ -63,7 +63,7 @@ const Login = () => {
 			console.error("Error durante la autenticación:", error.response ? error.response.data : error.message);
 			Swal.fire({
 				title: "Error",
-				text: "Error durante la autenticación",
+				text: "Usuario o contraseña incorrectos",
 				icon: "error",
 				confirmButtonText: "Aceptar",
 			});
