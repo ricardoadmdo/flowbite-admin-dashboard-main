@@ -121,24 +121,49 @@ const ResumenProductos = () => {
 					{user.rol === "Administrador" && (
 						<>
 							<li className="list-group-item">
-								<strong>Total Costo de Inventario:</strong> ${totalCostoInventario.toFixed(2)}
+								<strong>Total Costo de Inventario:</strong> $
+								{totalCostoInventario.toLocaleString("en-US", {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+								})}
+							</li>
+
+							<li className="list-group-item">
+								<strong>Total Ganancia Esperada:</strong> $
+								{totalGanancia.toLocaleString("en-US", {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+								})}
 							</li>
 							<li className="list-group-item">
-								<strong>Total Ganancia Esperada:</strong> ${totalGanancia.toFixed(2)}
-							</li>
-							<li className="list-group-item">
-								<strong>Total Ganancia Neta:</strong> ${totalGananciaNeta.toFixed(2)}
+								<strong>Total Ganancia Neta:</strong> $
+								{totalGananciaNeta.toLocaleString("en-US", {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+								})}
 							</li>
 						</>
 					)}
 					<li className="list-group-item">
-						<strong>Total de Venta (sin gestor):</strong> ${totalVentaInventario.toFixed(2)}
+						<strong>Total de Venta (sin gestor):</strong> $
+						{totalVentaInventario.toLocaleString("en-US", {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
 					</li>
 					<li className="list-group-item">
-						<strong>Total de Venta (con gestor):</strong> ${totalVentaInventarioSinGestor.toFixed(2)}
+						<strong>Total de Venta (con gestor):</strong> $
+						{totalVentaInventarioSinGestor.toLocaleString("en-US", {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
 					</li>
 					<li className="list-group-item">
-						<strong>Total Gestor:</strong> ${totalGestor.toFixed(2)}
+						<strong>Total Gestor:</strong> $
+						{totalGestor.toLocaleString("en-US", {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
 					</li>
 				</ul>
 				<h5 className="text-center mb-4">Servicios Bravo</h5>
@@ -166,22 +191,66 @@ const ResumenProductos = () => {
 									<td>{producto.codigo}</td>
 									<td>{producto.nombre}</td>
 									<td>{producto.existencia}</td>
-									{user.rol === "Administrador" && <td>${producto.costo.toFixed(2)}</td>}
-									<td>${producto.venta.toFixed(2)}</td>
-									<td>${producto.precioGestor.toFixed(2)}</td>
 									{user.rol === "Administrador" && (
-										<td>${(producto.costo * producto.existencia).toFixed(2)}</td>
+										<td>
+											$
+											{producto.costo.toLocaleString("en-US", {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+											})}
+										</td>
 									)}
-									<td>${(producto.venta * producto.existencia).toFixed(2)}</td>
+									<td>
+										$
+										{producto.venta.toLocaleString("en-US", {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
+									</td>
+									<td>
+										$
+										{producto.precioGestor.toLocaleString("en-US", {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
+									</td>
+									{user.rol === "Administrador" && (
+										<td>
+											$
+											{(producto.costo * producto.existencia).toLocaleString("en-US", {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+											})}
+										</td>
+									)}
+									<td>
+										$
+										{(producto.venta * producto.existencia).toLocaleString("en-US", {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
+									</td>
 									<td>
 										$
 										{(
 											producto.venta * producto.existencia -
 											producto.precioGestor * producto.existencia
-										).toFixed(2)}
+										).toLocaleString("en-US", {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
 									</td>
 									{user.rol === "Administrador" && (
-										<td>${((producto.venta - producto.costo) * producto.existencia).toFixed(2)}</td>
+										<td>
+											$
+											{((producto.venta - producto.costo) * producto.existencia).toLocaleString(
+												"en-US",
+												{
+													minimumFractionDigits: 2,
+													maximumFractionDigits: 2,
+												}
+											)}
+										</td>
 									)}
 									{user.rol === "Administrador" && (
 										<td>
@@ -189,10 +258,19 @@ const ResumenProductos = () => {
 											{(
 												(producto.venta - producto.precioGestor - producto.costo) *
 												producto.existencia
-											).toFixed(2)}
+											).toLocaleString("en-US", {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+											})}
 										</td>
 									)}
-									<td>${(producto.precioGestor * producto.existencia).toFixed(2)}</td>
+									<td>
+										$
+										{(producto.precioGestor * producto.existencia).toLocaleString("en-US", {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
+									</td>
 								</tr>
 							))}
 						</tbody>

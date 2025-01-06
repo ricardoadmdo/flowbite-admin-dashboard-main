@@ -70,13 +70,32 @@ const TablaVentas = ({ ventas, user, handleDeleteVenta }) => {
 											{venta.productos.map((producto, idx) => (
 												<li key={idx}>
 													{producto.nombre} - {producto.cantidad} x $
-													{producto.venta?.toFixed(2) || "0.00"}
+													{producto.venta?.toLocaleString("en-US", {
+														minimumFractionDigits: 2,
+														maximumFractionDigits: 2,
+													})}
 												</li>
 											))}
 										</ul>
 									</td>
-									<td>${venta.precioTotal?.toFixed(2) || "0.00"} CUP</td>
-									{user.rol === "Administrador" && <td>${gananciaVenta.toFixed(2)} CUP</td>}
+									<td>
+										$
+										{venta.precioTotal?.toLocaleString("en-US", {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
+										CUP
+									</td>
+									{user.rol === "Administrador" && (
+										<td>
+											$
+											{gananciaVenta.toLocaleString("en-US", {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+											})}{" "}
+											CUP
+										</td>
+									)}
 									<td>{venta.codigoFactura || "N/A"}</td>
 									<td>
 										<ul>

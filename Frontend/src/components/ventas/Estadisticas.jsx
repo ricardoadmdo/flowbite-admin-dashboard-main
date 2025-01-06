@@ -3,15 +3,30 @@ import PropTypes from "prop-types";
 const Estadisticas = ({ totalGanancia, totalRecaudado, gananciaNeta, productoMasVendido, user }) => (
 	<div className="mb-4">
 		<p>
-			<strong>Total Recaudado del Día:</strong> ${totalRecaudado.toFixed(2)} CUP
+			<strong>Total Recaudado del Día:</strong> $
+			{totalRecaudado.toLocaleString("en-US", {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			})}{" "}
+			CUP
 		</p>
 		{user.rol === "Administrador" && (
 			<>
 				<p>
-					<strong>Ganancia Total del Día:</strong> ${totalGanancia.toFixed(2)} CUP
+					<strong>Ganancia Total del Día:</strong> $
+					{totalGanancia.toLocaleString("en-US", {
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2,
+					})}{" "}
+					CUP
 				</p>
 				<p>
-					<strong>Ganancia Neta para Alejandro:</strong> ${gananciaNeta.toFixed(2)} CUP
+					<strong>Ganancia Neta para Alejandro:</strong> $
+					{gananciaNeta.toLocaleString("en-US", {
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2,
+					})}{" "}
+					CUP
 				</p>
 			</>
 		)}

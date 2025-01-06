@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const GananciaGestores = ({ ventas }) => {
 	// Calcular las ganancias de los gestores
@@ -6,7 +6,7 @@ const GananciaGestores = ({ ventas }) => {
 		const { gestor, productos } = venta;
 
 		// Ignorar ventas con gestor "Ninguno" o sin gestor
-		if (!gestor || gestor.trim().length === 0 || gestor.toLowerCase() === 'ninguno') return acc;
+		if (!gestor || gestor.trim().length === 0 || gestor.toLowerCase() === "ninguno") return acc;
 
 		// Calcular la ganancia del gestor por cada producto
 		productos.forEach((producto) => {
@@ -21,19 +21,29 @@ const GananciaGestores = ({ ventas }) => {
 	const totalGananciasGestores = Object.values(gananciasPorGestor).reduce((sum, ganancia) => sum + ganancia, 0);
 
 	return (
-		<div className='ganancia-gestores'>
+		<div className="ganancia-gestores">
 			<h4>Ganancia por Gestor</h4>
 			{Object.keys(gananciasPorGestor).length > 0 ? (
 				<>
 					<ul>
 						{Object.entries(gananciasPorGestor).map(([gestor, ganancia]) => (
 							<li key={gestor}>
-								<strong>{gestor}:</strong> ${ganancia.toFixed(2)} CUP
+								<strong>{gestor}:</strong> $
+								{ganancia.toLocaleString("en-US", {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+								})}{" "}
+								CUP
 							</li>
 						))}
 					</ul>
 					<p>
-						<strong>Total Ganancias de Gestores:</strong> ${totalGananciasGestores.toFixed(2)} CUP
+						<strong>Total Ganancias de Gestores:</strong> $
+						{totalGananciasGestores.toLocaleString("en-US", {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}{" "}
+						CUP
 					</p>
 				</>
 			) : (
