@@ -25,6 +25,7 @@ const fetchProductos = async (searchTerm) => {
 };
 
 const AgregarVenta = () => {
+	const [spinner, setSpinner] = useState(false)
 	const [gestores, setGestores] = useState([]);
 	const [codigoFactura, setCodigoFactura] = useState('');
 	const [formState, setFormState] = useState({
@@ -54,7 +55,7 @@ const AgregarVenta = () => {
 	};
 
 	// Búsqueda de productos usando react-query
-	const { data: productos = [], refetch } = useQuery({
+	const { data: productos = [], refetch, isFetching } = useQuery({
 		queryKey: ['productos', searchTerm],
 		queryFn: () => fetchProductos(searchTerm),
 		enabled: false, // Solo hacer la búsqueda cuando el término de búsqueda cambie
@@ -374,10 +375,18 @@ const AgregarVenta = () => {
 						placeholder='Buscar un producto...'
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
+						disabled = {spinner}
 					/>
-					<button className='btn btn-primary' type='button' onClick={() => refetch()}>
-						Buscar
-					</button>
+                      <button className='btn btn-primary' type='button' onClick={() => refetch()}>
+                        {isFetching ? (
+                          <div className="spinner-border spinner-border-sm me-2" role="status">
+                            <span className="visually-hidden">Cargando...</span>
+                          </div>
+                        ) : (
+                          'Buscar'
+                        )}
+                      </button>
+
 				</div>
 			</form>
 			{/* Lista de productos encontrados */}
