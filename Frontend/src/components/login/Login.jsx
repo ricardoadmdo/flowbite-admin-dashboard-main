@@ -118,7 +118,16 @@ const Login = () => {
 					style={{ borderRadius: "24px", backgroundColor: "rgba(250, 250, 250, 0.9)" }}
 				>
 					<h3 className="mb-3">Iniciar Sesión</h3>
-					<form className="d-grid gap-3" onSubmit={(e) => e.preventDefault()}>
+					<form
+						className="d-grid gap-3"
+						onSubmit={(e) => e.preventDefault()}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.preventDefault(); // Evita el comportamiento por defecto del formulario (si lo hay)
+								handleLogin();
+							}
+						}}
+					>
 						<div className="form-group">
 							<label htmlFor="username">Nombre de Usuario:</label>
 							<input
