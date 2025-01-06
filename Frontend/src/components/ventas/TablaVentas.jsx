@@ -24,93 +24,100 @@ const TablaVentas = ({ ventas, user, handleDeleteVenta }) => {
 	};
 
 	return (
-		<table className="table table-striped table-bordered">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Hora</th>
-					<th>Productos</th>
-					<th>Total Recaudado</th>
-					{user.rol === "Administrador" && <th>Ganancia por Venta</th>}
-					<th>Factura</th>
-					<th>Datos del Cliente</th>
-					<th>Gestor</th>
-					<th>Acciones</th>
-				</tr>
-			</thead>
-			<tbody>
-				{ventas.length === 0 ? (
+		<div className="table-responsive rounded-3">
+			<table className="table table-striped table-bordered">
+				<thead
+					style={{
+						"--bs-table-bg": "#343a40", // Fondo negro
+						"--bs-table-color": "#fff", // Texto blanco
+						"backgroundColor": "var(--bs-table-bg)", // Asegura que el fondo se aplique
+					}}
+				>
 					<tr>
-						<td colSpan="9" className="text-center">
-							No hay ventas para la fecha seleccionada.
-						</td>
+						<th>#</th>
+						<th>Hora</th>
+						<th>Productos</th>
+						<th>Total Recaudado</th>
+						{user.rol === "Administrador" && <th>Ganancia por Venta</th>}
+						<th>Factura</th>
+						<th>Datos del Cliente</th>
+						<th>Gestor</th>
+						<th>Acciones</th>
 					</tr>
-				) : (
-					ventas.map((venta, index) => {
-						// Calcular ganancia por venta
-						const gananciaVenta = venta.productos.reduce((acum, producto) => {
-							return acum + (producto.venta - producto.costo) * producto.cantidad;
-						}, 0);
+				</thead>
+				<tbody>
+					{ventas.length === 0 ? (
+						<tr>
+							<td colSpan="9" className="text-center">
+								No hay ventas para la fecha seleccionada.
+							</td>
+						</tr>
+					) : (
+						ventas.map((venta, index) => {
+							// Calcular ganancia por venta
+							const gananciaVenta = venta.productos.reduce((acum, producto) => {
+								return acum + (producto.venta - producto.costo) * producto.cantidad;
+							}, 0);
 
-						// Verifica si esta venta está en proceso de eliminación
-						const isDeleting = mutating > 0; // O usa un filtro si hay más de una mutación activa
+							const isDeleting = mutating > 0;
 
-						return (
-							<tr key={venta.uid}>
-								<td>{index + 1}</td>
-								<td>{new Date(venta.fecha).toLocaleTimeString()}</td>
-								<td>
-									<ul>
-										{venta.productos.map((producto, idx) => (
-											<li key={idx}>
-												{producto.nombre} - {producto.cantidad} x $
-												{producto.venta?.toFixed(2) || "0.00"}
+							return (
+								<tr key={venta.uid}>
+									<td>{index + 1}</td>
+									<td>{new Date(venta.fecha).toLocaleTimeString()}</td>
+									<td>
+										<ul>
+											{venta.productos.map((producto, idx) => (
+												<li key={idx}>
+													{producto.nombre} - {producto.cantidad} x $
+													{producto.venta?.toFixed(2) || "0.00"}
+												</li>
+											))}
+										</ul>
+									</td>
+									<td>${venta.precioTotal?.toFixed(2) || "0.00"} CUP</td>
+									{user.rol === "Administrador" && <td>${gananciaVenta.toFixed(2)} CUP</td>}
+									<td>{venta.codigoFactura || "N/A"}</td>
+									<td>
+										<ul>
+											<li>
+												<strong>Nombre:</strong> {venta.cliente?.nombre || "N/A"}
 											</li>
-										))}
-									</ul>
-								</td>
-								<td>${venta.precioTotal?.toFixed(2) || "0.00"} CUP</td>
-								{user.rol === "Administrador" && <td>${gananciaVenta.toFixed(2)} CUP</td>}
-								<td>{venta.codigoFactura || "N/A"}</td>
-								<td>
-									<ul>
-										<li>
-											<strong>Nombre:</strong> {venta.cliente?.nombre || "N/A"}
-										</li>
-										<li>
-											<strong>Carnet:</strong> {venta.cliente?.carnet || "N/A"}
-										</li>
-										<li>
-											<strong>Dirección:</strong> {venta.cliente?.direccion || "N/A"}
-										</li>
-									</ul>
-								</td>
-								<td>{venta.gestor || "N/A"}</td>
-								<td>
-									<button
-										className="btn btn-danger d-flex align-items-center justify-content-center"
-										onClick={() => handleEliminarConConfirmacion(venta.uid)}
-										disabled={isDeleting} // Botón deshabilitado mientras elimina
-									>
-										{isDeleting ? (
-											<span
-												className="spinner-border spinner-border-sm"
-												role="status"
-												aria-hidden="true"
-											></span>
-										) : (
-											<>
-												<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-											</>
-										)}
-									</button>
-								</td>
-							</tr>
-						);
-					})
-				)}
-			</tbody>
-		</table>
+											<li>
+												<strong>Carnet:</strong> {venta.cliente?.carnet || "N/A"}
+											</li>
+											<li>
+												<strong>Dirección:</strong> {venta.cliente?.direccion || "N/A"}
+											</li>
+										</ul>
+									</td>
+									<td>{venta.gestor || "N/A"}</td>
+									<td>
+										<button
+											className="btn btn-danger d-flex align-items-center justify-content-center"
+											onClick={() => handleEliminarConConfirmacion(venta.uid)}
+											disabled={isDeleting}
+										>
+											{isDeleting ? (
+												<span
+													className="spinner-border spinner-border-sm"
+													role="status"
+													aria-hidden="true"
+												></span>
+											) : (
+												<>
+													<FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+												</>
+											)}
+										</button>
+									</td>
+								</tr>
+							);
+						})
+					)}
+				</tbody>
+			</table>
+		</div>
 	);
 };
 
