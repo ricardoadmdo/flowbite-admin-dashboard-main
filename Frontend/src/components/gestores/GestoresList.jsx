@@ -51,7 +51,19 @@ const GestoresList = () => {
 		if (result.isConfirmed) {
 			try {
 				await Axios.delete(`/gestor/${gestor.uid}`);
-				queryClient.invalidateQueries({ queryKey: ["gestores"], exact: true });
+				await queryClient.invalidateQueries({ queryKey: ["gestor", currentPage, limit] });
+
+				// Obtén el número total de gestores después de la eliminación
+				const updatedData = await fetchGestores(currentPage, limit);
+
+				// Si no hay gestores en la página actual, retrocede una página si es posible
+				if (updatedData.gestores.length === 0 && currentPage > 1) {
+					setCurrentPage((prevPage) => prevPage - 1);
+				} else {
+					// Si hay gestores, actualiza los datos
+					await refetch();
+				}
+
 				Swal.fire({
 					title: "Gestor eliminado!",
 					html: `<i>El gestor <strong>${gestor.nombre}</strong> ha sido eliminado con éxito.</i>`,

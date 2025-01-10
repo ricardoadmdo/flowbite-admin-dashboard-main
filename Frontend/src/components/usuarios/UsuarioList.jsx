@@ -61,7 +61,6 @@ const UsuarioList = () => {
 
 			if (result.isConfirmed) {
 				await Axios.delete(`/usuarios/${usuario.uid}`);
-				queryClient.invalidateQueries({ queryKey: ["usuarios"], exact: true });
 
 				Swal.fire({
 					title: "Usuario eliminado!",
@@ -69,6 +68,12 @@ const UsuarioList = () => {
 					icon: "success",
 					timer: 3000,
 				});
+
+				// Invalidar la caché para recargar la lista
+				queryClient.invalidateQueries(["usuarios", currentPage, limit]);
+
+				// Refetch para actualizar la lista de usuarios
+				refetch();
 			}
 		} catch (error) {
 			console.error("Error eliminando usuario:", error);
