@@ -53,17 +53,32 @@ const ProductList = () => {
 		setSearchInput(e.target.value); // Actualiza el término ingresado en el input
 	};
 
-	const handleSearch = async () => {
-		setIsLoadingSpinner(true); // Activar spinner antes de realizar la búsqueda
-		try {
-			setSearchTerm(searchInput); // Actualizar el término de búsqueda
-			setCurrentPage(1); // Reiniciar a la primera página
-		} catch (error) {
-			console.error("Error realizando la búsqueda:", error);
-		} finally {
-			setIsLoadingSpinner(false); // Desactivar spinner al terminar
+	const handleSearch = () => {
+		if (!searchInput.trim()) {
+			// Verifica que el input no esté vacío
+			Swal.fire("Error", "Por favor, escribe algo para buscar", "warning");
+			return;
 		}
+
+		setIsLoadingSpinner(true); // Activar spinner en el botón
+		setSearchTerm(searchInput); // Actualizar el término de búsqueda
+		setCurrentPage(1); // Reiniciar a la primera página
 	};
+
+	const handleClearSearch = () => {
+		// Restablecer el término de búsqueda y el input
+		setSearchInput("");
+		setSearchTerm("");
+		setCurrentPage(1); // Reiniciar a la primera página
+		refetch(); // Refrescar la lista completa de productos
+	};
+
+	useEffect(() => {
+		// Desactivar el spinner del botón cuando React Query termina de cargar
+		if (!isLoading) {
+			setIsLoadingSpinner(false);
+		}
+	}, [isLoading]);
 
 	const handleDelete = async (producto) => {
 		const result = await Swal.fire({
@@ -111,7 +126,6 @@ const ProductList = () => {
 		});
 	};
 
-	if (isLoading) return <ProductSkeleton />;
 	if (isError) {
 		return (
 			<ErrorComponent message="No se pudo cargar la lista de productos">
@@ -142,7 +156,7 @@ const ProductList = () => {
 				</Link>
 			</div>
 
-			{/* Barra de búsqueda con botón */}
+			{/* Barra de búsqueda con botones */}
 			<div className="mb-4 d-flex gap-2">
 				<input
 					type="text"
@@ -151,92 +165,115 @@ const ProductList = () => {
 					value={searchInput}
 					onChange={handleSearchInput}
 				/>
-				<button className="btn btn-primary" onClick={handleSearch}>
+				<button
+					className="btn btn-primary d-flex align-items-center justify-content-center"
+					style={{ minWidth: "120px" }}
+					onClick={handleSearch}
+					disabled={isLoadingSpinner}
+				>
 					{isLoadingSpinner && (
-						<div className="spinner-border spinner-border-sm me-2" role="status">
+						<div
+							className="spinner-border spinner-border-sm text-light"
+							role="status"
+							style={{ marginRight: "8px" }}
+						>
 							<span className="visually-hidden">Cargando...</span>
 						</div>
 					)}
 					Buscar
 				</button>
+				<button
+					className="btn btn-secondary"
+					onClick={handleClearSearch}
+					disabled={!searchInput.trim() && !searchTerm} // Solo habilitar si hay algo buscado
+				>
+					Limpiar Búsqueda
+				</button>
 			</div>
 
-			<div className="row g-4">
-				{productosList.length > 0 ? (
-					productosList.map((producto) => (
-						<div key={producto.uid} className="col-sm-6 col-md-4 col-lg-3">
-							<div className="card h-100 shadow-sm border-0 position-relative product-card">
-								<div className="card-img-wrapper position-relative">
-									<LazyLoadImage
-										height="200px"
-										className="card-img-top position-absolute"
-										src={producto.url}
-										alt={`Imagen del producto: ${producto.nombre}`}
-										effect="blur"
-										style={{ objectFit: "contain" }}
-									/>
-									<div className="img-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+			{/* Mostrar skeleton mientras se cargan los datos */}
+			{isLoading ? (
+				<ProductSkeleton />
+			) : (
+				<div className="row g-4">
+					{productosList.length > 0 ? (
+						productosList.map((producto) => (
+							<div key={producto.uid} className="col-sm-6 col-md-4 col-lg-3">
+								<div className="card h-100 shadow-sm border-0 position-relative product-card">
+									<div className="card-img-wrapper position-relative">
+										<LazyLoadImage
+											height="200px"
+											className="card-img-top position-absolute"
+											src={producto.url}
+											alt={`Imagen del producto: ${producto.nombre}`}
+											effect="blur"
+											style={{ objectFit: "contain" }}
+										/>
+										<div className="img-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+											<button
+												className="btn btn-light btn-sm me-2"
+												onClick={() => handleViewMore(producto)}
+											>
+												<span className="text-primary">Ver más detalles</span>
+											</button>
+										</div>
+									</div>
+
+									<div className="card-body">
+										<h5 className="card-title fw-bold text-truncate mb-3">{producto.nombre}</h5>
+										<div className="product-details">
+											<div className="mb-2 d-flex justify-content-between">
+												<span className="text-muted">Código:</span>
+												<span className="fw-medium">{producto.codigo}</span>
+											</div>
+											<div className="mb-2 d-flex justify-content-between">
+												<span className="text-muted">Precio Costo:</span>
+												<span className="fw-medium text-danger">${producto.costo}</span>
+											</div>
+											<div className="mb-2 d-flex justify-content-between">
+												<span className="text-muted">Precio Venta:</span>
+												<span className="fw-bold text-success">${producto.venta}</span>
+											</div>
+											<div className="mb-2 d-flex justify-content-between">
+												<span className="text-muted">Ganancia del Gestor:</span>
+												<span className="fw-bold text-primary">${producto.precioGestor}</span>
+											</div>
+
+											<div className="d-flex justify-content-between">
+												<span className="text-muted">Existencia:</span>
+												<span className="fw-medium">
+													<span className="badge bg-success">
+														{producto.existencia} unidades
+													</span>
+												</span>
+											</div>
+										</div>
+									</div>
+
+									<div className="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
 										<button
-											className="btn btn-light btn-sm me-2"
-											onClick={() => handleViewMore(producto)}
+											className="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center gap-2"
+											onClick={() => navigate(`/edit/${producto.uid}`)}
 										>
-											<span className="text-primary">Ver más detalles</span>
+											<Edit size={16} /> Editar
+										</button>
+										<button
+											className="btn btn-danger flex-grow-1 d-flex align-items-center justify-content-center gap-2"
+											onClick={() => handleDelete(producto)}
+										>
+											<Trash2 size={16} /> Eliminar
 										</button>
 									</div>
 								</div>
-
-								<div className="card-body">
-									<h5 className="card-title fw-bold text-truncate mb-3">{producto.nombre}</h5>
-									<div className="product-details">
-										<div className="mb-2 d-flex justify-content-between">
-											<span className="text-muted">Código:</span>
-											<span className="fw-medium">{producto.codigo}</span>
-										</div>
-										<div className="mb-2 d-flex justify-content-between">
-											<span className="text-muted">Precio Costo:</span>
-											<span className="fw-medium text-danger">${producto.costo}</span>
-										</div>
-										<div className="mb-2 d-flex justify-content-between">
-											<span className="text-muted">Precio Venta:</span>
-											<span className="fw-bold text-success">${producto.venta}</span>
-										</div>
-										<div className="mb-2 d-flex justify-content-between">
-											<span className="text-muted">Ganancia del Gestor:</span>
-											<span className="fw-bold text-primary">${producto.precioGestor}</span>
-										</div>
-
-										<div className="d-flex justify-content-between">
-											<span className="text-muted">Existencia:</span>
-											<span className="fw-medium">
-												<span className="badge bg-success">{producto.existencia} unidades</span>
-											</span>
-										</div>
-									</div>
-								</div>
-
-								<div className="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
-									<button
-										className="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center gap-2"
-										onClick={() => navigate(`/edit/${producto.uid}`)}
-									>
-										<Edit size={16} /> Editar
-									</button>
-									<button
-										className="btn btn-danger flex-grow-1 d-flex align-items-center justify-content-center gap-2"
-										onClick={() => handleDelete(producto)}
-									>
-										<Trash2 size={16} /> Eliminar
-									</button>
-								</div>
 							</div>
+						))
+					) : (
+						<div className="col-12 text-center py-5">
+							<p className="text-muted fs-5">No hay productos disponibles.</p>
 						</div>
-					))
-				) : (
-					<div className="col-12 text-center py-5">
-						<p className="text-muted fs-5">No hay productos disponibles.</p>
-					</div>
-				)}
-			</div>
+					)}
+				</div>
+			)}
 
 			<Pagination
 				currentPage={currentPage}
