@@ -8,13 +8,12 @@ import ErrorComponent from "../ui/ErrorComponent";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "../productos/ProductList.css";
 import { Edit, Trash2 } from "lucide-react";
-import { fetchProductos } from "../../api/fetchData";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-const useProductos = (page, limit) => {
+const useProductos = (page, limit, searchTerm) => {
 	return useQuery({
-		queryKey: ["productos", page, limit],
-		queryFn: () => fetchProductos(page, limit),
+		queryKey: ["productos", page, limit, searchTerm],
+		queryFn: () => fetchProductosName(page, limit, searchTerm),
 		keepPreviousData: true,
 		staleTime: 5000,
 		select: (data) => ({
@@ -24,20 +23,47 @@ const useProductos = (page, limit) => {
 	});
 };
 
+// Modifica fetchProductos para aceptar el parámetro de búsqueda
+const fetchProductosName = async (page, limit, searchTerm = "") => {
+	const response = await Axios.get(`/productos`, {
+		params: { page, limit, search: searchTerm },
+	});
+	return response.data;
+};
+
 const ProductList = () => {
 	const queryClient = useQueryClient();
+	const [isLoadingSpinner, setIsLoadingSpinner] = useState(false); // Estado para el loading
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit] = useState(8);
+	const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
+	const [searchInput, setSearchInput] = useState(""); // Estado para el término ingresado en el input
 	const navigate = useNavigate();
 
-	const { data, isLoading, isError, refetch } = useProductos(currentPage, limit);
+	const { data, isLoading, isError, refetch } = useProductos(currentPage, limit, searchTerm);
 
 	useEffect(() => {
 		queryClient.prefetchQuery({
-			queryKey: ["productos", currentPage + 1, limit],
-			queryFn: () => fetchProductos(currentPage + 1, limit),
+			queryKey: ["productos", currentPage + 1, limit, searchTerm],
+			queryFn: () => fetchProductosName(currentPage + 1, limit, searchTerm),
 		});
-	}, [currentPage, limit, queryClient]);
+	}, [currentPage, limit, searchTerm, queryClient]);
+
+	const handleSearchInput = (e) => {
+		setSearchInput(e.target.value); // Actualiza el término ingresado en el input
+	};
+
+	const handleSearch = async () => {
+		setIsLoadingSpinner(true); // Activar spinner antes de realizar la búsqueda
+		try {
+			setSearchTerm(searchInput); // Actualizar el término de búsqueda
+			setCurrentPage(1); // Reiniciar a la primera página
+		} catch (error) {
+			console.error("Error realizando la búsqueda:", error);
+		} finally {
+			setIsLoadingSpinner(false); // Desactivar spinner al terminar
+		}
+	};
 
 	const handleDelete = async (producto) => {
 		const result = await Swal.fire({
@@ -114,6 +140,25 @@ const ProductList = () => {
 				<Link to="/productform" className="btn btn-success px-4 py-2 d-flex align-items-center gap-2">
 					<span className="fs-5">+</span> Agregar Producto
 				</Link>
+			</div>
+
+			{/* Barra de búsqueda con botón */}
+			<div className="mb-4 d-flex gap-2">
+				<input
+					type="text"
+					className="form-control"
+					placeholder="Buscar productos por nombre..."
+					value={searchInput}
+					onChange={handleSearchInput}
+				/>
+				<button className="btn btn-primary" onClick={handleSearch}>
+					{isLoadingSpinner && (
+						<div className="spinner-border spinner-border-sm me-2" role="status">
+							<span className="visually-hidden">Cargando...</span>
+						</div>
+					)}
+					Buscar
+				</button>
 			</div>
 
 			<div className="row g-4">
