@@ -100,7 +100,21 @@ const ProductList = () => {
 			try {
 				await Axios.delete(`/productos/${producto.uid}`);
 				Swal.fire("Eliminado", `El producto ${producto.nombre} ha sido eliminado`, "success");
-				queryClient.invalidateQueries({ queryKey: ["productos"], exact: true });
+				// Invalida la caché para la consulta actual
+				queryClient.invalidateQueries({
+					queryKey: ["productos", currentPage, limit, searchTerm],
+				});
+
+				// Refresca los datos
+				await refetch();
+
+				// Ajusta la página actual si es necesario
+				const newProductosList =
+					queryClient.getQueryData(["productos", currentPage, limit, searchTerm])?.productos || [];
+				if (newProductosList.length === 0 && currentPage > 1) {
+					// Si no hay productos en la página actual y no es la primera página
+					setCurrentPage((prevPage) => prevPage - 1);
+				}
 			} catch (error) {
 				console.error("Error eliminando producto:", error);
 				Swal.fire("Error", "No se pudo eliminar el producto", "error");
