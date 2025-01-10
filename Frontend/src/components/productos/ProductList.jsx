@@ -40,7 +40,7 @@ const ProductList = () => {
 	const [searchInput, setSearchInput] = useState(""); // Estado para el término ingresado en el input
 	const navigate = useNavigate();
 
-	const { data, isLoading, isError, refetch } = useProductos(currentPage, limit, searchTerm);
+	const { data, isLoading, isFetching, isError, refetch } = useProductos(currentPage, limit, searchTerm);
 
 	useEffect(() => {
 		queryClient.prefetchQuery({
@@ -60,8 +60,14 @@ const ProductList = () => {
 			return;
 		}
 
+		if (searchInput.trim() === searchTerm) {
+			// Si el término ya está buscado, desactivamos el spinner y salimos
+			setIsLoadingSpinner(false);
+			return;
+		}
+
 		setIsLoadingSpinner(true); // Activar spinner en el botón
-		setSearchTerm(searchInput); // Actualizar el término de búsqueda
+		setSearchTerm(searchInput.trim()); // Actualizar el término de búsqueda
 		setCurrentPage(1); // Reiniciar a la primera página
 	};
 
@@ -75,10 +81,10 @@ const ProductList = () => {
 
 	useEffect(() => {
 		// Desactivar el spinner del botón cuando React Query termina de cargar
-		if (!isLoading) {
+		if (!isFetching) {
 			setIsLoadingSpinner(false);
 		}
-	}, [isLoading]);
+	}, [isFetching]);
 
 	const handleDelete = async (producto) => {
 		const result = await Swal.fire({
@@ -129,7 +135,7 @@ const ProductList = () => {
 	if (isError) {
 		return (
 			<ErrorComponent message="No se pudo cargar la lista de productos">
-				<button onClick={() => refetch()} disabled={isLoading} className="btn btn-primary">
+				<button onClick={() => refetch()} disabled={isFetching} className="btn btn-primary">
 					Reintentar
 				</button>
 			</ErrorComponent>
@@ -157,17 +163,24 @@ const ProductList = () => {
 			</div>
 
 			{/* Barra de búsqueda con botones */}
-			<div className="mb-4 d-flex gap-2">
+			<div className="mb-4 d-flex gap-2 align-items-center" style={{ gap: "10px" }}>
 				<input
 					type="text"
 					className="form-control"
 					placeholder="Buscar productos por nombre..."
 					value={searchInput}
 					onChange={handleSearchInput}
+					style={{
+						borderRadius: "8px",
+						padding: "10px",
+						fontSize: "16px",
+					}}
 				/>
 				<button
 					className="btn btn-primary d-flex align-items-center justify-content-center"
-					style={{ minWidth: "120px" }}
+					style={{
+						minWidth: "140px",
+					}}
 					onClick={handleSearch}
 					disabled={isLoadingSpinner}
 				>
@@ -183,7 +196,11 @@ const ProductList = () => {
 					Buscar
 				</button>
 				<button
-					className="btn btn-secondary"
+					className="btn btn-outline-secondary shadow-sm"
+					style={{
+						borderRadius: "8px",
+						fontSize: "16px",
+					}}
 					onClick={handleClearSearch}
 					disabled={!searchInput.trim() && !searchTerm} // Solo habilitar si hay algo buscado
 				>
