@@ -144,20 +144,7 @@ const ResumenProductos = () => {
 							</li>
 						</>
 					)}
-					<li className="list-group-item">
-						<strong>Total de Venta (sin gestor):</strong> $
-						{totalVentaInventario.toLocaleString("en-US", {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						})}
-					</li>
-					<li className="list-group-item">
-						<strong>Total de Venta (con gestor):</strong> $
-						{totalVentaInventarioSinGestor.toLocaleString("en-US", {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						})}
-					</li>
+
 					<li className="list-group-item">
 						<strong>Total Gestor:</strong> $
 						{totalGestor.toLocaleString("en-US", {
@@ -176,7 +163,7 @@ const ResumenProductos = () => {
 								<th>Existencia</th>
 								{user.rol === "Administrador" && <th>Costo</th>}
 								<th>Venta</th>
-								<th>Venta sin Gestor</th>
+								<th>Ganancia Gestor Unidad</th>
 								{user.rol === "Administrador" && <th>Imp-Costo</th>}
 								<th>Imp-Venta</th>
 								<th>Imp-Venta sin Gestor</th>

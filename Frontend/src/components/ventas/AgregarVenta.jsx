@@ -221,20 +221,14 @@ const AgregarVenta = () => {
 	};
 
 	const generarCodigoFactura = (ultimoCodigoFactura) => {
-		const fechaActual = new Date();
-		const diaActual = fechaActual.getDate().toString().padStart(2, "0");
-		const mesActual = (fechaActual.getMonth() + 1).toString().padStart(2, "0");
-
 		if (ultimoCodigoFactura) {
-			const [dia, mes, numero] = ultimoCodigoFactura.split("/");
-			if (dia === diaActual && mes === mesActual) {
-				const nuevoNumero = (parseInt(numero) + 1).toString().padStart(2, "0");
-				localStorage.setItem("ultimoCodigoFactura", `${dia}/${mes}/${nuevoNumero}`);
-				return `${dia}/${mes}/${nuevoNumero}`;
-			}
+			const nuevoNumero = (parseInt(ultimoCodigoFactura) + 1).toString().padStart(4, "0");
+			localStorage.setItem("ultimoCodigoFactura", nuevoNumero);
+			return nuevoNumero;
 		}
 
-		const nuevoCodigo = `${diaActual}/${mesActual}/01`;
+		// Si no hay un código anterior, iniciar desde 0001
+		const nuevoCodigo = "0001";
 		localStorage.setItem("ultimoCodigoFactura", nuevoCodigo);
 		return nuevoCodigo;
 	};
