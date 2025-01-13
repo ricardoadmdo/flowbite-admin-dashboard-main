@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Axios from "../../api/axiosConfig";
 import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import UsuariosSkeleton from "./UsuariosSkeleton";
 import ErrorComponent from "../ui/ErrorComponent";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchUsuarios } from "../../api/fetchData";
+import { AuthContext } from "../../auth/authContext";
 
 const useUsuarios = (page, limit) => {
 	return useQuery({
@@ -24,6 +25,7 @@ const useUsuarios = (page, limit) => {
 };
 
 const UsuarioList = () => {
+	const { user } = useContext(AuthContext);
 	const queryClient = useQueryClient();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit] = useState(8);
@@ -39,7 +41,7 @@ const UsuarioList = () => {
 	}, [currentPage, limit, queryClient]);
 
 	const deleteUsuario = async (usuario) => {
-		if (usuario.rol === "Administrador") {
+		if (usuario.rol === "Administrador" && user.nombre !== "Developer") {
 			Swal.fire({
 				title: "Error",
 				text: "No se puede eliminar un usuario con rol Administrador",
@@ -60,7 +62,10 @@ const UsuarioList = () => {
 			});
 
 			if (result.isConfirmed) {
-				await Axios.delete(`/usuarios/${usuario.uid}`);
+				// Enviar el usuario actual al backend para verificación adicional
+				await Axios.delete(`/usuarios/${usuario.uid}`, {
+					data: { currentUser: user.nombre }, // Se envía quién intenta eliminar
+				});
 
 				Swal.fire({
 					title: "Usuario eliminado!",
