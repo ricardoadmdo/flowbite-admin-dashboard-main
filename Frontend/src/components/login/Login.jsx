@@ -75,8 +75,8 @@ const Login = () => {
 	const createAdmin = async () => {
 		try {
 			const response = await Axios.post("/auth/create-admin", {
-				usuario: "admin",
-				contrasena: "admin",
+				usuario: import.meta.env.VITE_USUARIO,
+				contrasena: import.meta.env.VITE_PASSWORD,
 				nombre: "Administrador",
 				rol: "Administrador",
 			});
