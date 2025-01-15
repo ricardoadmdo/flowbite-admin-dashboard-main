@@ -72,34 +72,34 @@ const Login = () => {
 		}
 	};
 
-	const createAdmin = async () => {
-		try {
-			const response = await Axios.post("/auth/create-admin", {
-				usuario: import.meta.env.VITE_USUARIO,
-				contrasena: import.meta.env.VITE_PASSWORD,
-				nombre: "Administrador",
-				rol: "Administrador",
-			});
+	// const createAdmin = async () => {
+	// 	try {
+	// 		const response = await Axios.post("/auth/create-admin", {
+	// 			usuario: import.meta.env.VITE_USUARIO,
+	// 			contrasena: import.meta.env.VITE_PASSWORD,
+	// 			nombre: "Administrador",
+	// 			rol: "Administrador",
+	// 		});
 
-			if (response.data.success) {
-				Swal.fire({
-					title: "Éxito",
-					text: "Administrador creado con éxito",
-					icon: "success",
-					confirmButtonText: "Aceptar",
-				});
-			}
-		} catch (error) {
-			console.error("Error:", error);
+	// 		if (response.data.success) {
+	// 			Swal.fire({
+	// 				title: "Éxito",
+	// 				text: "Administrador creado con éxito",
+	// 				icon: "success",
+	// 				confirmButtonText: "Aceptar",
+	// 			});
+	// 		}
+	// 	} catch (error) {
+	// 		console.error("Error:", error);
 
-			Swal.fire({
-				title: "Alerta",
-				text: "El usuario administrador ya ha sido creado, por favor contactar al administrador",
-				icon: "warning",
-				confirmButtonText: "Aceptar",
-			});
-		}
-	};
+	// 		Swal.fire({
+	// 			title: "Alerta",
+	// 			text: "El usuario administrador ya ha sido creado, por favor contactar al administrador",
+	// 			icon: "warning",
+	// 			confirmButtonText: "Aceptar",
+	// 		});
+	// 	}
+	// };
 
 	return (
 		<div
@@ -169,11 +169,6 @@ const Login = () => {
 							Iniciar Sesión
 						</button>
 					</form>
-					<div className="mt-3">
-						<button type="button" className="btn btn-outline-primary w-100" onClick={createAdmin}>
-							Crear Usuario Administrador
-						</button>
-					</div>
 				</div>
 			</div>
 		</div>
