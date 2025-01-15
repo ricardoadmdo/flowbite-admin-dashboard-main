@@ -321,25 +321,26 @@ const AgregarVenta = () => {
 			console.error("Error al registrar la venta:", error);
 		}
 	};
-
 	// Modal para seleccionar cantidad
 	const openModal = (producto) => {
 		Swal.fire({
 			title: "Ingrese la cantidad",
 			input: "number",
 			inputAttributes: {
-				min: 1,
+				min: 0.01, // Permite valores mínimos en decimales
+				step: 0.01, // Ajusta el incremento del valor en pasos decimales
 				autocapitalize: "off",
 			},
-			inputValue: "1",
+			inputValue: "1.00", // Valor inicial con decimales
 			showCancelButton: true,
 			confirmButtonText: "Agregar",
 			preConfirm: (cantidad) => {
-				if (!cantidad || cantidad < 1) {
-					Swal.showValidationMessage("Debe ingresar una cantidad válida");
+				const cantidadDecimal = parseFloat(cantidad); // Convertir a decimal
+				if (!cantidad || isNaN(cantidadDecimal) || cantidadDecimal <= 0) {
+					Swal.showValidationMessage("Debe ingresar una cantidad válida (mayor a 0)");
 					return false;
 				}
-				agregarProducto(producto, parseInt(cantidad));
+				agregarProducto(producto, cantidadDecimal); // Pasar el valor decimal
 			},
 		});
 	};
