@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faMinus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import html2pdf from 'html2pdf.js';
+import { useRef, useState } from "react";
+import PropTypes from "prop-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import html2pdf from "html2pdf.js";
 
 const Factura = ({
 	formState,
@@ -64,14 +64,14 @@ const Factura = ({
 
 	const generatePDF = () => {
 		const element = facturaRef.current.cloneNode(true);
-		element.querySelectorAll('.d-print-none').forEach((el) => el.remove());
+		element.querySelectorAll(".d-print-none").forEach((el) => el.remove());
 		html2pdf()
 			.from(element)
 			.set({
 				margin: 1,
 				filename: `Factura_Servicios_Bravo_${codigoFactura}.pdf`,
 				html2canvas: { scale: 2 },
-				jsPDF: { orientation: 'portrait' },
+				jsPDF: { orientation: "portrait" },
 			})
 			.save();
 	};
@@ -81,37 +81,37 @@ const Factura = ({
 			await validarVenta();
 			generatePDF();
 		} catch (error) {
-			console.error('Error al validar la venta:', error);
+			console.error("Error al validar la venta:", error);
 		}
 	};
 
 	return (
-		<div className='container mt-4 p-4 border rounded bg-white' ref={facturaRef}>
-			<div className='text-center mb-4'>
+		<div className="container mt-4 p-4 border rounded bg-white" ref={facturaRef}>
+			<div className="text-center mb-4">
 				<h4>Factura</h4>
 			</div>
-			<div className='mb-4'>
-				<div className='d-flex justify-content-between'>
-					<span className='fw-bold'>Servicios Bravo</span>
-					<span className='fw-bold'>Código: {codigoFactura}</span>
+			<div className="mb-4">
+				<div className="d-flex justify-content-between">
+					<span className="fw-bold">Servicios Bravo</span>
+					<span className="fw-bold">Código: {codigoFactura}</span>
 				</div>
-				<div className='text-start mt-2'>
+				<div className="text-start mt-2">
 					<span>Falgueras entre auditor y Santa Catalina, Empresa de fósforos ENFOS Cerro, La Habana</span>
 				</div>
-				<div className='d-flex justify-content-between mt-3'>
-					<span className='fw-bold'>Fecha: {new Date().toLocaleDateString()}</span>
+				<div className="d-flex justify-content-between mt-3">
+					<span className="fw-bold">Fecha: {new Date().toLocaleDateString()}</span>
 				</div>
 			</div>
-			<div className='mb-4'>
-				<div className='table-responsive'>
-					<table className='table table-bordered'>
-						<thead className='table-light'>
+			<div className="mb-4">
+				<div className="table-responsive">
+					<table className="table table-bordered">
+						<thead className="table-light">
 							<tr>
 								<th>Descripción</th>
 								<th>Precio Unitario</th>
 								<th>Cantidad</th>
 								<th>Monto</th>
-								<th className='d-print-none'>Acciones</th>
+								<th className="d-print-none">Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -120,39 +120,39 @@ const Factura = ({
 									<td>{producto.nombre}</td>
 									<td>
 										<input
-											type='number'
+											type="number"
 											value={producto.venta}
 											onChange={(e) => handlePrecioChange(producto.uid, e.target.value)}
-											min='0'
-											step='1'
-											className='form-control border-0'
-											style={{ maxWidth: '80px' }}
+											min="0"
+											step="1"
+											className="form-control border-0"
+											style={{ maxWidth: "80px" }}
 										/>
 									</td>
 									<td>{producto.cantidad}</td>
 									<td>${producto.cantidad * producto.venta}</td>
-									<td className='d-print-none'>
-										<div className='d-flex align-items-center'>
+									<td className="d-print-none">
+										<div className="d-flex align-items-center">
 											{/* Input para cantidad */}
 											<input
-												type='number'
-												min='1'
-												step='1'
-												value={cantidadInput[producto.uid] || ''}
+												type="number"
+												min="1"
+												step="1"
+												value={cantidadInput[producto.uid] || ""}
 												onChange={(e) => handleInputChange(producto.uid, e.target.value)}
-												className='form-control form-control-sm mr-2'
-												style={{ maxWidth: '70px' }}
+												className="form-control form-control-sm mr-2"
+												style={{ maxWidth: "70px" }}
 											/>
 											{/* Botón para aumentar */}
 											<button
-												className='btn btn-secondary btn-sm ml-1'
+												className="btn btn-secondary btn-sm ml-1"
 												onClick={() => handleAumentarCantidad(producto.uid)}
 											>
 												<FontAwesomeIcon icon={faPlus} />
 											</button>
 											{/* Botón para disminuir */}
 											<button
-												className='btn btn-danger btn-sm ml-1'
+												className="btn btn-danger btn-sm ml-1"
 												onClick={() => {
 													if (producto.cantidad > 1) {
 														handleDisminuirCantidad(producto.uid);
@@ -171,60 +171,61 @@ const Factura = ({
 					</table>
 				</div>
 			</div>
-			<div className='d-flex justify-content-end'>
-				<div className='w-25'>
-					<div className='d-flex justify-content-between mb-2'>
+			<div className="d-flex justify-content-end">
+				<div className="w-25">
+					<div className="d-flex justify-content-between mb-2">
 						<span>Subtotal:</span>
-						<span>${formState.precioTotal}</span>
+						<span>${formState.precioTotal.toFixed(2)}</span>
 					</div>
-					<div className='d-flex justify-content-between fw-bold mb-3'>
+					<div className="d-flex justify-content-between fw-bold mb-3">
 						<span>Total:</span>
-						<span>${formState.precioTotal}</span>
+						<span>${formState.precioTotal.toFixed(2)}</span>
 					</div>
 				</div>
 			</div>
-			<div className='mt-4'>
+
+			<div className="mt-4">
 				<h5>Datos del Cliente</h5>
-				<div className='mb-2 d-flex'>
-					<span className='fw-bold'>Nombre: </span>
+				<div className="mb-2 d-flex">
+					<span className="fw-bold">Nombre: </span>
 					<input
-						type='text'
-						placeholder='Nombre del cliente'
-						name='nombre'
+						type="text"
+						placeholder="Nombre del cliente"
+						name="nombre"
 						value={cliente.nombre}
 						onChange={handleClienteChange}
-						className='border-0 flex-grow-1'
-						style={{ minWidth: '50px', flex: '1' }}
+						className="border-0 flex-grow-1"
+						style={{ minWidth: "50px", flex: "1" }}
 					/>
 				</div>
-				<div className='mb-2'>
-					<span className='fw-bold'>Carnet de Identidad: </span>
+				<div className="mb-2">
+					<span className="fw-bold">Carnet de Identidad: </span>
 					<input
-						type='number'
-						placeholder='Carnet del cliente'
-						name='carnet'
+						type="number"
+						placeholder="Carnet del cliente"
+						name="carnet"
 						value={cliente.carnet}
 						onChange={handleClienteChange}
-						className='editable-input border-0 p-0'
-						style={{ minWidth: '50px', flex: '1' }}
+						className="editable-input border-0 p-0"
+						style={{ minWidth: "50px", flex: "1" }}
 					/>
 				</div>
-				<div className='mb-2 d-flex'>
-					<span className='fw-bold'>Dirección: </span>
+				<div className="mb-2 d-flex">
+					<span className="fw-bold">Dirección: </span>
 					<input
-						type='text'
-						placeholder='Dirección del cliente'
-						name='direccion'
+						type="text"
+						placeholder="Dirección del cliente"
+						name="direccion"
 						value={cliente.direccion}
 						onChange={handleClienteChange}
-						className='border-0 flex-grow-1'
-						style={{ minWidth: '50px', flex: '1' }}
+						className="border-0 flex-grow-1"
+						style={{ minWidth: "50px", flex: "1" }}
 					/>
 				</div>
-				<div className='mb-2'>Firma: ____________________________________</div>
+				<div className="mb-2">Firma: ____________________________________</div>
 			</div>
-			<div className='d-print-none text-right'>
-				<button className='btn btn-success mr-1' onClick={handleValidarVenta}>
+			<div className="d-print-none text-right">
+				<button className="btn btn-success mr-1" onClick={handleValidarVenta}>
 					Registrar Venta <FontAwesomeIcon icon={faPlus} />
 				</button>
 			</div>
