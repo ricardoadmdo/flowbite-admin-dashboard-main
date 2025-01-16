@@ -1,6 +1,6 @@
-const { response, request } = require('express');
-const Venta = require('../models/venta');
-const Producto = require('../models/producto');
+const { response, request } = require("express");
+const Venta = require("../models/venta");
+const Producto = require("../models/producto");
 
 // Crear una nueva venta
 const createVenta = async (req, res) => {
@@ -9,16 +9,16 @@ const createVenta = async (req, res) => {
 	try {
 		// Verifica que los campos requeridos estén presentes
 		if (!datos || !productos || productos.length === 0) {
-			return res.status(400).json({ message: 'Campos requeridos faltantes' });
+			return res.status(400).json({ message: "Campos requeridos faltantes" });
 		}
 
 		// Verifica que los datos del cliente no estén vacíos
 		if (!cliente.nombre || !cliente.carnet || !cliente.direccion) {
-			return res.status(400).json({ message: 'Datos del cliente incompletos' });
+			return res.status(400).json({ message: "Datos del cliente incompletos" });
 		}
 
 		// Ajusta el campo gestor si es una cadena vacía
-		const gestorAjustado = gestor.nombre === '' ? 'Ninguno' : gestor.nombre;
+		const gestorAjustado = gestor.nombre === "" ? "Ninguno" : gestor.nombre;
 
 		// Crear un nuevo objeto Venta con los datos recibidos
 		const nuevaVenta = new Venta({ ...datos, productos, cliente, gestor: gestorAjustado });
@@ -34,8 +34,44 @@ const createVenta = async (req, res) => {
 		// Devolver la nueva venta
 		res.status(201).json(nuevaVenta);
 	} catch (error) {
-		console.error('Error al crear venta:', error.message);
-		res.status(500).json({ message: 'Error al crear venta' });
+		console.error("Error al crear venta:", error.message);
+		res.status(500).json({ message: "Error al crear venta" });
+	}
+};
+
+const getProductoMasVendidoDiario = async (req, res) => {
+	try {
+		const fechaActual = new Date();
+		const mesActual = fechaActual.getMonth();
+		const anioActual = fechaActual.getFullYear();
+
+		const inicioMes = new Date(anioActual, mesActual, 1);
+		const finMes = new Date(anioActual, mesActual + 1, 1);
+
+		const productosMasVendidos = await Venta.aggregate([
+			{ $match: { fecha: { $gte: inicioMes, $lt: finMes } } },
+			{ $unwind: "$productos" },
+			{
+				$group: {
+					_id: { dia: { $dayOfMonth: "$fecha" }, producto: "$productos.nombre" },
+					totalCantidad: { $sum: "$productos.cantidad" },
+				},
+			},
+			{ $sort: { "_id.dia": 1, "totalCantidad": -1 } },
+			{
+				$group: {
+					_id: "$_id.dia",
+					producto: { $first: "$_id.producto" },
+					total: { $first: "$totalCantidad" },
+				},
+			},
+			{ $sort: { _id: 1 } },
+		]);
+
+		res.status(200).json(productosMasVendidos);
+	} catch (error) {
+		console.error("Error al obtener el producto más vendido diario:", error);
+		res.status(500).json({ error: "Error al procesar la solicitud." });
 	}
 };
 
@@ -70,9 +106,9 @@ const getVentas = async (req = request, res = response) => {
 			totalPages: Math.ceil(total / limit),
 		});
 	} catch (error) {
-		console.error('Error al obtener las ventas:', error);
+		console.error("Error al obtener las ventas:", error);
 		res.status(500).json({
-			msg: 'Error al obtener las ventas',
+			msg: "Error al obtener las ventas",
 			error: error.message,
 		});
 	}
@@ -84,8 +120,8 @@ const getUltimoCodigoFactura = async (req, res) => {
 		const ultimoCodigoFactura = ultimaVenta ? ultimaVenta.codigoFactura : null;
 		res.status(200).json({ ultimoCodigoFactura });
 	} catch (error) {
-		console.error('Error al obtener el último código de factura:', error.message);
-		res.status(500).json({ message: 'Error al obtener el último código de factura' });
+		console.error("Error al obtener el último código de factura:", error.message);
+		res.status(500).json({ message: "Error al obtener el último código de factura" });
 	}
 };
 
@@ -112,9 +148,9 @@ const getAllVentasByDay = async (req = request, res = response) => {
 			ventas,
 		});
 	} catch (error) {
-		console.error('Error al obtener todas las ventas del día:', error);
+		console.error("Error al obtener todas las ventas del día:", error);
 		res.status(500).json({
-			msg: 'Error al obtener todas las ventas del día',
+			msg: "Error al obtener todas las ventas del día",
 			error: error.message,
 		});
 	}
@@ -138,8 +174,8 @@ const getVentasPorMes = async (req, res) => {
 			},
 			{
 				$group: {
-					_id: { $dayOfMonth: '$fecha' },
-					total: { $sum: '$precioTotal' },
+					_id: { $dayOfMonth: "$fecha" },
+					total: { $sum: "$precioTotal" },
 				},
 			},
 			{ $sort: { _id: 1 } },
@@ -147,8 +183,8 @@ const getVentasPorMes = async (req, res) => {
 
 		res.status(200).json(ventasMensuales);
 	} catch (error) {
-		console.error('Error al obtener las ventas del mes:', error);
-		res.status(500).json({ error: 'Error al obtener las ventas del mes' });
+		console.error("Error al obtener las ventas del mes:", error);
+		res.status(500).json({ error: "Error al obtener las ventas del mes" });
 	}
 };
 
@@ -170,15 +206,15 @@ const getVentasPorMesGestor = async (req, res) => {
 			},
 			{
 				$group: {
-					_id: { dia: { $dayOfMonth: '$fecha' }, gestor: '$gestor' },
-					total: { $sum: '$precioTotal' },
+					_id: { dia: { $dayOfMonth: "$fecha" }, gestor: "$gestor" },
+					total: { $sum: "$precioTotal" },
 				},
 			},
-			{ $sort: { '_id.dia': 1, 'total': -1 } }, // Ordenar por día y luego por total en orden descendente
+			{ $sort: { "_id.dia": 1, "total": -1 } }, // Ordenar por día y luego por total en orden descendente
 		]);
 
 		// Filtrar gestores que no son "Ninguno"
-		const ventasFiltradas = ventasMensuales.filter((venta) => venta._id.gestor.toLowerCase() !== 'ninguno');
+		const ventasFiltradas = ventasMensuales.filter((venta) => venta._id.gestor.toLowerCase() !== "ninguno");
 
 		// Encontrar el gestor con mayor venta por día
 		const ventasMaximasPorDia = [];
@@ -196,8 +232,8 @@ const getVentasPorMesGestor = async (req, res) => {
 
 		res.status(200).json(ventasMaximasPorDia);
 	} catch (error) {
-		console.error('Error al obtener las ventas del mes:', error);
-		res.status(500).json({ error: 'Error al obtener las ventas del mes' });
+		console.error("Error al obtener las ventas del mes:", error);
+		res.status(500).json({ error: "Error al obtener las ventas del mes" });
 	}
 };
 
@@ -220,8 +256,8 @@ const getVentasPorAno = async (req, res) => {
 			},
 			{
 				$group: {
-					_id: { $month: '$fecha' },
-					total: { $sum: '$precioTotal' }, // Cambié '$total' a '$precioTotal' para mantener consistencia
+					_id: { $month: "$fecha" },
+					total: { $sum: "$precioTotal" }, // Cambié '$total' a '$precioTotal' para mantener consistencia
 				},
 			},
 			{ $sort: { _id: 1 } },
@@ -229,8 +265,8 @@ const getVentasPorAno = async (req, res) => {
 
 		res.status(200).json(ventasAnuales);
 	} catch (error) {
-		console.error('Error al obtener las ventas del año:', error);
-		res.status(500).json({ error: 'Error al obtener las ventas del año' });
+		console.error("Error al obtener las ventas del año:", error);
+		res.status(500).json({ error: "Error al obtener las ventas del año" });
 	}
 };
 
@@ -241,13 +277,13 @@ const deleteVenta = async (req = request, res = response) => {
 		const ventaEliminada = await Venta.findByIdAndDelete(id);
 
 		if (!ventaEliminada) {
-			return res.status(404).json({ message: 'Venta no encontrada' });
+			return res.status(404).json({ message: "Venta no encontrada" });
 		}
 
-		res.status(200).json({ message: 'Venta eliminada con éxito' });
+		res.status(200).json({ message: "Venta eliminada con éxito" });
 	} catch (error) {
-		console.error('Error al eliminar venta:', error);
-		res.status(500).json({ message: 'Error al eliminar venta' });
+		console.error("Error al eliminar venta:", error);
+		res.status(500).json({ message: "Error al eliminar venta" });
 	}
 };
 
@@ -260,4 +296,5 @@ module.exports = {
 	getVentasPorMesGestor,
 	getAllVentasByDay,
 	getUltimoCodigoFactura,
+	getProductoMasVendidoDiario,
 };

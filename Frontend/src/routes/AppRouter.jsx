@@ -1,21 +1,22 @@
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import Login from '../components/login/Login';
-import Barranavegacion from '../components/barra de navegacion/Barranavegacion';
-import AgregarVenta from '../components/ventas/AgregarVenta';
-import ProductForm from '../components/productos/ProductForm';
-import ProductList from '../components/productos/ProductList';
-import UsuarioForm from '../components/usuarios/UsuarioForm';
-import UsuarioList from '../components/usuarios/UsuarioList';
-import ReporteVentas from '../components/ventas/ReporteVentas';
-import AdminRoute from './AdminRoute';
-import PrivateRoute from './PrivateRoute';
-import Error404 from '../components/Error404';
-import GraficosVentas from '../components/ventas/GraficosVentas';
-import GraficoGestorMasVendioDiario from '../components/ventas/GraficoGestorMasVendioDiario';
-import ResumenProductos from '../components/productos/ResumenProductos';
-import Footer from '../components/Footer';
-import GestoresForm from '../components/gestores/GestoresForm';
-import GestoresList from '../components/gestores/GestoresList';
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import Login from "../components/login/Login";
+import Barranavegacion from "../components/barra de navegacion/Barranavegacion";
+import AgregarVenta from "../components/ventas/AgregarVenta";
+import ProductForm from "../components/productos/ProductForm";
+import ProductList from "../components/productos/ProductList";
+import UsuarioForm from "../components/usuarios/UsuarioForm";
+import UsuarioList from "../components/usuarios/UsuarioList";
+import ReporteVentas from "../components/ventas/ReporteVentas";
+import AdminRoute from "./AdminRoute";
+import PrivateRoute from "./PrivateRoute";
+import Error404 from "../components/Error404";
+import GraficosVentas from "../components/ventas/GraficosVentas";
+import GraficoGestorMasVendioDiario from "../components/ventas/GraficoGestorMasVendioDiario";
+import ResumenProductos from "../components/productos/ResumenProductos";
+import Footer from "../components/Footer";
+import GestoresForm from "../components/gestores/GestoresForm";
+import GestoresList from "../components/gestores/GestoresList";
+import GraficoProductoMasVendidoDiario from "../components/ventas/GraficoProductoMasVendidoDiario";
 
 const AppRouter = () => {
 	return (
@@ -23,7 +24,7 @@ const AppRouter = () => {
 			<Routes>
 				<Route element={<LayoutWithNav />}>
 					<Route
-						path='/reporte-venta'
+						path="/reporte-venta"
 						element={
 							<PrivateRoute>
 								<ReporteVentas />
@@ -31,7 +32,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/gestionar-productos'
+						path="/gestionar-productos"
 						element={
 							<AdminRoute>
 								<ProductList />
@@ -39,7 +40,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/gestionar-gestores'
+						path="/gestionar-gestores"
 						element={
 							<PrivateRoute>
 								<GestoresList />
@@ -47,7 +48,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/grafico-ventas'
+						path="/grafico-ventas"
 						element={
 							<AdminRoute>
 								<GraficosVentas />
@@ -55,7 +56,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/grafico-venta-gestores'
+						path="/grafico-venta-gestores"
 						element={
 							<AdminRoute>
 								<GraficoGestorMasVendioDiario />
@@ -63,7 +64,15 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/gestionar-usuarios'
+						path="/grafico-productos-mas-vendidos"
+						element={
+							<AdminRoute>
+								<GraficoProductoMasVendidoDiario />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path="/gestionar-usuarios"
 						element={
 							<AdminRoute>
 								<UsuarioList />
@@ -71,7 +80,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/agregar-venta'
+						path="/agregar-venta"
 						element={
 							<PrivateRoute>
 								<AgregarVenta />
@@ -79,7 +88,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/usuarioform'
+						path="/usuarioform"
 						element={
 							<AdminRoute>
 								<UsuarioForm />
@@ -87,7 +96,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/editUser/:id'
+						path="/editUser/:id"
 						element={
 							<AdminRoute>
 								<UsuarioForm />
@@ -95,7 +104,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/productform'
+						path="/productform"
 						element={
 							<AdminRoute>
 								<ProductForm />
@@ -103,7 +112,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/gestorform'
+						path="/gestorform"
 						element={
 							<AdminRoute>
 								<GestoresForm />
@@ -111,7 +120,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/editGestor/:id'
+						path="/editGestor/:id"
 						element={
 							<AdminRoute>
 								<GestoresForm />
@@ -119,7 +128,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/resumenProductos'
+						path="/resumenProductos"
 						element={
 							<PrivateRoute>
 								<ResumenProductos />
@@ -127,7 +136,7 @@ const AppRouter = () => {
 						}
 					/>
 					<Route
-						path='/edit/:id'
+						path="/edit/:id"
 						element={
 							<AdminRoute>
 								<ProductForm />
@@ -135,9 +144,9 @@ const AppRouter = () => {
 						}
 					/>
 				</Route>
-				<Route path='/' element={<Login />} />
+				<Route path="/" element={<Login />} />
 				{/* Ruta comodín para manejar rutas no existentes */}
-				<Route path='*' element={<Error404 />} />
+				<Route path="*" element={<Error404 />} />
 			</Routes>
 		</BrowserRouter>
 	);
