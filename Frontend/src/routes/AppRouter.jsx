@@ -17,6 +17,7 @@ import Footer from "../components/Footer";
 import GestoresForm from "../components/gestores/GestoresForm";
 import GestoresList from "../components/gestores/GestoresList";
 import GraficoProductoMasVendidoDiario from "../components/ventas/GraficoProductoMasVendidoDiario";
+import GraficoProductosDia from "../components/ventas/GraficoProductosDia";
 
 const AppRouter = () => {
 	return (
@@ -68,6 +69,14 @@ const AppRouter = () => {
 						element={
 							<AdminRoute>
 								<GraficoProductoMasVendidoDiario />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path="/grafico-productos-dia"
+						element={
+							<AdminRoute>
+								<GraficoProductosDia />
 							</AdminRoute>
 						}
 					/>

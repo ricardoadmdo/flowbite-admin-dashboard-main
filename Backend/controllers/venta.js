@@ -39,6 +39,32 @@ const createVenta = async (req, res) => {
 	}
 };
 
+const getProductosVendidosHoy = async (req, res) => {
+	try {
+		const fechaActual = new Date();
+		const inicioDia = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), fechaActual.getDate());
+		const finDia = new Date(inicioDia);
+		finDia.setHours(23, 59, 59, 999);
+
+		const productosVendidos = await Venta.aggregate([
+			{ $match: { fecha: { $gte: inicioDia, $lt: finDia } } },
+			{ $unwind: "$productos" },
+			{
+				$group: {
+					_id: "$productos.nombre", // Agrupa por nombre del producto
+					total: { $sum: "$productos.cantidad" }, // Suma las cantidades vendidas
+				},
+			},
+			{ $sort: { total: -1 } }, // Ordena por cantidad vendida en orden descendente
+		]);
+
+		res.status(200).json(productosVendidos);
+	} catch (error) {
+		console.error("Error al obtener los productos vendidos hoy:", error);
+		res.status(500).json({ error: "Error al procesar la solicitud." });
+	}
+};
+
 const getProductoMasVendidoDiario = async (req, res) => {
 	try {
 		const fechaActual = new Date();
@@ -297,4 +323,5 @@ module.exports = {
 	getAllVentasByDay,
 	getUltimoCodigoFactura,
 	getProductoMasVendidoDiario,
+	getProductosVendidosHoy,
 };

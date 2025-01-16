@@ -130,6 +130,10 @@ const Barranavegacion = () => {
 								<FontAwesomeIcon icon={faChartLine} className="me-2" />
 								Gráfico productos mas vendidos
 							</NavLink>
+							<NavLink to="/grafico-productos-dia" className="nav-link">
+								<FontAwesomeIcon icon={faChartLine} className="me-2" />
+								Gráfico productos vendidos hoy
+							</NavLink>
 						</>
 					)}
 				</nav>
