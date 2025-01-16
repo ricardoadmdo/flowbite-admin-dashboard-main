@@ -35,7 +35,7 @@ const GraficoProductosDia = () => {
 	}, []);
 
 	return (
-		<div className="container">
+		<div className="container my-5">
 			<h2 className="text-center mb-4">Productos Vendidos Hoy</h2>
 			<ResponsiveContainer
 				width="100%"
