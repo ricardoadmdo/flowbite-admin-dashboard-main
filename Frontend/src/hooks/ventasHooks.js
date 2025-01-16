@@ -86,9 +86,9 @@ export const calcularEstadisticas = (ventas) => {
 		gananciaNeta: totalGanancia - gananciaGestores,
 		productoMasVendido:
 			productosMasVendidos.length === 1
-				? `${productosMasVendidos[0]} con ${maxCantidad} unidades.`
+				? `${productosMasVendidos[0]} con ${maxCantidad.toFixed(2)} unidades.`
 				: productosMasVendidos.length > 1
-				? `Empatados: ${productosMasVendidos.join(" y ")} con ${maxCantidad} unidades cada uno.`
+				? `Empatados: ${productosMasVendidos.join(" y ")} con ${maxCantidad.toFixed(2)} unidades cada uno.`
 				: "No hay ventas.",
 	};
 };
