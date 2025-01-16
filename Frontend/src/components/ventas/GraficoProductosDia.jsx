@@ -35,7 +35,12 @@ const GraficoProductosDia = () => {
 	}, []);
 
 	return (
-		<div className="container my-5">
+		<div
+			className="container my-5"
+			style={{
+				minHeight: "calc(100vh - 410px)", // Ajusta según el tamaño de tu header y footer
+			}}
+		>
 			<h2 className="text-center mb-4">Productos Vendidos Hoy</h2>
 			<ResponsiveContainer
 				width="100%"
