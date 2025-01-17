@@ -97,6 +97,15 @@ const AgregarVenta = () => {
 			});
 		},
 	});
+	const generarCodigoFactura = (ultimoCodigoFactura) => {
+		if (ultimoCodigoFactura) {
+			// Incrementa el último código y rellena con ceros hasta 4 dígitos
+			const nuevoNumero = (parseInt(ultimoCodigoFactura, 10) + 1).toString().padStart(4, "0");
+			return nuevoNumero;
+		}
+		// Si no hay un último código, empieza desde "0001"
+		return "0001";
+	};
 
 	const limpiarCampos = () => {
 		setFormState({
@@ -166,47 +175,28 @@ const AgregarVenta = () => {
 		});
 	};
 
-	const aumentarCantidad = (uid, cantidad = 1) => {
+	const actualizarCantidad = (uid, cantidad) => {
 		setFormState((prevState) => {
 			const productosActualizados = prevState.productos.map((producto) => {
 				if (producto.uid === uid) {
 					const nuevaCantidad = producto.cantidad + cantidad;
-					if (nuevaCantidad <= producto.existencia) {
-						return { ...producto, cantidad: nuevaCantidad };
-					} else {
-						Swal.fire({
-							icon: "warning",
-							title: "No hay suficiente Stock",
-							text: "La cantidad introducida sobrepasa el stock",
-						});
-					}
-				}
-				return producto;
-			});
-
-			const precioTotal = productosActualizados.reduce(
-				(total, producto) => total + producto.cantidad * producto.venta,
-				0
-			);
-
-			return { ...prevState, productos: productosActualizados, precioTotal };
-		});
-	};
-
-	const disminuirCantidad = (uid, cantidad = 1) => {
-		setFormState((prevState) => {
-			const productosActualizados = prevState.productos.map((producto) => {
-				if (producto.uid === uid) {
-					const nuevaCantidad = producto.cantidad - cantidad;
-					if (nuevaCantidad >= 1) {
-						return { ...producto, cantidad: nuevaCantidad };
-					} else {
+					if (nuevaCantidad < 1) {
 						Swal.fire({
 							icon: "error",
-							title: "La cantidad no puede ser menor a 1",
-							text: "No puedes registrar un producto negativo",
+							title: "Cantidad inválida",
+							text: "La cantidad debe ser al menos 1.",
 						});
+						return producto;
 					}
+					if (nuevaCantidad > producto.existencia) {
+						Swal.fire({
+							icon: "warning",
+							title: "No hay suficiente stock",
+							text: "La cantidad excede la disponibilidad.",
+						});
+						return producto;
+					}
+					return { ...producto, cantidad: nuevaCantidad };
 				}
 				return producto;
 			});
@@ -220,18 +210,8 @@ const AgregarVenta = () => {
 		});
 	};
 
-	const generarCodigoFactura = (ultimoCodigoFactura) => {
-		if (ultimoCodigoFactura) {
-			const nuevoNumero = (parseInt(ultimoCodigoFactura) + 1).toString().padStart(4, "0");
-			localStorage.setItem("ultimoCodigoFactura", nuevoNumero);
-			return nuevoNumero;
-		}
-
-		// Si no hay un código anterior, iniciar desde 0001
-		const nuevoCodigo = "0001";
-		localStorage.setItem("ultimoCodigoFactura", nuevoCodigo);
-		return nuevoCodigo;
-	};
+	const aumentarCantidad = (uid) => actualizarCantidad(uid, 1);
+	const disminuirCantidad = (uid) => actualizarCantidad(uid, -1);
 
 	useEffect(() => {
 		const obtenerUltimoCodigoFactura = async () => {
@@ -243,7 +223,10 @@ const AgregarVenta = () => {
 				console.error("Error al obtener el último código de factura:", error);
 			}
 		};
+		obtenerUltimoCodigoFactura();
+	}, []);
 
+	useEffect(() => {
 		const obtenerGestores = async () => {
 			try {
 				const gestoresObtenidos = await fetchGestores(1, 100);
@@ -252,10 +235,8 @@ const AgregarVenta = () => {
 				console.error("Error al obtener los gestores:", error);
 			}
 		};
-
-		obtenerUltimoCodigoFactura();
 		obtenerGestores();
-	}, []);
+	}, []); // Separado para claridad
 
 	// Validar venta
 	const validarVenta = async () => {

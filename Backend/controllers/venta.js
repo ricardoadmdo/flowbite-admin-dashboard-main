@@ -142,8 +142,24 @@ const getVentas = async (req = request, res = response) => {
 
 const getUltimoCodigoFactura = async (req, res) => {
 	try {
-		const ultimaVenta = await Venta.findOne({}, { codigoFactura: 1 }).sort({ fecha: -1 }).exec();
+		// Obtener el inicio y el final del día de hoy
+		const inicioDia = new Date();
+		inicioDia.setHours(0, 0, 0, 0); // Medianoche
+		const finDia = new Date();
+		finDia.setHours(23, 59, 59, 999); // Final del día
+
+		// Buscar la venta con el mayor código de factura dentro del día actual
+		const ultimaVenta = await Venta.findOne(
+			{ fecha: { $gte: inicioDia, $lte: finDia } }, // Filtro por fecha del día actual
+			{ codigoFactura: 1 }
+		)
+			.sort({ codigoFactura: -1 }) // Ordenar por código de factura en orden descendente
+			.exec();
+
+		// Obtener el último código de factura
 		const ultimoCodigoFactura = ultimaVenta ? ultimaVenta.codigoFactura : null;
+
+		// Responder al cliente
 		res.status(200).json({ ultimoCodigoFactura });
 	} catch (error) {
 		console.error("Error al obtener el último código de factura:", error.message);
