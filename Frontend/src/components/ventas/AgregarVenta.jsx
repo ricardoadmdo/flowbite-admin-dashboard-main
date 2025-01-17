@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
 import Axios from "../../api/axiosConfig";
 import Swal from "sweetalert2";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Factura from "./Factura";
 import { fetchGestores, fetchProductosName, fetchUltimoCodigoFactura } from "../../api/fetchData";
 import BuscarProductoSkeleton from "./BuscarProductoSkeleton";
+import { io } from "socket.io-client";
+
+const socket = io(
+	import.meta.env.MODE === "development"
+		? import.meta.env.VITE_SOCKET_URL_DEVELOPMENT
+		: import.meta.env.VITE_SOCKET_URL_PRODUCTION
+);
+
+socket.on("connect", () => console.log("Conectado al servidor WebSocket"));
+socket.on("disconnect", () => console.log("Desconectado del servidor WebSocket"));
 
 const AgregarVenta = () => {
 	const [spinner] = useState(false);
@@ -23,10 +33,29 @@ const AgregarVenta = () => {
 		direccion: "",
 	});
 
-	const queryClient = useQueryClient();
-	const refetchProductos = () => {
-		queryClient.invalidateQueries(["productos"]);
-	};
+	// Obtener el último código de factura al montar el componente
+	useEffect(() => {
+		const obtenerUltimoCodigoFactura = async () => {
+			try {
+				const { proximoCodigoFactura } = await fetchUltimoCodigoFactura();
+				setCodigoFactura(proximoCodigoFactura);
+			} catch (error) {
+				console.error("Error al obtener el último código de factura:", error);
+			}
+		};
+
+		obtenerUltimoCodigoFactura();
+
+		// Escuchar eventos de WebSocket
+		socket.on("actualizarCodigoFactura", (nuevoCodigo) => {
+			console.log("Nuevo código de factura recibido:", nuevoCodigo);
+			setCodigoFactura(nuevoCodigo);
+		});
+
+		return () => {
+			socket.off("actualizarCodigoFactura");
+		};
+	}, []);
 
 	// Búsqueda de productos usando react-query
 	const {
@@ -57,7 +86,6 @@ const AgregarVenta = () => {
 	const ventaMutation = useMutation({
 		mutationFn: (newVenta) => Axios.post("/venta", newVenta),
 		onSuccess: async () => {
-			refetchProductos();
 			limpiarCampos();
 			Swal.fire({
 				toast: true,
@@ -78,15 +106,6 @@ const AgregarVenta = () => {
 					text: "swal-content",
 				},
 			});
-
-			// Obtener y actualizar el nuevo código de factura después de registrar la venta
-			try {
-				const ultimoCodigoFactura = await fetchUltimoCodigoFactura();
-				const nuevoCodigoFactura = generarCodigoFactura(ultimoCodigoFactura);
-				setCodigoFactura(nuevoCodigoFactura);
-			} catch (error) {
-				console.error("Error al obtener el nuevo código de factura:", error);
-			}
 		},
 		onError: (error) => {
 			console.log(error);
@@ -97,15 +116,6 @@ const AgregarVenta = () => {
 			});
 		},
 	});
-	const generarCodigoFactura = (ultimoCodigoFactura) => {
-		if (ultimoCodigoFactura) {
-			// Incrementa el último código y rellena con ceros hasta 4 dígitos
-			const nuevoNumero = (parseInt(ultimoCodigoFactura, 10) + 1).toString().padStart(4, "0");
-			return nuevoNumero;
-		}
-		// Si no hay un último código, empieza desde "0001"
-		return "0001";
-	};
 
 	const limpiarCampos = () => {
 		setFormState({
@@ -214,19 +224,6 @@ const AgregarVenta = () => {
 	const disminuirCantidad = (uid) => actualizarCantidad(uid, -1);
 
 	useEffect(() => {
-		const obtenerUltimoCodigoFactura = async () => {
-			try {
-				const ultimoCodigoFactura = await fetchUltimoCodigoFactura();
-				const nuevoCodigoFactura = generarCodigoFactura(ultimoCodigoFactura);
-				setCodigoFactura(nuevoCodigoFactura);
-			} catch (error) {
-				console.error("Error al obtener el último código de factura:", error);
-			}
-		};
-		obtenerUltimoCodigoFactura();
-	}, []);
-
-	useEffect(() => {
 		const obtenerGestores = async () => {
 			try {
 				const gestoresObtenidos = await fetchGestores(1, 100);
@@ -325,6 +322,23 @@ const AgregarVenta = () => {
 			},
 		});
 	};
+
+	useEffect(() => {
+		console.log("Inicializando WebSocket...");
+		socket.on("connect", () => {
+			console.log("🟢 Conectado al servidor de WebSocket:", socket.id);
+		});
+
+		socket.on("disconnect", () => {
+			console.log("🔴 Desconectado del servidor de WebSocket");
+		});
+
+		return () => {
+			console.log("Limpieza de listeners de WebSocket");
+			socket.off("connect");
+			socket.off("disconnect");
+		};
+	}, []);
 
 	return (
 		<div className="container animate__animated animate__fadeIn mt-4 my-5">

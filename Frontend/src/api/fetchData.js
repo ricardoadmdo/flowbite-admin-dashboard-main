@@ -12,7 +12,7 @@ const fetchData = async (endpoint, page, limit) => {
 export const fetchUltimoCodigoFactura = async () => {
 	try {
 		const response = await Axios.get("/venta/ultimo-codigo-factura");
-		return response.data.ultimoCodigoFactura;
+		return response.data;
 	} catch (error) {
 		console.error("Error al obtener el último código de factura:", error);
 		return null;

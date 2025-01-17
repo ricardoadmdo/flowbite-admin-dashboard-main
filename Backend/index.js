@@ -1,15 +1,24 @@
 const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
 const { dbConnection } = require("./database/config.js");
 require("dotenv").config();
 
-//Crear el servidor de express
+// Crear el servidor de Express
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+	cors: {
+		origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://superbravo.es"],
+		methods: ["GET", "POST", "PUT", "DELETE"],
+	},
+});
 
-//Base de Datos
+// Base de Datos
 dbConnection();
 
-//CORS
+// CORS
 const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173", "https://superbravo.es"];
 app.use(
 	cors({
@@ -21,23 +30,38 @@ app.use(
 			}
 			return callback(null, true);
 		},
-		methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
-		allowedHeaders: ["Content-Type", "Authorization"], // Encabezados permitidos
+		methods: ["GET", "POST", "PUT", "DELETE"],
+		allowedHeaders: ["Content-Type", "Authorization"],
 	})
 );
 
-//Lectura y parseo del body asdasd asdasd
+// Lectura y parseo del body
 app.use(express.json());
 
-//Rutas
-// Usar las rutas de usuario
+// Configurar Socket.IO para manejar conexiones
+io.on("connection", (socket) => {
+	console.log("🟢 Nuevo cliente conectado: ", socket.id);
+
+	socket.on("disconnect", () => {
+		console.log("🔴 Cliente desconectado: ", socket.id);
+	});
+});
+
+// Agregar el objeto `io` al `req` para usarlo en los controladores
+app.use((req, res, next) => {
+	req.io = io;
+	next();
+});
+
+// Rutas
 app.use("/api/usuarios", require("./routes/usuario"));
 app.use("/api/productos", require("./routes/producto"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/venta", require("./routes/venta"));
 app.use("/api/gestor", require("./routes/gestor"));
 
-//Escuchar peticiones.
-app.listen(process.env.PORT, () => {
-	console.log(`🟢Backend corriendo en el puerto: ${process.env.PORT}`);
+// Escuchar peticiones
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+	console.log(`🟢 Backend corriendo en el puerto: ${PORT}`);
 });

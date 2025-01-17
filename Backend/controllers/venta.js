@@ -7,35 +7,49 @@ const createVenta = async (req, res) => {
 	const { productos, cliente, gestor, ...datos } = req.body;
 
 	try {
-		// Verifica que los campos requeridos estén presentes
-		if (!datos || !productos || productos.length === 0) {
-			return res.status(400).json({ message: "Campos requeridos faltantes" });
+		if (!productos || productos.length === 0) {
+			return res.status(400).json({ message: "No hay productos en la venta." });
 		}
 
-		// Verifica que los datos del cliente no estén vacíos
-		if (!cliente.nombre || !cliente.carnet || !cliente.direccion) {
-			return res.status(400).json({ message: "Datos del cliente incompletos" });
+		if (!cliente || !cliente.nombre || !cliente.carnet || !cliente.direccion) {
+			return res.status(400).json({ message: "Los datos del cliente están incompletos." });
 		}
 
-		// Ajusta el campo gestor si es una cadena vacía
-		const gestorAjustado = gestor.nombre === "" ? "Ninguno" : gestor.nombre;
+		// Ajustar el campo gestor si está vacío o nulo
+		const gestorAjustado =
+			(gestor && (gestor.nombre && gestor.nombre.trim().length > 0 ? gestor.nombre : "Ninguno")) || "Ninguno";
 
-		// Crear un nuevo objeto Venta con los datos recibidos
-		const nuevaVenta = new Venta({ ...datos, productos, cliente, gestor: gestorAjustado });
+		const inicioDia = new Date();
+		inicioDia.setHours(0, 0, 0, 0);
+		const finDia = new Date();
+		finDia.setHours(23, 59, 59, 999);
 
-		// Guardar la nueva venta en la base de datos
+		// Obtener el último código de factura del día actual
+		const ultimaVenta = await Venta.findOne({ fecha: { $gte: inicioDia, $lte: finDia } }, { codigoFactura: 1 })
+			.sort({ codigoFactura: -1 })
+			.exec();
+
+		const ultimoCodigo = ultimaVenta ? parseInt(ultimaVenta.codigoFactura, 10) : 0;
+		const nuevoCodigoFactura = (ultimoCodigo + 1).toString().padStart(4, "0");
+
+		// Crear la venta con el nuevo código
+		const nuevaVenta = new Venta({
+			...datos,
+			productos,
+			cliente,
+			gestor: gestorAjustado, // Usar el gestor ajustado
+			codigoFactura: nuevoCodigoFactura,
+		});
 		await nuevaVenta.save();
 
-		// Actualizar cantidades de productos
-		for (let producto of productos) {
-			await Producto.findByIdAndUpdate(producto.uid, { $inc: { existencia: -producto.cantidad } });
-		}
+		// Emitir el siguiente código al frontend
+		const siguienteCodigoFactura = (ultimoCodigo + 2).toString().padStart(4, "0");
+		req.io.emit("actualizarCodigoFactura", siguienteCodigoFactura);
 
-		// Devolver la nueva venta
-		res.status(201).json(nuevaVenta);
+		res.status(201).json({ message: "Venta registrada", codigoFactura: nuevoCodigoFactura });
 	} catch (error) {
-		console.error("Error al crear venta:", error.message);
-		res.status(500).json({ message: "Error al crear venta" });
+		console.error("Error al registrar la venta:", error);
+		res.status(500).json({ message: "Error al registrar la venta." });
 	}
 };
 
@@ -156,11 +170,12 @@ const getUltimoCodigoFactura = async (req, res) => {
 			.sort({ codigoFactura: -1 }) // Ordenar por código de factura en orden descendente
 			.exec();
 
-		// Obtener el último código de factura
-		const ultimoCodigoFactura = ultimaVenta ? ultimaVenta.codigoFactura : null;
+		// Obtener el último código de factura y calcular el siguiente
+		const ultimoCodigoFactura = ultimaVenta ? parseInt(ultimaVenta.codigoFactura, 10) : 0;
+		const proximoCodigoFactura = (ultimoCodigoFactura + 1).toString().padStart(4, "0");
 
 		// Responder al cliente
-		res.status(200).json({ ultimoCodigoFactura });
+		res.status(200).json({ proximoCodigoFactura });
 	} catch (error) {
 		console.error("Error al obtener el último código de factura:", error.message);
 		res.status(500).json({ message: "Error al obtener el último código de factura" });
