@@ -1,9 +1,9 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 const ProductoSchema = Schema({
 	nombre: {
 		type: String,
-		required: [true, 'El nombre es obligatorio'],
+		required: [true, "El nombre es obligatorio"],
 	},
 	cantidad: {
 		type: Number,
@@ -11,26 +11,26 @@ const ProductoSchema = Schema({
 	},
 	codigo: {
 		type: String,
-		required: [true, 'El código es obligatorio'],
+		required: [true, "El código es obligatorio"],
 	},
 	existencia: {
 		type: Number,
-		required: [true, 'La existencia es obligatoria'],
+		required: [true, "La existencia es obligatoria"],
 		min: 0, // No permite valores negativos
 	},
 	costo: {
 		type: Number,
-		required: [true, 'El costo es obligatorio'],
+		required: [true, "El costo es obligatorio"],
 		min: 0,
 	},
 	venta: {
 		type: Number,
-		required: [true, 'El precio de venta es obligatorio'],
+		required: [true, "El precio de venta es obligatorio"],
 		min: 0,
 	},
 	precioGestor: {
 		type: Number,
-		required: [true, 'El precio del gestor es obligatorio'],
+		required: [true, "El precio del gestor es obligatorio"],
 		min: 0,
 	},
 });
@@ -38,22 +38,22 @@ const ProductoSchema = Schema({
 const ClienteSchema = new Schema({
 	nombre: {
 		type: String,
-		required: [true, 'El nombre es obligatorio'],
+		required: [true, "El nombre es obligatorio"],
 	},
 	carnet: {
 		type: String,
-		required: [true, 'El carnet de identidad es obligatorio'],
+		required: [true, "El carnet de identidad es obligatorio"],
 	},
 	direccion: {
 		type: String,
-		required: [true, 'La dirección es obligatoria'],
+		required: [true, "La dirección es obligatoria"],
 	},
 });
 
 const GestorSchema = new Schema({
 	nombre: {
 		type: String,
-		required: [true, 'El nombre es obligatorio'],
+		required: [true, "El nombre es obligatorio"],
 	},
 });
 
@@ -79,7 +79,6 @@ const VentaSchema = new Schema({
 	codigoFactura: {
 		type: String,
 		required: true,
-		unique: true,
 	},
 	cliente: {
 		type: ClienteSchema,
@@ -93,4 +92,4 @@ VentaSchema.methods.toJSON = function () {
 	return venta;
 };
 
-module.exports = model('Venta', VentaSchema);
+module.exports = model("Venta", VentaSchema);
