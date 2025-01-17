@@ -20,13 +20,16 @@ const GananciaGestores = ({ ventas }) => {
 	// Calcular el total de todas las ganancias de los gestores
 	const totalGananciasGestores = Object.values(gananciasPorGestor).reduce((sum, ganancia) => sum + ganancia, 0);
 
+	// Ordenar los gestores por ganancia de mayor a menor
+	const gestoresOrdenados = Object.entries(gananciasPorGestor).sort((a, b) => b[1] - a[1]);
+
 	return (
 		<div className="ganancia-gestores">
 			<h4>Ganancia por Gestor</h4>
-			{Object.keys(gananciasPorGestor).length > 0 ? (
+			{gestoresOrdenados.length > 0 ? (
 				<>
 					<ul>
-						{Object.entries(gananciasPorGestor).map(([gestor, ganancia]) => (
+						{gestoresOrdenados.map(([gestor, ganancia]) => (
 							<li key={gestor}>
 								<strong>{gestor}:</strong> $
 								{ganancia.toLocaleString("en-US", {
