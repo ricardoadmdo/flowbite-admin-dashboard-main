@@ -42,6 +42,24 @@ const createVenta = async (req, res) => {
 		});
 		await nuevaVenta.save();
 
+		// Actualizar las existencias de los productos
+		for (const producto of productos) {
+			const productoActual = await Producto.findOne({ codigo: producto.codigo });
+
+			if (!productoActual) {
+				return res.status(404).json({ message: `Producto con código ${producto.codigo} no encontrado.` });
+			}
+
+			if (productoActual.existencia < producto.cantidad) {
+				return res
+					.status(400)
+					.json({ message: `No hay suficiente existencia del producto ${producto.nombre}.` });
+			}
+
+			productoActual.existencia -= producto.cantidad;
+			await productoActual.save();
+		}
+
 		// Emitir el siguiente código al frontend
 		const siguienteCodigoFactura = (ultimoCodigo + 2).toString().padStart(4, "0");
 		req.io.emit("actualizarCodigoFactura", siguienteCodigoFactura);
